@@ -1,0 +1,14 @@
+main
+num V_a, num V_b, num V_result,
+begin
+  V_a = 10;
+  V_b = 5;
+  V_result = add(V_a, V_b);
+  print V_result;
+  V_result = sub(V_a, V_b);
+  print V_result;
+  V_result = mul(V_a, V_b);
+  print V_result;
+  V_result = div(V_a, V_b);
+  print V_result;
+end

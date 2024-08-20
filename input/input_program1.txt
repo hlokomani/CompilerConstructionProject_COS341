@@ -1,0 +1,37 @@
+main
+num V_count, text V_message,
+begin
+  V_count = 5;
+  V_message = "Hello World";
+  if grt(V_count, 0) then
+    begin
+      print V_message;
+      V_count = sub(V_count, 1);
+    end
+  else
+    begin
+      halt;
+    end
+
+  F_factorial(V_count, 1, V_message);
+end
+
+void F_factorial(num V_n, num V_result, text V_msg)
+{
+  num V_temp, num V_zero, text V_result_msg,
+  begin
+    V_zero = 0;
+    if eq(V_n, V_zero) then
+      begin
+        V_result_msg = "Factorial is";
+        print V_result_msg;
+        print V_result;
+      end
+    else
+      begin
+        V_temp = mul(V_n, V_result);
+        V_n = sub(V_n, 1);
+        F_factorial(V_n, V_temp, V_msg);
+      end
+  end
+}

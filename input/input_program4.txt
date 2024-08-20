@@ -1,0 +1,26 @@
+main
+num V_n, num V_result,
+begin
+  V_n = 5;
+  V_result = F_factorial(V_n, 1, "Calculating");
+  print V_result;
+end
+
+num F_factorial(num V_n, num V_acc, text V_msg)
+{
+  num V_zero, text V_debug,
+  begin
+    V_zero = 0;
+    V_debug = "Debug";
+    print V_debug;
+    print V_n;
+    if eq(V_n, V_zero) then
+      begin
+        V_result = V_acc;
+      end
+    else
+      begin
+        V_result = F_factorial(sub(V_n, 1), mul(V_n, V_acc), V_msg);
+      end
+  end
+}
