@@ -1,17 +1,17 @@
 main
 num V_age, text V_message,
 begin
-  V_message = "Enter your age:";
+  V_message = "Enter";
   print V_message;
   V_age < input;
   if grt(V_age, 18) then
     begin
-      V_message = "You are an adult";
+      V_message = "Adult";
       print V_message;
     end
   else
     begin
-      V_message = "You are a minor";
+      V_message = "Minor";
       print V_message;
     end
 end

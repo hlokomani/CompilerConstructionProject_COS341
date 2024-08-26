@@ -2,7 +2,7 @@ main
 num V_count, text V_message,
 begin
   V_count = 5;
-  V_message = "Hello World";
+  V_message = "Hello";
   if grt(V_count, 0) then
     begin
       print V_message;
@@ -18,13 +18,13 @@ end
 
 void F_factorial(num V_n, num V_result, text V_msg)
 {
-  num V_temp, num V_zero, text V_result_msg,
+  num V_temp, num V_zero, text V_resultmsg,
   begin
     V_zero = 0;
     if eq(V_n, V_zero) then
       begin
-        V_result_msg = "Factorial is";
-        print V_result_msg;
+        V_resultmsg = "Factor";
+        print V_resultmsg;
         print V_result;
       end
     else

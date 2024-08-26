@@ -6,7 +6,7 @@ begin
   V_c = 2;
   V_result = add(mul(V_a, V_b), div(sub(V_c, V_a), V_b));
   print V_result;
-  V_result = F_complex(V_a, V_b, V_c);
+  F_complex(V_a, V_b, V_c);
   print V_result;
 end
 
