@@ -7,21 +7,21 @@ begin
   V_num2 = 10;
   if and(eq(V_str1, "Hello"), grt(V_num2, V_num1)) then
     begin
-      V_result = "Condition met";
+      V_result = "Met";
     end
   else
     begin
-      V_result = "Condition not met";
+      V_result = "Notmet";
     end
   print V_result;
 
-  if or(eq(V_str2, "OpenAI"), eq(add(V_num1, V_num2), 15)) then
+  if or(eq(V_str2, "Openai"), eq(add(V_num1, V_num2), 15)) then
     begin
-      V_result = "At least one condition is true";
+      V_result = "Atlone";
     end
   else
     begin
-      V_result = "Both conditions are false";
+      V_result = "Bothfal";
     end
   print V_result;
 
@@ -33,7 +33,6 @@ text F_concatenate(text V_a, text V_b)
 {
   text V_space,
   begin
-    V_space = " ";
     V_result = V_a;
     V_result = V_space;
     V_result = V_b;
