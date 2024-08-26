@@ -4,7 +4,7 @@ import java.util.regex.*;
 public class LexicalAnalyzer {
     private static final String[] KEYWORDS = {"main", "begin", "end", "if", "then", "else", "num", "text", "void", "print", "input", "skip", "halt"};
     private static final Set<String> KEYWORD_SET = new HashSet<>(Arrays.asList(KEYWORDS));
-    private static final String[] OPERATORS = {"<", "=", "(", ")", ",", ";", "or", "and", "eq", "grt", "add", "sub", "mul", "div", "not", "sqrt"};
+    private static final String[] OPERATORS = {"<", "=", "(", ")", ",", ";", "{", "}", "or", "and", "eq", "grt", "add", "sub", "mul", "div", "not", "sqrt"};
     private static final Set<String> OPERATOR_SET = new HashSet<>(Arrays.asList(OPERATORS));
 
     private static final Pattern VARIABLE_PATTERN = Pattern.compile("V_[a-z]([a-z]|[0-9])*");
@@ -67,7 +67,7 @@ public class LexicalAnalyzer {
     }
 
     private static boolean isPunctuation(char c) {
-        return "(),;".indexOf(c) != -1;
+        return "(),;{}".indexOf(c) != -1;
     }
 
     private static Token createToken(String word) throws LexicalException {
