@@ -4,20 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c28cd061-734d-4bbf-b87d-7d3b85d2d3d7" name="Changes" comment="init">
-      <change afterPath="$PROJECT_DIR$/input/input_program1.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/input/input_program2.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/input/input_program3.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/input/input_program4.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/input/input_program5.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/input/input_program56txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/FileHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Lexer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/LexicalAnalyzer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/LexicalException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Token.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/XMLFormatter.java" afterDir="false" />
+    <list default="true" id="c28cd061-734d-4bbf-b87d-7d3b85d2d3d7" name="Changes" comment="Output from lexing">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/input_program1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input/input_program1.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/input_program3.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input/input_program3.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/input_program4.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input/input_program4.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/input_program5.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input/input_program5.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/input_program56txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LexicalAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/LexicalAnalyzer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,23 +26,28 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "hlokomani"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;hlokomani&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/hlokomani/341SemesterProject.git",
-    "accountId": "67e3930d-c369-4da6-8f33-adf07f395989"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/hlokomani/341SemesterProject.git&quot;,
+    &quot;accountId&quot;: &quot;67e3930d-c369-4da6-8f33-adf07f395989&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="2kvMg1Juok0OHNtbzCZeLbdcoEF" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -62,7 +61,7 @@
     "Application.Lexer.executor": "Run",
     "Application.Run Lexer.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "hlokomani",
     "kotlin-language-version-configured": "true"
   }
 }]]></component>
@@ -75,7 +74,7 @@
     <configuration name="Run Lexer" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Lexer" />
       <module name="341SemesterProject" />
-      <option name="PROGRAM_PARAMETERS" value="input/input_program2.txt output/output2.xml" />
+      <option name="PROGRAM_PARAMETERS" value="input/input_program6.txt output/output6.xml" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -98,11 +97,38 @@
       <option name="project" value="LOCAL" />
       <updated>1724159830709</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Input program types">
+      <option name="closed" value="true" />
+      <created>1724161719786</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1724161719787</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Java classes for lexing">
+      <option name="closed" value="true" />
+      <created>1724161751119</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1724161751119</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Output from lexing">
+      <option name="closed" value="true" />
+      <created>1724161776699</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1724161776699</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="init" />
-    <option name="LAST_COMMIT_MESSAGE" value="init" />
+    <MESSAGE value="Input program types" />
+    <MESSAGE value="Java classes for lexing" />
+    <MESSAGE value="Output from lexing" />
+    <option name="LAST_COMMIT_MESSAGE" value="Output from lexing" />
   </component>
 </project>
