@@ -1,15 +1,3 @@
-main 
-num V_one , 
-num V_two , 
-num V_three ,
-num V_sum ,
-Num V_mul ,
- begin 
-	V_one = 1 ; 
-	V_two = 2 ; 
-	V_three = 3 ; 
-	; 
-	V_sum= add( V_one,  V_two) ; 
-	print V_mul ; 
-	print V_sum ; 
+main
+begin
 end

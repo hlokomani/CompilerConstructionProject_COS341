@@ -1,3 +1,5 @@
+package lexer;
+
 public class Token {
     private final String tokenClass;
     private final String word;

@@ -16,11 +16,11 @@ num F_factorial(num V_n, num V_acc, text V_msg)
     print V_n;
     if eq(V_n, V_zero) then
       begin
-        V_result = V_acc;
+        return V_acc;
       end
     else
       begin
-        V_result = F_factorial(sub(V_n, 1), mul(V_n, V_acc), V_msg);
+        return F_factorial(sub(V_n, 1), mul(V_n, V_acc), V_msg);
       end
   end
 }

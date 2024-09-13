@@ -1,12 +1,41 @@
-main 
-num V_one , 
-num V_two , 
-num V_three ,
- begin 
-	V_one = 1 ; 
-	V_two = 2 ; 
-	V_three = 3 ; 
-	print V_one ; 
-	print V_two ; 
-	print V_three ; 
+main
+text V_str1, text V_str2, text V_result, num V_num1, num V_num2,
+begin
+  V_str1 = "Hello";
+  V_str2 = "World";
+  V_num1 = 5;
+  V_num2 = 10;
+  if and(eq(V_str1, "Hello"), grt(V_num2, V_num1)) then
+    begin
+      V_result = "Met";
+    end
+  else
+    begin
+      V_result = "Notmet";
+    end
+  print V_result;
+
+  if or(eq(V_str2, "Openai"), eq(add(V_num1, V_num2), 15)) then
+    begin
+      V_result = "Atlone";
+    end
+  else
+    begin
+      V_result = "Bothfal";
+    end
+  print V_result;
+
+  F_concatenate(V_str1, V_str2);
+  print V_result;
 end
+
+void F_concatenate(text V_a, text V_b)
+{
+  text V_space,
+  begin
+    V_space = " ";
+    V_result = V_a;
+    V_result = V_space;
+    V_result = V_b;
+  end
+}

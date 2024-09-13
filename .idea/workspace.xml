@@ -4,14 +4,31 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c28cd061-734d-4bbf-b87d-7d3b85d2d3d7" name="Changes" comment="Output from lexing">
+    <list default="true" id="c28cd061-734d-4bbf-b87d-7d3b85d2d3d7" name="Changes" comment="Some more output xml">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/input/input_program7.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/parser/Main.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/parser/Parser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/parser/SyntaxTreeBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/parser/Token.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/parser/TreeNode.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/parser/XMLTokenReader.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/input/input_program1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input/input_program1.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input/input_program3.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input/input_program3.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/input/input_program4.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input/input_program4.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/input/input_program5.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input/input_program5.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input/input_program56txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LexicalAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/LexicalAnalyzer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/input_program6.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input/input_program6.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/output1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/output/output1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/output2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/output/output2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/output3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/output/output3.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/output4.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/output/output4.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/output6.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/output/output6.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/FileHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/FileHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Lexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/Lexer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LexicalAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/LexicalAnalyzer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LexicalException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/LexicalException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Token.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/Token.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/XMLFormatter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/XMLFormatter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,6 +62,9 @@
     &quot;accountId&quot;: &quot;67e3930d-c369-4da6-8f33-adf07f395989&quot;
   }
 }</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
@@ -56,29 +76,45 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Lexer.executor": "Run",
-    "Application.Run Lexer.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "hlokomani",
-    "kotlin-language-version-configured": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Lexer.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Run Lexer.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Run Parser.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;hlokomani&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\hloko\iCloudDrive\UP documents\Final Year\Semester 8\COS 341 - Compiler Construction\Semester Project\341SemesterProject\src\lexer" />
       <recent name="C:\Users\hloko\iCloudDrive\UP documents\Final Year\Semester 8\COS 341 - Compiler Construction\Semester Project\341SemesterProject\input" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.Run Parser">
     <configuration name="Run Lexer" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" value="Lexer" />
+      <option name="MAIN_CLASS_NAME" value="lexer.Lexer" />
       <module name="341SemesterProject" />
-      <option name="PROGRAM_PARAMETERS" value="input/input_program6.txt output/output6.xml" />
+      <option name="PROGRAM_PARAMETERS" value="input/input_program7.txt src/lexer/output/output7.xml" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Run Parser" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="parser.Main" />
+      <module name="341SemesterProject" />
+      <option name="PROGRAM_PARAMETERS" value="src/lexer/output/output7.xml" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.Run Parser" />
+      <item itemvalue="Application.Run Lexer" />
+    </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -121,14 +157,52 @@
       <option name="project" value="LOCAL" />
       <updated>1724161776699</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Fixed input programs to adhere to the language rules">
+      <option name="closed" value="true" />
+      <created>1724658455740</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1724658455740</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Added epilog to operator">
+      <option name="closed" value="true" />
+      <created>1724658483514</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1724658483514</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Some more output xml">
+      <option name="closed" value="true" />
+      <created>1724658539612</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1724658539612</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="init" />
     <MESSAGE value="Input program types" />
     <MESSAGE value="Java classes for lexing" />
     <MESSAGE value="Output from lexing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Output from lexing" />
+    <MESSAGE value="Fixed input programs to adhere to the language rules" />
+    <MESSAGE value="Added epilog to operator" />
+    <MESSAGE value="Some more output xml" />
+    <option name="LAST_COMMIT_MESSAGE" value="Some more output xml" />
   </component>
 </project>
