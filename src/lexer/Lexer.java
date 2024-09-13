@@ -1,3 +1,5 @@
+package lexer;
+
 import java.nio.file.Paths;
 import java.util.logging.*;
 import java.util.*;
@@ -7,7 +9,7 @@ public class Lexer {
 
     public static void main(String[] args) {
         if (args.length != 2) {
-            System.out.println("Usage: java Lexer <input_file> <output_file>");
+            System.out.println("Usage: java lexer.Lexer <input_file> <output_file>");
             System.exit(1);
         }
 

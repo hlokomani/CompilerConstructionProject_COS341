@@ -25,14 +25,15 @@ begin
     end
   print V_result;
 
-  V_result = F_concatenate(V_str1, V_str2);
+  F_concatenate(V_str1, V_str2);
   print V_result;
 end
 
-text F_concatenate(text V_a, text V_b)
+void F_concatenate(text V_a, text V_b)
 {
   text V_space,
   begin
+    V_space = " ";
     V_result = V_a;
     V_result = V_space;
     V_result = V_b;

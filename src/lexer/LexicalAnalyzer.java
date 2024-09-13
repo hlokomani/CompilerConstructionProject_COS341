@@ -1,8 +1,10 @@
+package lexer;
+
 import java.util.*;
 import java.util.regex.*;
 
 public class LexicalAnalyzer {
-    private static final String[] KEYWORDS = {"main", "begin", "end", "if", "then", "else", "num", "text", "void", "print", "input", "skip", "halt"};
+    private static final String[] KEYWORDS = {"main", "begin", "end", "if", "then", "else", "num", "text", "void", "print", "input", "skip", "halt", "return"};
     private static final Set<String> KEYWORD_SET = new HashSet<>(Arrays.asList(KEYWORDS));
     private static final String[] OPERATORS = {"<", "=", "(", ")", ",", ";", "{", "}", "or", "and", "eq", "grt", "add", "sub", "mul", "div", "not", "sqrt"};
     private static final Set<String> OPERATOR_SET = new HashSet<>(Arrays.asList(OPERATORS));
