@@ -1,100 +1,104 @@
 package parser2;
 import java.util.Stack;
 
+import parser2.InputStream.Token;
+
 public class SLRParser {
 
     Stack<Integer> stack = new Stack<>();
-    String next; // This would represent the next input symbol
+    Token next; // This would represent the next input symbol
+    InputStream inputStream;
+    ParseTable parseTable;
 
-    public void parse(String input) {
-        stack.push(0); // Push initial state to the stack
-        next = readNext(input); // Read the first symbol
-        
-        while (true) {
-            int top = stack.peek();
-            Action action = table[top][getNextSymbolIndex(next)];
-            
-            if (action instanceof Shift) {
-                Shift shiftAction = (Shift) action;
-                stack.push(shiftAction.getState());
-                next = readNext(input);
-            } else if (action instanceof Reduce) {
-                Reduce reduceAction = (Reduce) action;
-                String lhs = reduceAction.getLeftHandSide();
-                int rhsCount = reduceAction.getRightHandSideCount();
-                
-                // Pop the right-hand side count from the stack
-                for (int i = 0; i < rhsCount; i++) {
-                    stack.pop();
+    public SLRParser() {
+        parseTable = new ParseTable();
+    }
+
+    public void parse(String filename) {
+        try {
+            inputStream = new InputStream(filename);
+
+            stack.push(0);
+            next = inputStream.getNextToken();
+
+            while (next != null) {
+                int top = stack.peek();
+                System.out.println("Top: " + top);
+                System.out.println("Printing next: " + next);
+                String action = "";
+                System.out.println("Next: " + next.getWord() + " " + next.getClazz());
+                if (next.getClazz().equals("operator") || next.getClazz().equals("reserved_keyword")
+                        || next.getClazz().equals("punctuation")) //Terminals
+                {
+                    action = parseTable.getAction(top, next.getWord());
+                } else if (next.getClazz().equals("V")) {
+                    action = parseTable.getAction(top, "TokenV");
+                } else if (next.getClazz().equals("F")) {
+                    action = parseTable.getAction(top, "TokenF");
+                } else if (next.getClazz().equals("N")) {
+                    action = parseTable.getAction(top, "TokenN");
+                } else if (next.getClazz().equals("T")) {
+                    action = parseTable.getAction(top, "TokenT");
+                } else if (next.getClazz().equals("end_of_file")) {
+                    action = parseTable.getAction(top, "$");
+                } else {
+                    reportError("Unknown token class: " + next.getClazz());
+                    return;
                 }
-                
-                // Push the new state based on the go-to table
-                int topAfterPop = stack.peek();
-                int goToState = gotoTable[topAfterPop][getSymbolIndex(lhs)];
-                stack.push(goToState);
-            } else if (action instanceof Accept) {
-                System.out.println("Parsing successful!");
-                return; // Terminate the loop
-            } else {
-                reportError();
-                return; // Terminate on error
+
+                System.out.println("Action: " + action);
+
+                if (action == null) {
+                    reportError("No action found for state " + top + " and symbol " + next.getWord());
+                    return;
+                }
+
+                if (action.startsWith("s")) {
+                    int state = Integer.parseInt(action.substring(1));
+                    stack.push(state);
+                    next = inputStream.getNextToken();
+                } else if (action.startsWith("r")) {
+                    String n = parseTable.getLHS(Integer.parseInt(action.substring(1)));
+                    System.out.println("N: " + n);
+                    int r = parseTable.numSymbolsRHS(Integer.parseInt(action.substring(1)));
+                    System.out.println("R: " + r);
+
+                    System.out.println("Top before pop: " + stack.peek());
+
+                    for (int i = 0; i < r; i++) {
+                        stack.pop();
+                    }
+
+                    int topAfterPop = stack.peek();
+                    System.out.println("Top after pop: " + topAfterPop);
+                    int goToState = parseTable.getGoto(topAfterPop, n);
+                    if (goToState == -1) {
+                        reportError("No goto state found for state " + topAfterPop + " and non-terminal " + n);
+                        return;
+                    }
+                    System.out.println("Go to state: " + goToState);
+                    stack.push(goToState);
+                } else if (action.equals("acc")) {
+                    System.out.println("Parsing successful!");
+                    return;
+                } else {
+                    reportError("Unknown action: " + action);
+                    return;
+                }
             }
+            System.out.println("Parsing successful!");
+
+        } catch (Exception e) {
+            System.out.println("Error occurred in catch: " + e.getMessage());
         }
     }
 
-    // Sample method for reading the next input
-    private String readNext(String input) {
-        // Implement reading logic based on the input stream
-        return ""; // Placeholder for actual input reading
+    private void reportError(String message) {
+        System.err.println("Parsing error occurred: " + message);
     }
 
-    // Get the index of the symbol in the table
-    private int getNextSymbolIndex(String symbol) {
-        // Implement logic to convert symbol to index
-        return 0; // Placeholder for actual index
+    public static void main(String[] args) {
+        SLRParser parser = new SLRParser();
+        parser.parse("src/lexer/output/output3.xml");
     }
-
-    private int getSymbolIndex(String symbol) {
-        // Implement logic to convert a non-terminal to index
-        return 0; // Placeholder for actual index
-    }
-
-    private void reportError() {
-        System.err.println("Parsing error occurred!");
-    }
-
-    // Placeholder classes for different actions
-    class Action {}
-    class Shift extends Action {
-        private int state;
-
-        public Shift(int state) {
-            this.state = state;
-        }
-
-        public int getState() {
-            return state;
-        }
-    }
-    class Reduce extends Action {
-        private String leftHandSide;
-        private int rightHandSideCount;
-
-        public Reduce(String leftHandSide, int rightHandSideCount) {
-            this.leftHandSide = leftHandSide;
-            this.rightHandSideCount = rightHandSideCount;
-        }
-
-        public String getLeftHandSide() {
-            return leftHandSide;
-        }
-
-        public int getRightHandSideCount() {
-            return rightHandSideCount;
-        }
-    }
-    class Accept extends Action {}
-
-    // Placeholder for the table, this will depend on the specific parser
-    private parseTable table;
 }
