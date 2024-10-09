@@ -10,7 +10,7 @@ public class Node {
     private List<Node> children;
     private boolean isLeaf;
     private boolean isRoot;
-    private String terminal; // For leaf nodes
+    private String terminal;
 
     public Node(int unid, String symb) {
         this.unid = unid;

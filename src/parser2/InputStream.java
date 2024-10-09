@@ -121,26 +121,26 @@ public class InputStream {
 
         @Override
         public String toString() {
-            return "Token{" +
-                    "id=" + id +
-                    ", class='" + clazz + '\'' +
-                    ", word='" + word + '\'' +
-                    ", line=" + line +
-                    ", column=" + column +
-                    '}';
+            return "<TOK>" +
+                    "<ID>" + id + "</ID>" +
+                    "<CLASS>" + clazz + "</CLASS>" +
+                    "<WORD>" + word + "</WORD>" +
+                    "<LINE>" + line + "</LINE>" +
+                    "<COLUMN>" + column + "</COLUMN>" +
+                    "</TOK>";
         }
     }
 
-    public static void main(String[] args) {
-        try {
-            InputStream parser = new InputStream("src/lexer/output/output2.xml");
-            Token token;
-            while ((token = parser.getNextToken()) != null) {
-                System.out.println(token);
-            }
-            parser.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    // public static void main(String[] args) {
+    //     try {
+    //         InputStream parser = new InputStream("src/lexer/output/output2.xml");
+    //         Token token;
+    //         while ((token = parser.getNextToken()) != null) {
+    //             System.out.println(token);
+    //         }
+    //         parser.close();
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 }
