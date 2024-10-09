@@ -5,7 +5,8 @@ import java.util.Map;
 
 public class TypeChecker {
     private Map<String, Character> symbolTable = new HashMap<>(); //Needs to be replaced by actual SymbolTable
-
+    private TreeCrawler treeCrawler;
+    
     public TypeChecker() {
         //Initialize symbol table 
     }
