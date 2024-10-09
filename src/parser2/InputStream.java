@@ -131,16 +131,16 @@ public class InputStream {
         }
     }
 
-    // public static void main(String[] args) {
-    //     try {
-    //         InputStream parser = new InputStream("src/lexer/output/output3.xml");
-    //         Token token;
-    //         while ((token = parser.getNextToken()) != null) {
-    //             System.out.println(token);
-    //         }
-    //         parser.close();
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    // }
+    public static void main(String[] args) {
+        try {
+            InputStream parser = new InputStream("src/lexer/output/output2.xml");
+            Token token;
+            while ((token = parser.getNextToken()) != null) {
+                System.out.println(token);
+            }
+            parser.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

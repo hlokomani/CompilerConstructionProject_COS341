@@ -9,13 +9,15 @@ public class Node {
     private Node parent;
     private List<Node> children;
     private boolean isLeaf;
+    private boolean isRoot;
     private String terminal; // For leaf nodes
 
     public Node(int unid, String symb) {
         this.unid = unid;
         this.symb = symb;
         this.children = new ArrayList<>();
-        this.isLeaf = false;
+        this.isLeaf = true;
+        this.isRoot = true;
     }
 
     // Constructor for leaf nodes
@@ -41,6 +43,7 @@ public class Node {
 
     public void setParent(Node parent) {
         this.parent = parent;
+        this.isRoot = false;
     }
 
     public List<Node> getChildren() {
@@ -50,10 +53,21 @@ public class Node {
     public void addChild(Node child) {
         child.setParent(this);
         this.children.add(child);
+        this.isLeaf = false;
+    }
+
+    public void addChildren(List<Node> children) {
+        for (Node child : children) {
+            addChild(child);
+        }
     }
 
     public boolean isLeaf() {
         return isLeaf;
+    }
+
+    public boolean isRoot() {
+        return isRoot;
     }
 
     public String getTerminal() {

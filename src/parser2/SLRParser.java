@@ -1,11 +1,13 @@
 package parser2;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import parser2.InputStream.Token;
 
 public class SLRParser {
 
-    Stack<Integer> stack = new Stack<>();
+    Stack<StackElement> stack = new Stack<>();
     Token next; // This would represent the next input symbol
     InputStream inputStream;
     ParseTable parseTable;
@@ -16,68 +18,72 @@ public class SLRParser {
 
     public void parse(String filename) {
         try {
+            int idCounter = 0;
             inputStream = new InputStream(filename);
-
-            stack.push(0);
             next = inputStream.getNextToken();
+            StackElement elm = new StackElement(0, new Node(idCounter++, next.getWord()));
+            stack.push(elm);
+            String action = "";
 
-            while (next != null) {
-                int top = stack.peek();
-                System.out.println("Top: " + top);
-                System.out.println("Printing next: " + next);
-                String action = "";
-                System.out.println("Next: " + next.getWord() + " " + next.getClazz());
+            while (action != "acc") {
+                System.out.println("Action: " + action);
+                int state = stack.peek().state;
+                System.out.println("State: " + state);
                 if (next.getClazz().equals("operator") || next.getClazz().equals("reserved_keyword")
                         || next.getClazz().equals("punctuation")) //Terminals
                 {
-                    action = parseTable.getAction(top, next.getWord());
+                    action = parseTable.getAction(state, next.getWord());
                 } else if (next.getClazz().equals("V")) {
-                    action = parseTable.getAction(top, "TokenV");
+                    action = parseTable.getAction(state, "TokenV");
                 } else if (next.getClazz().equals("F")) {
-                    action = parseTable.getAction(top, "TokenF");
+                    action = parseTable.getAction(state, "TokenF");
                 } else if (next.getClazz().equals("N")) {
-                    action = parseTable.getAction(top, "TokenN");
+                    action = parseTable.getAction(state, "TokenN");
                 } else if (next.getClazz().equals("T")) {
-                    action = parseTable.getAction(top, "TokenT");
-                } else if (next.getClazz().equals("end_of_file")) {
-                    action = parseTable.getAction(top, "$");
+                    action = parseTable.getAction(state, "TokenT");
+                } else if (next.getClazz().equals("END")) {
+                    action = parseTable.getAction(state, "$");
                 } else {
                     reportError("Unknown token class: " + next.getClazz());
                     return;
                 }
 
-                System.out.println("Action: " + action);
-
                 if (action == null) {
-                    reportError("No action found for state " + top + " and symbol " + next.getWord());
+                    reportError("No action found for state " + state + " and symbol " + next.getWord());
                     return;
                 }
 
                 if (action.startsWith("s")) {
-                    int state = Integer.parseInt(action.substring(1));
-                    stack.push(state);
+                    int newState = Integer.parseInt(action.substring(1));
+                    elm = new StackElement(newState, new Node(idCounter++, next.getWord()));
+                    // System.out.println("Pushing: " + elm.node.getUnid() + " " + elm.node.getSymb());
+                    // System.out.println("State: " + elm.state);
+                    stack.push(elm);
                     next = inputStream.getNextToken();
                 } else if (action.startsWith("r")) {
                     String n = parseTable.getLHS(Integer.parseInt(action.substring(1)));
-                    System.out.println("N: " + n);
                     int r = parseTable.numSymbolsRHS(Integer.parseInt(action.substring(1)));
-                    System.out.println("R: " + r);
 
-                    System.out.println("Top before pop: " + stack.peek());
+                    List<Node> children = new ArrayList<>();
 
                     for (int i = 0; i < r; i++) {
-                        stack.pop();
+                        children.add(stack.pop().node);
                     }
 
-                    int topAfterPop = stack.peek();
-                    System.out.println("Top after pop: " + topAfterPop);
-                    int goToState = parseTable.getGoto(topAfterPop, n);
+                    int stateAfterPop = stack.peek().state;
+                    // System.out.println("state after pop: " + stateAfterPop);
+                    int goToState = parseTable.getGoto(stateAfterPop, n);
                     if (goToState == -1) {
-                        reportError("No goto state found for state " + topAfterPop + " and non-terminal " + n);
+                        reportError("No goto state found for state " + stateAfterPop + " and non-terminal " + n);
                         return;
                     }
-                    System.out.println("Go to state: " + goToState);
-                    stack.push(goToState);
+                    // System.out.println("Go to state: " + goToState);
+                    Node newNode = new Node(idCounter++, n);
+                    newNode.addChildren(children);
+                    elm = new StackElement(goToState, newNode);
+                    // System.out.println("Pushing: " + elm.node.getUnid() + " " + elm.node.getSymb());
+                    // System.out.println("State: " + elm.state);
+                    stack.push(elm);
                 } else if (action.equals("acc")) {
                     System.out.println("Parsing successful!");
                     return;
@@ -86,8 +92,6 @@ public class SLRParser {
                     return;
                 }
             }
-            System.out.println("Parsing successful!");
-
         } catch (Exception e) {
             System.out.println("Error occurred in catch: " + e.getMessage());
         }
@@ -97,8 +101,8 @@ public class SLRParser {
         System.err.println("Parsing error occurred: " + message);
     }
 
-    public static void main(String[] args) {
-        SLRParser parser = new SLRParser();
-        parser.parse("src/lexer/output/output3.xml");
-    }
+    // public static void main(String[] args) {
+    //     SLRParser parser = new SLRParser();
+    //     parser.parse("src/lexer/output/output2.xml");
+    // }
 }

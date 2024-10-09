@@ -124,12 +124,12 @@ public class ParseTable {
                 break;
             }
         }
-        System.out.println("State: " + state + " Terminal: " + terminal + " Index: " + index);
+        // System.out.println("State: " + state + " Terminal: " + terminal + " Index: " + index);
         return actionTable.get(state)[index];
     }
 
     public int getGoto(int state, String nonTerminal) {
-        System.out.println("State: " + state + " NonTerminal: " + nonTerminal);
+        // System.out.println("State: " + state + " NonTerminal: " + nonTerminal);
         int index = -1;
         for (int i = 0; i < this.nonTerminal.size(); i++) {
             if (this.nonTerminal.get(i).equals(nonTerminal)) {
@@ -137,8 +137,8 @@ public class ParseTable {
                 break;
             }
         }
-        System.out.println("Index: " + index);
-        System.out.println("Goto: " + gotoTable.get(state).get(index));
+        // System.out.println("Index: " + index);
+        // System.out.println("Goto: " + gotoTable.get(state).get(index));
         if(gotoTable.get(state).get(index) == null) {
             return -1;
         }
