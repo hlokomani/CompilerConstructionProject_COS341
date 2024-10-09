@@ -64,9 +64,14 @@ public class SLRParser {
                     int r = parseTable.numSymbolsRHS(Integer.parseInt(action.substring(1)));
 
                     List<Node> children = new ArrayList<>();
+                    boolean popped = false;
 
                     for (int i = 0; i < r; i++) {
                         children.add(stack.pop().node);
+                        popped = true;
+                    }
+                    if (!popped) {
+                        children.add(new Node(idCounter++, "EPSILON"));
                     }
 
                     int stateAfterPop = stack.peek().state;
@@ -77,6 +82,8 @@ public class SLRParser {
                     }
                     Node newNode = new Node(idCounter++, n);
                     newNode.addChildren(children);
+                    System.out.println("New node: " + newNode.getSymb());
+                    System.out.println("id: " + newNode.getUnid());
                     elm = new StackElement(goToState, newNode);
                     stack.push(elm);
                 } else if (action.equals("acc")) {
