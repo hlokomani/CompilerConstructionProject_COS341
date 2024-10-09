@@ -65,6 +65,8 @@ public class LexicalAnalyzer {
             tokens.add(createToken(currentToken.toString()));
         }
 
+        tokens.add(new Token("END", "$", lineNumber, columnNumber));
+
         return tokens;
     }
 
