@@ -26,9 +26,7 @@ public class SLRParser {
             String action = "";
 
             while (true) {
-                System.out.println("Action: " + action);
                 int state = stack.peek().state;
-                System.out.println("State: " + state);
                 if (next.getClazz().equals("operator") || next.getClazz().equals("reserved_keyword")
                         || next.getClazz().equals("punctuation")) //Terminals
                 {
@@ -60,7 +58,6 @@ public class SLRParser {
                     next = inputStream.getNextToken();
                 } else if (action.startsWith("r")) {
                     String n = parseTable.getLHS(Integer.parseInt(action.substring(1)));
-                    System.out.println("n: " + n);
                     int r = parseTable.numSymbolsRHS(Integer.parseInt(action.substring(1)));
 
                     List<Node> children = new ArrayList<>();
@@ -82,14 +79,12 @@ public class SLRParser {
                     }
                     Node newNode = new Node(idCounter++, n);
                     newNode.addChildren(children);
-                    System.out.println("New node: " + newNode.getSymb());
-                    System.out.println("id: " + newNode.getUnid());
                     elm = new StackElement(goToState, newNode);
                     stack.push(elm);
                 } else if (action.equals("acc")) {
                     System.out.println("Parsing successful!");
-                    //Creating the xml file
-                    new XMLGenerator(stack.pop().node).convertToXML("src/parser2/output/output.xml");
+                    String newFileName = filename.replace("src/lexer", "src/parser2");
+                    new XMLGenerator(stack.pop().node).convertToXML(newFileName);
                     return;
                 } else {
                     reportError("Unknown action: " + action);
