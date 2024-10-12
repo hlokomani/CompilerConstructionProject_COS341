@@ -1,6 +1,12 @@
 package typeChecker;
 
 import org.w3c.dom.*;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.StringWriter;
 
 import parser2.SyntaxTreeNode;
 
@@ -17,25 +23,20 @@ public class TreeCrawler {
 
     public TreeCrawler(String xmlFilePath) throws Exception {
         parseXML(xmlFilePath);
-        inOrderTraversal(root, traversedTree);
+        preOrderTraversal(root, traversedTree);
     }
 
-    public static void inOrderTraversal(SyntaxTreeNode node, List<SyntaxTreeNode> result) {
+    public static void preOrderTraversal(SyntaxTreeNode node, List<SyntaxTreeNode> result) {
         if (node == null) {
             return;
         }
 
-        // If there are children, we assume the first child is the "left" subtree
-        if (!node.getChildren().isEmpty()) {
-            inOrderTraversal(node.getChildren().get(0), result);  // Visit the first child (left subtree)
-        }
-
-        // Add the current node to the result list
+        // Add the current node to the result list (visit the current node first)
         result.add(node);
 
-        // If there are more children, visit the rest (right subtrees)
-        for (int i = 1; i < node.getChildren().size(); i++) {
-            inOrderTraversal(node.getChildren().get(i), result);
+        // Visit all children in order (preorder, so visit before going deeper)
+        for (SyntaxTreeNode child : node.getChildren()) {
+            preOrderTraversal(child, result);
         }
     }
 
@@ -63,8 +64,7 @@ public class TreeCrawler {
 
             String terminalXML = "";
             if (terminalElement.hasChildNodes()) {
-                // Serialize the TERMINAL element to a string
-                terminalXML = elementToString(terminalElement.getFirstChild());
+                terminalXML = elementToString(terminalElement);
             }
 
             SyntaxTreeNode leafNode = new SyntaxTreeNode(unid, "Terminal", terminalXML);
@@ -138,44 +138,23 @@ public class TreeCrawler {
         return null;
     }
 
-    private String elementToString(Node node) {
-        StringBuilder sb = new StringBuilder();
-        serializeNode(node, sb, 0);
-        return sb.toString();
-    }
+    public static String elementToString(Element element) {
+        try {
+            // Set up a transformer to convert the element to a string
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer transformer = tf.newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-    private void serializeNode(Node node, StringBuilder sb, int level) {
-        // Indentation
-        for (int i = 0; i < level; i++) {
-            sb.append("    ");
+            // Convert the element to a string
+            StringWriter writer = new StringWriter();
+            transformer.transform(new DOMSource(element), new StreamResult(writer));
+
+            return writer.getBuffer().toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-
-        if (node.getNodeType() == Node.TEXT_NODE) {
-            String text = node.getTextContent().trim();
-            if (!text.isEmpty()) {
-                sb.append(text).append("\n");
-            }
-            return;
-        }
-
-        sb.append("<").append(node.getNodeName()).append(">");
-        NodeList children = node.getChildNodes();
-        boolean hasElementChildren = false;
-
-        for (int i = 0; i < children.getLength(); i++) {
-            if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                hasElementChildren = true;
-                sb.append("\n");
-                serializeNode(children.item(i), sb, level + 1);
-            }
-        }
-
-        if (hasElementChildren) {
-            for (int i = 0; i < level; i++) {
-                sb.append("    ");
-            }
-        }
-        sb.append("</").append(node.getNodeName()).append(">").append("\n");
     }
 
     public SyntaxTreeNode getNext() {
@@ -193,7 +172,10 @@ public class TreeCrawler {
             TreeCrawler treeCrawler = new TreeCrawler("src/parser2/output/output2.xml");
             SyntaxTreeNode node;
             while ((node = treeCrawler.getNext()) != null) {
-                System.out.println(node.getUnid() + " " + node.getSymb());
+                if(node.getSymb() == "Terminal")
+                    System.out.println(node.getUnid() + " " + node.getTerminal());
+                else
+                    System.out.println(node.getUnid() + " " + node.getSymb());
             }
         } catch (Exception e) {
             e.printStackTrace();
