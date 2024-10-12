@@ -476,4 +476,11 @@
     <LINE>14</LINE>
     <COLUMN>1</COLUMN>
   </TOK>
+  <TOK>
+    <ID>69</ID>
+    <CLASS>END</CLASS>
+    <WORD>end</WORD>
+    <LINE>-1</LINE>
+    <COLUMN>-1</COLUMN>
+  </TOK>
 </TOKENSTREAM>
