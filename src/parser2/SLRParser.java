@@ -18,10 +18,10 @@ public class SLRParser {
 
     public void parse(String filename) {
         try {
-            int idCounter = 0;
+            int idCounter = -1;
             inputStream = new InputStream(filename);
             next = inputStream.getNextToken();
-            StackElement elm = new StackElement(0, new Node(idCounter++, next.getWord()));
+            StackElement elm = new StackElement(0, new SyntaxTreeNode(idCounter++, next.getWord()));
             stack.push(elm);
             String action = "";
 
@@ -53,14 +53,14 @@ public class SLRParser {
 
                 if (action.startsWith("s")) {
                     int newState = Integer.parseInt(action.substring(1));
-                    elm = new StackElement(newState, new Node(idCounter++, next.getWord(), next.toString()));
+                    elm = new StackElement(newState, new SyntaxTreeNode(idCounter++, next.getWord(), next.toString()));
                     stack.push(elm);
                     next = inputStream.getNextToken();
                 } else if (action.startsWith("r")) {
                     String n = parseTable.getLHS(Integer.parseInt(action.substring(1)));
                     int r = parseTable.numSymbolsRHS(Integer.parseInt(action.substring(1)));
 
-                    List<Node> children = new ArrayList<>();
+                    List<SyntaxTreeNode> children = new ArrayList<>();
                     boolean popped = false;
 
                     for (int i = 0; i < r; i++) {
@@ -68,7 +68,7 @@ public class SLRParser {
                         popped = true;
                     }
                     if (!popped) {
-                        children.add(new Node(idCounter++, "EPSILON"));
+                        children.add(new SyntaxTreeNode(idCounter++, "EPSILON"));
                     }
 
                     int stateAfterPop = stack.peek().state;
@@ -77,7 +77,7 @@ public class SLRParser {
                         reportError("No goto state found for state " + stateAfterPop + " and non-terminal " + n);
                         return;
                     }
-                    Node newNode = new Node(idCounter++, n);
+                    SyntaxTreeNode newNode = new SyntaxTreeNode(idCounter++, n);
                     newNode.addChildren(children);
                     elm = new StackElement(goToState, newNode);
                     stack.push(elm);

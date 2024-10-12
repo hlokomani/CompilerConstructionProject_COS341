@@ -11,12 +11,12 @@ import java.io.File;
 import java.util.*;
 
 public class XMLGenerator{
-    private Node root;
+    private SyntaxTreeNode root;
     private Document doc;
-    private Map<Integer, Node> innerNodes;
-    private List<Node> leafNodes;
+    private Map<Integer, SyntaxTreeNode> innerNodes;
+    private List<SyntaxTreeNode> leafNodes;
 
-    public XMLGenerator(Node root) throws ParserConfigurationException {
+    public XMLGenerator(SyntaxTreeNode root) throws ParserConfigurationException {
         this.root = root;
         this.innerNodes = new HashMap<>();
         this.leafNodes = new ArrayList<>();
@@ -37,14 +37,14 @@ public class XMLGenerator{
         traverseAndCategorize(root);
     }
 
-    private void traverseAndCategorize(Node node) {
+    private void traverseAndCategorize(SyntaxTreeNode node) {
         if (node.isLeaf()) {
             leafNodes.add(node);
         } else {
             if (node != root) {
                 innerNodes.put(node.getUnid(), node);
             }
-            for (Node child : node.getChildren()) {
+            for (SyntaxTreeNode child : node.getChildren()) {
                 traverseAndCategorize(child);
             }
         }
@@ -69,7 +69,7 @@ public class XMLGenerator{
 
         // ROOT CHILDREN
         Element rootChildren = doc.createElement("CHILDREN");
-        for (Node child : root.getChildren()) {
+        for (SyntaxTreeNode child : root.getChildren()) {
             Element childId = doc.createElement("ID");
             childId.appendChild(doc.createTextNode(String.valueOf(child.getUnid())));
             rootChildren.appendChild(childId);
@@ -79,7 +79,7 @@ public class XMLGenerator{
         // INNERNODES
         Element innerNodesElement = doc.createElement("INNERNODES");
         syntaxTreeElement.appendChild(innerNodesElement);
-        for (Node innerNode : innerNodes.values()) {
+        for (SyntaxTreeNode innerNode : innerNodes.values()) {
             Element inElement = doc.createElement("IN");
 
             // PARENT
@@ -99,7 +99,7 @@ public class XMLGenerator{
 
             // CHILDREN
             Element childrenElement = doc.createElement("CHILDREN");
-            for (Node child : innerNode.getChildren()) {
+            for (SyntaxTreeNode child : innerNode.getChildren()) {
                 Element childId = doc.createElement("ID");
                 childId.appendChild(doc.createTextNode(String.valueOf(child.getUnid())));
                 childrenElement.appendChild(childId);
@@ -112,7 +112,7 @@ public class XMLGenerator{
         // LEAFNODES
         Element leafNodesElement = doc.createElement("LEAFNODES");
         syntaxTreeElement.appendChild(leafNodesElement);
-        for (Node leaf : leafNodes) {
+        for (SyntaxTreeNode leaf : leafNodes) {
             Element leafElement = doc.createElement("LEAF");
 
             // PARENT

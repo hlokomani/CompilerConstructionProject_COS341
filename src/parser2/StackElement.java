@@ -4,9 +4,9 @@ import java.util.List;
 
 public class StackElement {
     public int state;
-    public Node node;
+    public SyntaxTreeNode node;
 
-    public StackElement(int state, Node node) {
+    public StackElement(int state, SyntaxTreeNode node) {
         this.state = state;
         this.node = node;
     }

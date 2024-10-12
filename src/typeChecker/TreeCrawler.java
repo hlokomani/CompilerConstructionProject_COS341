@@ -1,33 +1,42 @@
 package typeChecker;
 
 import org.w3c.dom.*;
+
+import parser2.SyntaxTreeNode;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.util.*;
 
 public class TreeCrawler {
-
+    private Map<Integer, SyntaxTreeNode> nodeMap = new HashMap<>();
     private SyntaxTreeNode root;
-    private Map<Integer, SyntaxTreeNode> nodeMap;
-    private Stack<StackFrame> traversalStack;
-
-    private static class StackFrame {
-        SyntaxTreeNode node;
-        int state; // 0: traverse first half, 1: visit node, 2: traverse second half
-        int totalChildren;
-
-        StackFrame(SyntaxTreeNode node) {
-            this.node = node;
-            this.state = 0;
-            this.totalChildren = node.getChildren().size();
-        }
-    }
+    private List<SyntaxTreeNode> traversedTree = new ArrayList<>();
+    private int currentIndex;
 
     public TreeCrawler(String xmlFilePath) throws Exception {
-        nodeMap = new HashMap<>();
         parseXML(xmlFilePath);
-        initializeTraversal();
+        inOrderTraversal(root, traversedTree);
+    }
+
+    public static void inOrderTraversal(SyntaxTreeNode node, List<SyntaxTreeNode> result) {
+        if (node == null) {
+            return;
+        }
+
+        // If there are children, we assume the first child is the "left" subtree
+        if (!node.getChildren().isEmpty()) {
+            inOrderTraversal(node.getChildren().get(0), result);  // Visit the first child (left subtree)
+        }
+
+        // Add the current node to the result list
+        result.add(node);
+
+        // If there are more children, visit the rest (right subtrees)
+        for (int i = 1; i < node.getChildren().size(); i++) {
+            inOrderTraversal(node.getChildren().get(i), result);
+        }
     }
 
     private void parseXML(String xmlFilePath) throws Exception {
@@ -43,27 +52,7 @@ public class TreeCrawler {
 
         doc.getDocumentElement().normalize();
 
-        // Parse ROOT
-        NodeList rootList = doc.getElementsByTagName("ROOT");
-        if (rootList.getLength() == 0) {
-            throw new Exception("No ROOT element found in the XML.");
-        }
-        Element rootElement = (Element) rootList.item(0);
-        int rootUnid = Integer.parseInt(getTagValue("UNID", rootElement));
-        String rootSymb = getTagValue("SYMB", rootElement);
-        root = new SyntaxTreeNode(rootUnid, rootSymb);
-        nodeMap.put(rootUnid, root);
-
-        // Parse INNERNODES
-        NodeList innerNodesList = doc.getElementsByTagName("IN");
-        for (int i = 0; i < innerNodesList.getLength(); i++) {
-            Element inElement = (Element) innerNodesList.item(i);
-            int unid = Integer.parseInt(getTagValue("UNID", inElement));
-            String symb = getTagValue("SYMB", inElement);
-
-            SyntaxTreeNode innerNode = new SyntaxTreeNode(unid, symb);
-            nodeMap.put(unid, innerNode);
-        }
+        // Starting with the children so that the tree can be built while parsing
 
         // Parse LEAFNODES
         NodeList leafNodesList = doc.getElementsByTagName("LEAF");
@@ -82,102 +71,63 @@ public class TreeCrawler {
             nodeMap.put(unid, leafNode);
         }
 
-        // Link children to parents
-
-        // First, link ROOT children
-        Element rootChildrenElement = (Element) rootElement.getElementsByTagName("CHILDREN").item(0);
-        NodeList rootChildren = rootChildrenElement.getElementsByTagName("ID");
-        for (int i = 0; i < rootChildren.getLength(); i++) {
-            int childUnid = Integer.parseInt(rootChildren.item(i).getTextContent());
-            SyntaxTreeNode childNode = nodeMap.get(childUnid);
-            if (childNode == null) {
-                throw new Exception("Child with UNID " + childUnid + " not found.");
-            }
-            root.addChild(childNode);
-        }
-
-        // Link INNER nodes to their parents and their children
+        // Parse INNERNODES
+        NodeList innerNodesList = doc.getElementsByTagName("IN");
         for (int i = 0; i < innerNodesList.getLength(); i++) {
             Element inElement = (Element) innerNodesList.item(i);
             int unid = Integer.parseInt(getTagValue("UNID", inElement));
-            SyntaxTreeNode currentNode = nodeMap.get(unid);
-            if (currentNode == null) {
-                throw new Exception("Inner node with UNID " + unid + " not found.");
-            }
-
-            // Get children IDs
-            Element childrenElement = (Element) inElement.getElementsByTagName("CHILDREN").item(0);
-            NodeList childrenIDs = childrenElement.getElementsByTagName("ID");
-            for (int j = 0; j < childrenIDs.getLength(); j++) {
-                int childUnid = Integer.parseInt(childrenIDs.item(j).getTextContent());
-                SyntaxTreeNode childNode = nodeMap.get(childUnid);
-                if (childNode == null) {
-                    throw new Exception("Child with UNID " + childUnid + " not found.");
-                }
-                currentNode.addChild(childNode);
-            }
-
-            // Find the PARENT element to link current node to its parent
-            int parentUnid = Integer.parseInt(getTagValue("PARENT", inElement));
-            SyntaxTreeNode parentNode = nodeMap.get(parentUnid);
-            if (parentNode == null) {
-                throw new Exception("Parent node with UNID " + parentUnid + " not found for inner node " + unid);
-            }
-            parentNode.addChild(currentNode);
+            String symb = getTagValue("SYMB", inElement);
+            SyntaxTreeNode innerNode = new SyntaxTreeNode(unid, symb);
+            nodeMap.put(unid, innerNode);
         }
 
-        // Similarly, link LEAF nodes to their parents
-        for (int i = 0; i < leafNodesList.getLength(); i++) {
-            Element leafElement = (Element) leafNodesList.item(i);
-            int unid = Integer.parseInt(getTagValue("UNID", leafElement));
-            int parentUnid = Integer.parseInt(getTagValue("PARENT", leafElement));
+        // Adding the children for each inner node
+        for (int i = 0; i < innerNodesList.getLength(); i++) {
+            Element inElement = (Element) innerNodesList.item(i);
+            int unid = Integer.parseInt(getTagValue("UNID", inElement));
+            SyntaxTreeNode innerNode = nodeMap.get(unid);
 
-            SyntaxTreeNode parentNode = nodeMap.get(parentUnid);
-            SyntaxTreeNode leafNode = nodeMap.get(unid);
-            if (parentNode == null) {
-                throw new Exception("Parent node with UNID " + parentUnid + " not found for leaf node " + unid);
+            NodeList childrenList = inElement.getElementsByTagName("CHILDREN");
+            if (childrenList.getLength() == 0) {
+                throw new Exception("No CHILDREN element found in the XML.");
             }
-            parentNode.addChild(leafNode);
+            Element childrenElement = (Element) childrenList.item(0);
+            NodeList childList = childrenElement.getElementsByTagName("ID");         
+
+            for (int j = childList.getLength() - 1; j >= 0; j--) {
+                int childUnid = Integer.parseInt(childList.item(j).getTextContent());
+                innerNode.addChild(nodeMap.get(childUnid));
+                //adding the parent to the child
+                nodeMap.get(childUnid).setParent(innerNode);
+            }
         }
+
+        // Parse ROOT
+        NodeList rootList = doc.getElementsByTagName("ROOT");
+        if (rootList.getLength() == 0) {
+            throw new Exception("No ROOT element found in the XML.");
+        }
+        Element rootElement = (Element) rootList.item(0);
+        // Converting to a SyntaxTreeNode
+        int rootUnid = Integer.parseInt(getTagValue("UNID", rootElement));
+        String rootSymb = getTagValue("SYMB", rootElement);
+        root = new SyntaxTreeNode(rootUnid, rootSymb);
+        nodeMap.put(rootUnid, root);
+        // Adding the children for the root node
+        NodeList childrenList = rootElement.getElementsByTagName("CHILDREN");
+        if (childrenList.getLength() == 0) {
+            throw new Exception("No CHILDREN element found in the XML.");
+        }
+        Element childrenElement = (Element) childrenList.item(0);
+        NodeList childList = childrenElement.getElementsByTagName("ID");
+        for (int j = childList.getLength()-1; j >=0 ; j--) {
+            int childUnid = Integer.parseInt(childList.item(j).getTextContent());
+            root.addChild(nodeMap.get(childUnid));
+            //adding the parent to the child
+            nodeMap.get(childUnid).setParent(root);
+        }              
     }
 
-    private void initializeTraversal() {
-        traversalStack = new Stack<>();
-        if (root != null) {
-            traversalStack.push(new StackFrame(root));
-        }
-    }
-
-
-    public SyntaxTreeNode getNext() {
-        while (!traversalStack.isEmpty()) {
-            StackFrame currentFrame = traversalStack.peek();
-
-            if (currentFrame.state == 0) {
-                // Traverse the first half of the children
-                int firstHalf = currentFrame.totalChildren / 2;
-                for (int i = 0; i < firstHalf; i++) {
-                    SyntaxTreeNode child = currentFrame.node.getChildren().get(i);
-                    traversalStack.push(new StackFrame(child));
-                }
-                currentFrame.state = 1; // Move to visiting the node
-            } else if (currentFrame.state == 1) {
-                // Visit the node
-                currentFrame.state = 2; // Move to traversing the second half
-                return currentFrame.node;
-            } else if (currentFrame.state == 2) {
-                // Traverse the second half of the children
-                int firstHalf = currentFrame.totalChildren / 2;
-                for (int i = firstHalf; i < currentFrame.totalChildren; i++) {
-                    SyntaxTreeNode child = currentFrame.node.getChildren().get(i);
-                    traversalStack.push(new StackFrame(child));
-                }
-                traversalStack.pop(); // Finished processing this node
-            }
-        }
-        // Traversal complete
-        return null;
-    }
 
     private String getTagValue(String tag, Element element) {
         NodeList nodeList = element.getElementsByTagName(tag);
@@ -228,23 +178,22 @@ public class TreeCrawler {
         sb.append("</").append(node.getNodeName()).append(">").append("\n");
     }
 
-    public void resetTraversal() {
-        initializeTraversal();
+    public SyntaxTreeNode getNext() {
+        int temp = currentIndex;
+        if (currentIndex < traversedTree.size()) {
+            currentIndex++;
+            return traversedTree.get(temp);
+        }
+        return null;
     }
 
     public static void main(String[] args) {
+       // Crawling a tree and printing the nodes
         try {
-            // Replace with the path to your XML file
-            String xmlFilePath = "src/parser2/output/output2.xml";
-            TreeCrawler crawler = new TreeCrawler(xmlFilePath);
-
+            TreeCrawler treeCrawler = new TreeCrawler("src/parser2/output/output2.xml");
             SyntaxTreeNode node;
-            while ((node = crawler.getNext()) != null) {
-                if (node.getTerminal() != null && !node.getTerminal().isEmpty()) {
-                    System.out.println("Leaf Node: " + node);
-                } else {
-                    System.out.println("Inner Node: " + node);
-                }
+            while ((node = treeCrawler.getNext()) != null) {
+                System.out.println(node.getUnid() + " " + node.getSymb());
             }
         } catch (Exception e) {
             e.printStackTrace();
