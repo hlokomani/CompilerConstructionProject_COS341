@@ -329,4 +329,11 @@
     <LINE>17</LINE>
     <COLUMN>1</COLUMN>
   </TOK>
+  <TOK>
+    <ID>48</ID>
+    <CLASS>END</CLASS>
+    <WORD>$</WORD>
+    <LINE>18</LINE>
+    <COLUMN>1</COLUMN>
+  </TOK>
 </TOKENSTREAM>
