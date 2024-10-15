@@ -52,20 +52,23 @@ public class XMLGenerator{
 
     public void convertToXML(String filePath) throws TransformerException {
         Element syntaxTreeElement = doc.getDocumentElement();
-
+        //System.out.println("checkpoint 1");
         // ROOT Element
         Element rootElement = doc.createElement("ROOT");
         syntaxTreeElement.appendChild(rootElement);
+        //System.out.println("checkpoint 2");
 
         // ROOT UNID
         Element rootUnid = doc.createElement("UNID");
         rootUnid.appendChild(doc.createTextNode(String.valueOf(root.getUnid())));
         rootElement.appendChild(rootUnid);
+        //System.out.println("checkpoint 3");
 
         // ROOT SYMB
         Element rootSymb = doc.createElement("SYMB");
         rootSymb.appendChild(doc.createTextNode(root.getSymb()));
         rootElement.appendChild(rootSymb);
+        //System.out.println("checkpoint 4");
 
         // ROOT CHILDREN
         Element rootChildren = doc.createElement("CHILDREN");
@@ -75,6 +78,7 @@ public class XMLGenerator{
             rootChildren.appendChild(childId);
         }
         rootElement.appendChild(rootChildren);
+        //System.out.println("checkpoint 5");
 
         // INNERNODES
         Element innerNodesElement = doc.createElement("INNERNODES");
@@ -108,31 +112,40 @@ public class XMLGenerator{
 
             innerNodesElement.appendChild(inElement);
         }
+        //System.out.println("checkpoint 6");
 
         // LEAFNODES
         Element leafNodesElement = doc.createElement("LEAFNODES");
         syntaxTreeElement.appendChild(leafNodesElement);
+        //System.out.println("checkpoint 6.1");
         for (SyntaxTreeNode leaf : leafNodes) {
             Element leafElement = doc.createElement("LEAF");
-
+            //System.out.println("checkpoint 6.2");
             // PARENT
             Element parentElement = doc.createElement("PARENT");
             parentElement.appendChild(doc.createTextNode(String.valueOf(leaf.getParent().getUnid())));
             leafElement.appendChild(parentElement);
 
+            //System.out.println("checkpoint 6.3");
             // UNID
             Element unidElement = doc.createElement("UNID");
             unidElement.appendChild(doc.createTextNode(String.valueOf(leaf.getUnid())));
             leafElement.appendChild(unidElement);
 
+            //System.out.println("checkpoint 6.4");
             // TERMINAL
             Element terminalElement = doc.createElement("TERMINAL");
             // Assuming terminalXML is a well-formed XML string
             try {
+                //System.out.println("checkpoint 6.5");
+                //System.out.println("leaf.getTerminal() = " + leaf.getTerminal());
                 Document terminalDoc = parseXMLString(leaf.getTerminal());
+                //System.out.println("checkpoint 6.6");
                 org.w3c.dom.Node importedTerminal = doc.importNode(terminalDoc.getDocumentElement(), true);
+                //System.out.println("checkpoint 6.7");
                 terminalElement.appendChild(importedTerminal);
             } catch (Exception e) {
+                //System.out.println("checkpoint 6.8");
                 // If terminalXML is not well-formed, store it as text
                 terminalElement.appendChild(doc.createTextNode(leaf.getTerminal()));
             }
@@ -140,17 +153,21 @@ public class XMLGenerator{
 
             leafNodesElement.appendChild(leafElement);
         }
+        //System.out.println("checkpoint 7");
 
         // Write the content into XML file
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
+        //System.out.println("checkpoint 8");
         // For pretty print
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+        //System.out.println("checkpoint 8");
         DOMSource source = new DOMSource(doc);
         StreamResult result = new StreamResult(new File(filePath));
-
+        //System.out.println("checkpoint 10");
         transformer.transform(source, result);
+        //System.out.println("checkpoint 11");
     }
 
     private Document parseXMLString(String xmlStr) throws Exception {

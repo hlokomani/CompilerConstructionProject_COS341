@@ -324,9 +324,23 @@
   </TOK>
   <TOK>
     <ID>47</ID>
+    <CLASS>operator</CLASS>
+    <WORD>;</WORD>
+    <LINE>16</LINE>
+    <COLUMN>8</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>48</ID>
     <CLASS>reserved_keyword</CLASS>
     <WORD>end</WORD>
     <LINE>17</LINE>
+    <COLUMN>1</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>49</ID>
+    <CLASS>END</CLASS>
+    <WORD>$</WORD>
+    <LINE>18</LINE>
     <COLUMN>1</COLUMN>
   </TOK>
 </TOKENSTREAM>
