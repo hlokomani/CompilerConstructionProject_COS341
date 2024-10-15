@@ -11,6 +11,7 @@ public class SemanticAnalyzer {
     private SyntaxTreeNode currentNode;
     private Stack<String> scopeStack;
     private boolean inGlobalVars = false;
+    private String currentType = null;
 
     public SemanticAnalyzer(String xmlFilePath) throws Exception {
         this.treeCrawler = new TreeCrawler(xmlFilePath);
@@ -30,6 +31,9 @@ public class SemanticAnalyzer {
                     break;
                 case "GLOBVARS":
                     handleGlobalVarsNode();
+                    break;
+                case "VTYP":
+                    handleVarTypeNode();
                     break;
                 case "VNAME":
                     handleVariableNode();
@@ -62,8 +66,27 @@ public class SemanticAnalyzer {
             if (symbolTable.lookupVariable(variableName, true) != null) {
                 throw new SemanticException("Variable " + variableName + " is already defined in this scope");
             }
-            symbolTable.addSymbol(new Symbol(variableName, "variable", currentNode.getUnid()));
+            symbolTable.addSymbol(new Symbol(variableName, "variable", currentType, currentNode.getUnid()));
         }
+    }
+
+    private void handleVarTypeNode() {
+        currentType = extractType(currentNode);
+    }
+
+    private String extractType(SyntaxTreeNode node) {
+        if (node.getChildren().size() > 0) {
+            SyntaxTreeNode terminalNode = node.getChildren().get(0);
+            if (terminalNode.getSymb().equals("Terminal")) {
+                String terminal = terminalNode.getTerminal();
+                if (terminal != null && terminal.contains("<WORD>")) {
+                    int start = terminal.indexOf("<WORD>") + 6;
+                    int end = terminal.indexOf("</WORD>");
+                    return terminal.substring(start, end);
+                }
+            }
+        }
+        return null;
     }
 
     private void handleAssignmentNode() throws SemanticException {
@@ -99,7 +122,7 @@ public class SemanticAnalyzer {
             System.out.println("Semantic analysis completed successfully.");
             SymbolTable.getInstance().getAllSymbols().forEach((key, symbols) -> {
                 symbols.forEach(symbol ->
-                        System.out.println(key + ": " + symbol.getName() + " (" + symbol.getKind() + ")"));
+                        System.out.println(key + ": " + symbol.getName() + " (" + symbol.getKind() + ")" + " - " + symbol.getType()));
             });
         } catch (Exception e) {
             System.err.println("Semantic analysis failed: " + e.getMessage());

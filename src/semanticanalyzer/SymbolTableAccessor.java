@@ -9,8 +9,11 @@ public class SymbolTableAccessor {
     }
 
     public static Symbol lookupVariable(String name, String scope) {
-        List<Symbol> symbols = SymbolTable.getInstance().getAllSymbols().get(name + ":" + scope);
-        return (symbols != null && !symbols.isEmpty()) ? symbols.get(0) : null;
+        return SymbolTable.getInstance().lookupVariable(name, false);
+    }
+
+    public static Symbol lookupVariableInCurrentScope(String name, String scope) {
+        return SymbolTable.getInstance().lookupVariable(name, true);
     }
 
     public static Symbol lookupFunction(String name) {

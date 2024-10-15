@@ -55,7 +55,7 @@ public class SymbolTable {
     }
 
     public Symbol lookupFunction(String name) {
-        String key = "global:" + name;  // Assuming all functions are in the global scope
+        String key = "global:" + name;
         List<Symbol> symbols = symbolMap.get(key);
         return (symbols != null && !symbols.isEmpty()) ? symbols.get(0) : null;
     }
