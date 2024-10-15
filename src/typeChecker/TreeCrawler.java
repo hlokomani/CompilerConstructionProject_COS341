@@ -165,6 +165,20 @@ public class TreeCrawler {
         }
         return null;
     }
+    
+    public SyntaxTreeNode peakNext() {
+        if (currentIndex < traversedTree.size()) {
+            return traversedTree.get(currentIndex);
+        }
+        return null;
+    }
+
+    public SyntaxTreeNode peakNextIndex(int index) {
+        if ((currentIndex + index) < traversedTree.size()) {
+            return traversedTree.get(currentIndex + index);
+        }
+        return null;
+    }
 
     public static void main(String[] args) {
        // Crawling a tree and printing the nodes
