@@ -212,115 +212,115 @@
   </TOK>
   <TOK>
     <ID>31</ID>
-    <CLASS>reserved_keyword</CLASS>
-    <WORD>num</WORD>
+    <CLASS>V</CLASS>
+    <WORD>V_n</WORD>
     <LINE>9</LINE>
     <COLUMN>17</COLUMN>
   </TOK>
   <TOK>
     <ID>32</ID>
-    <CLASS>V</CLASS>
-    <WORD>V_n</WORD>
-    <LINE>9</LINE>
-    <COLUMN>21</COLUMN>
-  </TOK>
-  <TOK>
-    <ID>33</ID>
     <CLASS>operator</CLASS>
     <WORD>,</WORD>
     <LINE>9</LINE>
-    <COLUMN>24</COLUMN>
+    <COLUMN>20</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>33</ID>
+    <CLASS>V</CLASS>
+    <WORD>V_acc</WORD>
+    <LINE>9</LINE>
+    <COLUMN>22</COLUMN>
   </TOK>
   <TOK>
     <ID>34</ID>
-    <CLASS>reserved_keyword</CLASS>
-    <WORD>num</WORD>
+    <CLASS>operator</CLASS>
+    <WORD>,</WORD>
     <LINE>9</LINE>
-    <COLUMN>26</COLUMN>
+    <COLUMN>27</COLUMN>
   </TOK>
   <TOK>
     <ID>35</ID>
     <CLASS>V</CLASS>
-    <WORD>V_acc</WORD>
+    <WORD>V_msg</WORD>
     <LINE>9</LINE>
-    <COLUMN>30</COLUMN>
+    <COLUMN>29</COLUMN>
   </TOK>
   <TOK>
     <ID>36</ID>
     <CLASS>operator</CLASS>
-    <WORD>,</WORD>
+    <WORD>)</WORD>
     <LINE>9</LINE>
-    <COLUMN>35</COLUMN>
+    <COLUMN>34</COLUMN>
   </TOK>
   <TOK>
     <ID>37</ID>
-    <CLASS>reserved_keyword</CLASS>
-    <WORD>text</WORD>
-    <LINE>9</LINE>
-    <COLUMN>37</COLUMN>
-  </TOK>
-  <TOK>
-    <ID>38</ID>
-    <CLASS>V</CLASS>
-    <WORD>V_msg</WORD>
-    <LINE>9</LINE>
-    <COLUMN>42</COLUMN>
-  </TOK>
-  <TOK>
-    <ID>39</ID>
-    <CLASS>operator</CLASS>
-    <WORD>)</WORD>
-    <LINE>9</LINE>
-    <COLUMN>47</COLUMN>
-  </TOK>
-  <TOK>
-    <ID>40</ID>
     <CLASS>operator</CLASS>
     <WORD>{</WORD>
     <LINE>10</LINE>
     <COLUMN>1</COLUMN>
   </TOK>
   <TOK>
-    <ID>41</ID>
+    <ID>38</ID>
     <CLASS>reserved_keyword</CLASS>
     <WORD>num</WORD>
     <LINE>11</LINE>
     <COLUMN>3</COLUMN>
   </TOK>
   <TOK>
-    <ID>42</ID>
+    <ID>39</ID>
     <CLASS>V</CLASS>
     <WORD>V_zero</WORD>
     <LINE>11</LINE>
     <COLUMN>7</COLUMN>
   </TOK>
   <TOK>
-    <ID>43</ID>
+    <ID>40</ID>
     <CLASS>operator</CLASS>
     <WORD>,</WORD>
     <LINE>11</LINE>
     <COLUMN>13</COLUMN>
   </TOK>
   <TOK>
-    <ID>44</ID>
+    <ID>41</ID>
     <CLASS>reserved_keyword</CLASS>
     <WORD>text</WORD>
     <LINE>11</LINE>
     <COLUMN>15</COLUMN>
   </TOK>
   <TOK>
-    <ID>45</ID>
+    <ID>42</ID>
     <CLASS>V</CLASS>
     <WORD>V_debug</WORD>
     <LINE>11</LINE>
     <COLUMN>20</COLUMN>
   </TOK>
   <TOK>
-    <ID>46</ID>
+    <ID>43</ID>
     <CLASS>operator</CLASS>
     <WORD>,</WORD>
     <LINE>11</LINE>
     <COLUMN>27</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>44</ID>
+    <CLASS>reserved_keyword</CLASS>
+    <WORD>num</WORD>
+    <LINE>11</LINE>
+    <COLUMN>29</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>45</ID>
+    <CLASS>V</CLASS>
+    <WORD>V_fun</WORD>
+    <LINE>11</LINE>
+    <COLUMN>33</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>46</ID>
+    <CLASS>operator</CLASS>
+    <WORD>,</WORD>
+    <LINE>11</LINE>
+    <COLUMN>38</COLUMN>
   </TOK>
   <TOK>
     <ID>47</ID>
@@ -492,219 +492,310 @@
   </TOK>
   <TOK>
     <ID>71</ID>
-    <CLASS>V</CLASS>
-    <WORD>V_result</WORD>
+    <CLASS>reserved_keyword</CLASS>
+    <WORD>return</WORD>
     <LINE>19</LINE>
     <COLUMN>9</COLUMN>
   </TOK>
   <TOK>
     <ID>72</ID>
-    <CLASS>operator</CLASS>
-    <WORD>=</WORD>
-    <LINE>19</LINE>
-    <COLUMN>18</COLUMN>
-  </TOK>
-  <TOK>
-    <ID>73</ID>
     <CLASS>V</CLASS>
     <WORD>V_acc</WORD>
     <LINE>19</LINE>
-    <COLUMN>20</COLUMN>
+    <COLUMN>16</COLUMN>
   </TOK>
   <TOK>
-    <ID>74</ID>
+    <ID>73</ID>
     <CLASS>operator</CLASS>
     <WORD>;</WORD>
     <LINE>19</LINE>
-    <COLUMN>25</COLUMN>
+    <COLUMN>21</COLUMN>
   </TOK>
   <TOK>
-    <ID>75</ID>
+    <ID>74</ID>
     <CLASS>reserved_keyword</CLASS>
     <WORD>end</WORD>
     <LINE>20</LINE>
     <COLUMN>7</COLUMN>
   </TOK>
   <TOK>
-    <ID>76</ID>
+    <ID>75</ID>
     <CLASS>reserved_keyword</CLASS>
     <WORD>else</WORD>
     <LINE>21</LINE>
     <COLUMN>5</COLUMN>
   </TOK>
   <TOK>
-    <ID>77</ID>
+    <ID>76</ID>
     <CLASS>reserved_keyword</CLASS>
     <WORD>begin</WORD>
     <LINE>22</LINE>
     <COLUMN>7</COLUMN>
   </TOK>
   <TOK>
-    <ID>78</ID>
+    <ID>77</ID>
     <CLASS>V</CLASS>
-    <WORD>V_result</WORD>
+    <WORD>V_n</WORD>
     <LINE>23</LINE>
     <COLUMN>9</COLUMN>
   </TOK>
   <TOK>
-    <ID>79</ID>
+    <ID>78</ID>
     <CLASS>operator</CLASS>
     <WORD>=</WORD>
+    <LINE>23</LINE>
+    <COLUMN>13</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>79</ID>
+    <CLASS>operator</CLASS>
+    <WORD>sub</WORD>
+    <LINE>23</LINE>
+    <COLUMN>15</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>80</ID>
+    <CLASS>operator</CLASS>
+    <WORD>(</WORD>
     <LINE>23</LINE>
     <COLUMN>18</COLUMN>
   </TOK>
   <TOK>
-    <ID>80</ID>
-    <CLASS>F</CLASS>
-    <WORD>F_factorial</WORD>
-    <LINE>23</LINE>
-    <COLUMN>20</COLUMN>
-  </TOK>
-  <TOK>
     <ID>81</ID>
-    <CLASS>operator</CLASS>
-    <WORD>(</WORD>
+    <CLASS>V</CLASS>
+    <WORD>V_n</WORD>
     <LINE>23</LINE>
-    <COLUMN>31</COLUMN>
+    <COLUMN>19</COLUMN>
   </TOK>
   <TOK>
     <ID>82</ID>
     <CLASS>operator</CLASS>
-    <WORD>sub</WORD>
+    <WORD>,</WORD>
     <LINE>23</LINE>
-    <COLUMN>32</COLUMN>
+    <COLUMN>22</COLUMN>
   </TOK>
   <TOK>
     <ID>83</ID>
-    <CLASS>operator</CLASS>
-    <WORD>(</WORD>
+    <CLASS>N</CLASS>
+    <WORD>1</WORD>
     <LINE>23</LINE>
-    <COLUMN>35</COLUMN>
+    <COLUMN>24</COLUMN>
   </TOK>
   <TOK>
     <ID>84</ID>
-    <CLASS>V</CLASS>
-    <WORD>V_n</WORD>
+    <CLASS>operator</CLASS>
+    <WORD>)</WORD>
     <LINE>23</LINE>
-    <COLUMN>36</COLUMN>
+    <COLUMN>25</COLUMN>
   </TOK>
   <TOK>
     <ID>85</ID>
     <CLASS>operator</CLASS>
-    <WORD>,</WORD>
+    <WORD>;</WORD>
     <LINE>23</LINE>
-    <COLUMN>39</COLUMN>
+    <COLUMN>26</COLUMN>
   </TOK>
   <TOK>
     <ID>86</ID>
-    <CLASS>N</CLASS>
-    <WORD>1</WORD>
-    <LINE>23</LINE>
-    <COLUMN>41</COLUMN>
+    <CLASS>V</CLASS>
+    <WORD>V_acc</WORD>
+    <LINE>24</LINE>
+    <COLUMN>9</COLUMN>
   </TOK>
   <TOK>
     <ID>87</ID>
     <CLASS>operator</CLASS>
-    <WORD>)</WORD>
-    <LINE>23</LINE>
-    <COLUMN>42</COLUMN>
+    <WORD>=</WORD>
+    <LINE>24</LINE>
+    <COLUMN>15</COLUMN>
   </TOK>
   <TOK>
     <ID>88</ID>
     <CLASS>operator</CLASS>
-    <WORD>,</WORD>
-    <LINE>23</LINE>
-    <COLUMN>43</COLUMN>
+    <WORD>mul</WORD>
+    <LINE>24</LINE>
+    <COLUMN>17</COLUMN>
   </TOK>
   <TOK>
     <ID>89</ID>
     <CLASS>operator</CLASS>
-    <WORD>mul</WORD>
-    <LINE>23</LINE>
-    <COLUMN>45</COLUMN>
+    <WORD>(</WORD>
+    <LINE>24</LINE>
+    <COLUMN>20</COLUMN>
   </TOK>
   <TOK>
     <ID>90</ID>
-    <CLASS>operator</CLASS>
-    <WORD>(</WORD>
-    <LINE>23</LINE>
-    <COLUMN>48</COLUMN>
+    <CLASS>V</CLASS>
+    <WORD>V_n</WORD>
+    <LINE>24</LINE>
+    <COLUMN>21</COLUMN>
   </TOK>
   <TOK>
     <ID>91</ID>
-    <CLASS>V</CLASS>
-    <WORD>V_n</WORD>
-    <LINE>23</LINE>
-    <COLUMN>49</COLUMN>
+    <CLASS>operator</CLASS>
+    <WORD>,</WORD>
+    <LINE>24</LINE>
+    <COLUMN>24</COLUMN>
   </TOK>
   <TOK>
     <ID>92</ID>
-    <CLASS>operator</CLASS>
-    <WORD>,</WORD>
-    <LINE>23</LINE>
-    <COLUMN>52</COLUMN>
+    <CLASS>V</CLASS>
+    <WORD>V_acc</WORD>
+    <LINE>24</LINE>
+    <COLUMN>26</COLUMN>
   </TOK>
   <TOK>
     <ID>93</ID>
-    <CLASS>V</CLASS>
-    <WORD>V_acc</WORD>
-    <LINE>23</LINE>
-    <COLUMN>54</COLUMN>
+    <CLASS>operator</CLASS>
+    <WORD>)</WORD>
+    <LINE>24</LINE>
+    <COLUMN>31</COLUMN>
   </TOK>
   <TOK>
     <ID>94</ID>
     <CLASS>operator</CLASS>
-    <WORD>)</WORD>
-    <LINE>23</LINE>
-    <COLUMN>59</COLUMN>
+    <WORD>;</WORD>
+    <LINE>24</LINE>
+    <COLUMN>32</COLUMN>
   </TOK>
   <TOK>
     <ID>95</ID>
-    <CLASS>operator</CLASS>
-    <WORD>,</WORD>
-    <LINE>23</LINE>
-    <COLUMN>60</COLUMN>
+    <CLASS>V</CLASS>
+    <WORD>V_fun</WORD>
+    <LINE>25</LINE>
+    <COLUMN>9</COLUMN>
   </TOK>
   <TOK>
     <ID>96</ID>
-    <CLASS>V</CLASS>
-    <WORD>V_msg</WORD>
-    <LINE>23</LINE>
-    <COLUMN>62</COLUMN>
+    <CLASS>operator</CLASS>
+    <WORD>=</WORD>
+    <LINE>25</LINE>
+    <COLUMN>15</COLUMN>
   </TOK>
   <TOK>
     <ID>97</ID>
-    <CLASS>operator</CLASS>
-    <WORD>)</WORD>
-    <LINE>23</LINE>
-    <COLUMN>67</COLUMN>
+    <CLASS>F</CLASS>
+    <WORD>F_factorial</WORD>
+    <LINE>25</LINE>
+    <COLUMN>17</COLUMN>
   </TOK>
   <TOK>
     <ID>98</ID>
     <CLASS>operator</CLASS>
-    <WORD>;</WORD>
-    <LINE>23</LINE>
-    <COLUMN>68</COLUMN>
+    <WORD>(</WORD>
+    <LINE>25</LINE>
+    <COLUMN>28</COLUMN>
   </TOK>
   <TOK>
     <ID>99</ID>
-    <CLASS>reserved_keyword</CLASS>
-    <WORD>end</WORD>
-    <LINE>24</LINE>
-    <COLUMN>7</COLUMN>
+    <CLASS>V</CLASS>
+    <WORD>V_n</WORD>
+    <LINE>25</LINE>
+    <COLUMN>29</COLUMN>
   </TOK>
   <TOK>
     <ID>100</ID>
-    <CLASS>reserved_keyword</CLASS>
-    <WORD>end</WORD>
+    <CLASS>operator</CLASS>
+    <WORD>,</WORD>
     <LINE>25</LINE>
-    <COLUMN>3</COLUMN>
+    <COLUMN>32</COLUMN>
   </TOK>
   <TOK>
     <ID>101</ID>
+    <CLASS>V</CLASS>
+    <WORD>V_acc</WORD>
+    <LINE>25</LINE>
+    <COLUMN>34</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>102</ID>
+    <CLASS>operator</CLASS>
+    <WORD>,</WORD>
+    <LINE>25</LINE>
+    <COLUMN>39</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>103</ID>
+    <CLASS>V</CLASS>
+    <WORD>V_msg</WORD>
+    <LINE>25</LINE>
+    <COLUMN>41</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>104</ID>
+    <CLASS>operator</CLASS>
+    <WORD>)</WORD>
+    <LINE>25</LINE>
+    <COLUMN>46</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>105</ID>
+    <CLASS>operator</CLASS>
+    <WORD>;</WORD>
+    <LINE>25</LINE>
+    <COLUMN>47</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>106</ID>
+    <CLASS>reserved_keyword</CLASS>
+    <WORD>return</WORD>
+    <LINE>26</LINE>
+    <COLUMN>9</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>107</ID>
+    <CLASS>V</CLASS>
+    <WORD>V_fun</WORD>
+    <LINE>26</LINE>
+    <COLUMN>16</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>108</ID>
+    <CLASS>operator</CLASS>
+    <WORD>;</WORD>
+    <LINE>26</LINE>
+    <COLUMN>21</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>109</ID>
+    <CLASS>reserved_keyword</CLASS>
+    <WORD>end</WORD>
+    <LINE>27</LINE>
+    <COLUMN>7</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>110</ID>
+    <CLASS>operator</CLASS>
+    <WORD>;</WORD>
+    <LINE>27</LINE>
+    <COLUMN>10</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>111</ID>
+    <CLASS>reserved_keyword</CLASS>
+    <WORD>end</WORD>
+    <LINE>28</LINE>
+    <COLUMN>3</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>112</ID>
     <CLASS>operator</CLASS>
     <WORD>}</WORD>
-    <LINE>26</LINE>
+    <LINE>29</LINE>
+    <COLUMN>1</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>113</ID>
+    <CLASS>reserved_keyword</CLASS>
+    <WORD>end</WORD>
+    <LINE>29</LINE>
+    <COLUMN>3</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>114</ID>
+    <CLASS>END</CLASS>
+    <WORD>$</WORD>
+    <LINE>30</LINE>
     <COLUMN>1</COLUMN>
   </TOK>
 </TOKENSTREAM>
