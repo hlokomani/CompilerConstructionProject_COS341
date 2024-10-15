@@ -91,7 +91,7 @@ public class SLRParser {
                     elm = new StackElement(goToState, newNode);
                     stack.push(elm);
                 } else if (action.equals("acc")) {
-                    //System.out.println("Parsing successful!");
+                    System.out.println("Parsing successful!");
                     String newFileName = filename.replace("src/lexer", "src/parser2");
                     new XMLGenerator(stack.pop().node).convertToXML(newFileName);
                     return;
@@ -111,6 +111,6 @@ public class SLRParser {
 
     public static void main(String[] args) {
         SLRParser parser = new SLRParser();
-        parser.parse("src/lexer/output/output1.xml");
+        parser.parse("src/lexer/output/output2.xml");
     }
 }

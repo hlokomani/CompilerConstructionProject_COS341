@@ -479,8 +479,8 @@
   <TOK>
     <ID>69</ID>
     <CLASS>END</CLASS>
-    <WORD>end</WORD>
-    <LINE>-1</LINE>
-    <COLUMN>-1</COLUMN>
+    <WORD>$</WORD>
+    <LINE>15</LINE>
+    <COLUMN>1</COLUMN>
   </TOK>
 </TOKENSTREAM>
