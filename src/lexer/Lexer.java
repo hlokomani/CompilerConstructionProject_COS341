@@ -1,20 +1,11 @@
 package lexer;
-
-import java.nio.file.Paths;
-import java.util.logging.*;
 import java.util.*;
 
 public class Lexer {
-    private static final Logger logger = Logger.getLogger(Lexer.class.getName());
 
     public static void main(String[] args) {
-        if (args.length != 2) {
-            System.out.println("Usage: java lexer.Lexer <input_file> <output_file>");
-            System.exit(1);
-        }
-
-        String inputFile = Paths.get(args[0]).toString();
-        String outputFile = Paths.get(args[1]).toString();
+        String inputFile = "input/input_program1.txt";
+        String outputFile = "src/lexer/output/output1.xml";
 
         try {
             String input = FileHandler.readFile(inputFile);
@@ -24,7 +15,7 @@ public class Lexer {
         } catch (LexicalException e) {
             System.err.println("Lexical Error: " + e.getMessage());
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "An error occurred", e);
+            System.err.println("An error occurred: " + e.getMessage());
         }
     }
 }
