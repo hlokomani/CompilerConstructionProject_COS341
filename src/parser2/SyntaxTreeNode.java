@@ -26,7 +26,36 @@ public class SyntaxTreeNode {
         this.symb = symb;
         this.children = new ArrayList<>();
         this.isLeaf = true;
-        this.terminal = terminal;
+        this.terminal = sanitizesTerminal(terminal);
+    }
+
+    private String sanitizesTerminal(String terminal) {
+        //finding special character in between the terminal
+        //finding the contents between <WORD> and </WORD>
+        //System.out.println("In the sanitizesTerminal");
+        if (terminal.contains("<WORD>") && terminal.contains("</WORD>")) {
+            int start = terminal.indexOf("<WORD>") + 6;
+            int end = terminal.indexOf("</WORD>");
+            String word = terminal.substring(start, end);
+            //System.out.println("word: " + word);
+            if (word.contains(">")) {
+                //System.out.println("In if 1");
+                word = "&gt;";
+            }
+            if (word.contains("<")) {
+                //System.out.println("In if 2");
+                word = "&lt;";
+            }
+            if (word.contains("&")) {
+                //System.out.println("In if 3");
+                word="&amp;";
+            }                  
+            //replacing the contents between <WORD> and </WORD> with the sanitized word
+            //System.out.println("Sanitized word: " + word);
+            terminal = terminal.substring(0, start) + word + terminal.substring(end);
+            //System.out.println("The sanitized terminal: " + terminal);
+        }
+        return terminal;
     }
 
     public int getUnid() {

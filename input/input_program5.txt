@@ -10,11 +10,12 @@ begin
   print V_result;
 end
 
-num F_complex(num V_x, num V_y, num V_z)
+num F_complex(V_x, V_y,  V_z)
 {
-  num V_temp,
+  num V_tempa, num V_tempb, num V_tempc, 
   begin
-    V_temp = add(mul(V_x, V_y), div(V_z, 2));
-    return sqrt(add(mul(V_temp, V_temp), V_z));
+    V_tempa = add(mul(V_x, V_y), div(V_z, 2));
+    V_tempb = sqrt(add(mul(V_tempa, V_tempa), V_z));
+    return V_tempb;
   end
-}
+} end

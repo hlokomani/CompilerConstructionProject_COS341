@@ -1,5 +1,5 @@
 main
-text V_str1, text V_str2, text V_result, num V_num1, num V_num2,
+text V_str1, text V_str2, text V_result, num V_num1, num V_num2, num V_sum,
 begin
   V_str1 = "Hello";
   V_str2 = "World";
@@ -12,30 +12,31 @@ begin
   else
     begin
       V_result = "Notmet";
-    end
+    end;
   print V_result;
 
-  if or(eq(V_str2, "Openai"), eq(add(V_num1, V_num2), 15)) then
+  V_sum = add(V_num1, V_num2);
+
+  if or(eq(V_str2, "Openai"), eq(V_sum, 15)) then
     begin
       V_result = "Atlone";
     end
   else
     begin
       V_result = "Bothfal";
-    end
+    end;
   print V_result;
-
-  F_concatenate(V_str1, V_str2);
+  F_concatenate(V_str1, V_str2, V_result);
   print V_result;
 end
 
-void F_concatenate(text V_a, text V_b)
+void F_concatenate(V_a, V_b, V_temp1)
 {
-  text V_space,
+  text V_space, text V_temp2, text V_temp3,
   begin
-    V_space = " ";
+    V_space = "Space";
     V_result = V_a;
     V_result = V_space;
     V_result = V_b;
   end
-}
+} end

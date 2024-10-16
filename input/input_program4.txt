@@ -6,9 +6,9 @@ begin
   print V_result;
 end
 
-num F_factorial(num V_n, num V_acc, text V_msg)
+num F_factorial(V_n, V_acc, V_msg)
 {
-  num V_zero, text V_debug,
+  num V_zero, text V_debug, num V_fun,
   begin
     V_zero = 0;
     V_debug = "Debug";
@@ -20,7 +20,10 @@ num F_factorial(num V_n, num V_acc, text V_msg)
       end
     else
       begin
-        return F_factorial(sub(V_n, 1), mul(V_n, V_acc), V_msg);
-      end
+        V_n = sub(V_n, 1);
+        V_acc = mul(V_n, V_acc);
+        V_fun = F_factorial(V_n, V_acc, V_msg);
+        return V_fun;
+      end;
   end
-}
+} end

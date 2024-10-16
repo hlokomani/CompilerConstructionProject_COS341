@@ -13,5 +13,5 @@ begin
     begin
       V_message = "Minor";
       print V_message;
-    end
+    end;
 end

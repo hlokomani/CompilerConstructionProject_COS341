@@ -26,6 +26,12 @@ public class SLRParser {
             String action = "";
 
             while (true) {
+                //System.out.println("");
+                //printing next 
+                //System.out.println(next.getClazz() + ": " + next.getWord());
+                //printing top of stack
+                //System.out.println("Top of stack: " + stack.peek().state);
+
                 int state = stack.peek().state;
                 if (next.getClazz().equals("operator") || next.getClazz().equals("reserved_keyword")
                         || next.getClazz().equals("punctuation")) //Terminals
@@ -47,7 +53,7 @@ public class SLRParser {
                 }
 
                 if (action == null) {
-                    reportError("No action found for state " + state + " and symbol " + next.getWord());
+                    reportError("No action found for state " + state + " and symbol " + next.getWord() + ".\nThe symbol is found at line " + next.getLine() + " and column " + next.getColumn());
                     return;
                 }
 
@@ -73,6 +79,9 @@ public class SLRParser {
 
                     int stateAfterPop = stack.peek().state;
                     int goToState = parseTable.getGoto(stateAfterPop, n);
+                    //System.out.println("stateAfterPop: " + stateAfterPop);
+                    //System.out.println("n: " + n);
+                    //System.out.println("Goto state: " + goToState);
                     if (goToState == -1) {
                         reportError("No goto state found for state " + stateAfterPop + " and non-terminal " + n);
                         return;
@@ -82,9 +91,9 @@ public class SLRParser {
                     elm = new StackElement(goToState, newNode);
                     stack.push(elm);
                 } else if (action.equals("acc")) {
-                    System.out.println("Parsing successful!");
                     String newFileName = filename.replace("src/lexer", "src/parser2");
                     new XMLGenerator(stack.pop().node).convertToXML(newFileName);
+                    System.out.println("Parsing successful!");
                     return;
                 } else {
                     reportError("Unknown action: " + action);
@@ -92,7 +101,7 @@ public class SLRParser {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error occurred in catch: " + e.getMessage());
+            //System.out.println("Error occurred in catch: " + e.getMessage());
         }
     }
 
@@ -102,6 +111,6 @@ public class SLRParser {
 
     public static void main(String[] args) {
         SLRParser parser = new SLRParser();
-        parser.parse("src/lexer/output/output2.xml");
+        parser.parse("src/lexer/output/output8.xml");
     }
 }

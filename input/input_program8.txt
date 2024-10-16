@@ -1,21 +1,18 @@
 main 
-num V_one , 
-num V_two , 
-num V_three ,
-num V_four,
- begin 
-	V_one = 1 ; 
-	V_two = 2 ; 
-	V_three = 3 ; 
-	V_four = F_func( V_one, V_two, V_three )  ; 
-end
-num F_func(  V_in1, V_in2, V_in3 )  
-{
-num V_lone , num V_ltwo , num V_lthree ,
+num V_one, num V_two, num V_three, num V_four,
 begin 
-	V_lone = sub( V_in1,  V_in2 )  ; 
-	V_ltwo = sub( V_lone,  V_in3 ) ; 
-	V_one = V_ltwo ;
+    V_one = 1; 
+    V_two = 2; 
+    V_three = 3; 
+    V_four = F_func(V_one, V_two, V_three); 
 end
-}
-end
+
+num F_func(V_in1, V_in2, V_in3)  
+{
+    num V_lone, num V_ltwo, num V_lthree,
+    begin 
+        V_lone = sub(V_in1, V_in2); 
+        V_ltwo = sub(V_lone, V_in3);
+        return V_ltwo;
+    end
+} end
