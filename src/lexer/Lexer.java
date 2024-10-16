@@ -4,8 +4,8 @@ import java.util.*;
 public class Lexer {
 
     public static void main(String[] args) {
-        String inputFile = "input/input_program5.txt";
-        String outputFile = "src/lexer/output/output5.xml";
+        String inputFile = "input/input_program6.txt";
+        String outputFile = "src/lexer/output/output6.xml";
 
         try {
             String input = FileHandler.readFile(inputFile);
