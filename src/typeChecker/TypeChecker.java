@@ -61,6 +61,7 @@ public class TypeChecker {
     public String typeOfVNAME(SyntaxTreeNode node) {
         return node.getTerminal();
 
+        return "";
     }
     
     public boolean typecheckALGO() {

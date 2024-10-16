@@ -4,31 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c28cd061-734d-4bbf-b87d-7d3b85d2d3d7" name="Changes" comment="Some more output xml">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/input/input_program7.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/parser/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/parser/Parser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/parser/SyntaxTreeBuilder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/parser/Token.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/parser/TreeNode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/parser/XMLTokenReader.java" afterDir="false" />
+    <list default="true" id="c28cd061-734d-4bbf-b87d-7d3b85d2d3d7" name="Changes" comment="Stubbed empty type checker to remove errors">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/input/input_program1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input/input_program1.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input/input_program4.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input/input_program4.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input/input_program5.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input/input_program5.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input/input_program6.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input/input_program6.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/output1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/output/output1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/output2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/output/output2.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/output3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/output/output3.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/output4.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/output/output4.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/output6.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/output/output6.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/FileHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/FileHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Lexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/Lexer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LexicalAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/LexicalAnalyzer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LexicalException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/LexicalException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Token.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/Token.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/XMLFormatter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/XMLFormatter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lexer/output/output1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/output/output1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lexer/output/output3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/output/output3.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/parser/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/parser/Parser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/parser/SyntaxTreeBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/parser/Token.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/parser/TreeNode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/parser/XMLTokenReader.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/parser2/SLRParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/parser2/SLRParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/parser2/output/output2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/parser2/output/output2.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,6 +29,9 @@
         <option value="Class" />
       </list>
     </option>
+  </component>
+  <component name="Git.Merge.Settings">
+    <option name="BRANCH" value="hlokomani" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -76,29 +67,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Lexer.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Run Lexer.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Run Parser.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;hlokomani&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Lexer.executor": "Run",
+    "Application.Main.executor": "Run",
+    "Application.Run Lexer.executor": "Run",
+    "Application.Run Parser.executor": "Run",
+    "Application.SLRParser.executor": "Debug",
+    "Application.SemanticAnalyzer.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "feature/semantic__analysis",
+    "kotlin-language-version-configured": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\hloko\iCloudDrive\UP documents\Final Year\Semester 8\COS 341 - Compiler Construction\Semester Project\341SemesterProject\src\lexer" />
       <recent name="C:\Users\hloko\iCloudDrive\UP documents\Final Year\Semester 8\COS 341 - Compiler Construction\Semester Project\341SemesterProject\input" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Run Parser">
+  <component name="RunManager" selected="Application.SemanticAnalyzer">
     <configuration name="Run Lexer" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="lexer.Lexer" />
       <module name="341SemesterProject" />
-      <option name="PROGRAM_PARAMETERS" value="input/input_program7.txt src/lexer/output/output7.xml" />
+      <option name="PROGRAM_PARAMETERS" value="input/input_program3.txt src/lexer/output/output3.xml" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -111,10 +104,44 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="SLRParser" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="parser2.SLRParser" />
+      <module name="341SemesterProject" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="parser2.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SemanticAnalyzer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="semanticanalyzer.SemanticAnalyzer" />
+      <module name="341SemesterProject" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="semanticanalyzer.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <list>
-      <item itemvalue="Application.Run Parser" />
       <item itemvalue="Application.Run Lexer" />
+      <item itemvalue="Application.Run Parser" />
+      <item itemvalue="Application.SLRParser" />
+      <item itemvalue="Application.SemanticAnalyzer" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.SemanticAnalyzer" />
+        <item itemvalue="Application.SLRParser" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -181,7 +208,31 @@
       <option name="project" value="LOCAL" />
       <updated>1724658539612</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Added end of program token after lexing is completed">
+      <option name="closed" value="true" />
+      <created>1728481783241</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1728481783241</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Init semantic analysis module">
+      <option name="closed" value="true" />
+      <created>1728917673872</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1728917673872</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Stubbed empty type checker to remove errors">
+      <option name="closed" value="true" />
+      <created>1728917704008</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1728917704008</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -203,6 +254,20 @@
     <MESSAGE value="Fixed input programs to adhere to the language rules" />
     <MESSAGE value="Added epilog to operator" />
     <MESSAGE value="Some more output xml" />
-    <option name="LAST_COMMIT_MESSAGE" value="Some more output xml" />
+    <MESSAGE value="Added end of program token after lexing is completed" />
+    <MESSAGE value="Init semantic analysis module" />
+    <MESSAGE value="Stubbed empty type checker to remove errors" />
+    <option name="LAST_COMMIT_MESSAGE" value="Stubbed empty type checker to remove errors" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/parser2/SLRParser.java</url>
+          <line>49</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
