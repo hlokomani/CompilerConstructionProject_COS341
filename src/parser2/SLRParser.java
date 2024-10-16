@@ -111,6 +111,6 @@ public class SLRParser {
 
     public static void main(String[] args) {
         SLRParser parser = new SLRParser();
-        parser.parse("src/lexer/output/output6.xml");
+        parser.parse("src/lexer/output/output7.xml");
     }
 }

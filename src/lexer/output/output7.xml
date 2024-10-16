@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<TOKENSTREAM>
+  <TOK>
+    <ID>1</ID>
+    <CLASS>reserved_keyword</CLASS>
+    <WORD>main</WORD>
+    <LINE>1</LINE>
+    <COLUMN>1</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>2</ID>
+    <CLASS>reserved_keyword</CLASS>
+    <WORD>begin</WORD>
+    <LINE>2</LINE>
+    <COLUMN>1</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>3</ID>
+    <CLASS>reserved_keyword</CLASS>
+    <WORD>end</WORD>
+    <LINE>3</LINE>
+    <COLUMN>1</COLUMN>
+  </TOK>
+  <TOK>
+    <ID>4</ID>
+    <CLASS>END</CLASS>
+    <WORD>$</WORD>
+    <LINE>4</LINE>
+    <COLUMN>1</COLUMN>
+  </TOK>
+</TOKENSTREAM>
