@@ -6,10 +6,12 @@ public class SymbolTable {
     private static SymbolTable instance = null;
     private Stack<String> scopes;
     private Map<String, List<Symbol>> symbolMap;
+    private List<Symbol> globalSymbols;
 
     private SymbolTable() {
         this.scopes = new Stack<>();
         this.symbolMap = new HashMap<>();
+        this.globalSymbols = new ArrayList<>();
     }
 
     public static SymbolTable getInstance() {
@@ -22,6 +24,7 @@ public class SymbolTable {
     public void clear() {
         scopes.clear();
         symbolMap.clear();
+        globalSymbols.clear();
     }
 
     public void enterScope(String scopeName) {
@@ -29,20 +32,45 @@ public class SymbolTable {
     }
 
     public void exitScope() {
-        scopes.pop();
+        if (!scopes.isEmpty()) {
+            scopes.pop();
+        }
     }
 
-    public void addSymbol(Symbol symbol) {
-        String key = scopes.peek() + ":" + symbol.getName();
-        symbolMap.computeIfAbsent(key, k -> new ArrayList<>()).add(symbol);
+    public void addSymbol(Symbol symbol, boolean isGlobal) {
+        if (isGlobal) {
+            globalSymbols.add(symbol);
+        } else {
+            String key = getCurrentScopeKey() + ":" + symbol.getName();
+            symbolMap.computeIfAbsent(key, k -> new ArrayList<>()).add(symbol);
+        }
     }
 
     public Symbol lookupVariable(String name, boolean currentScopeOnly) {
         if (currentScopeOnly) {
-            String key = scopes.peek() + ":" + name;
-            List<Symbol> symbols = symbolMap.get(key);
-            return (symbols != null && !symbols.isEmpty()) ? symbols.get(0) : null;
+            if (scopes.isEmpty() || scopes.peek().equals("global")) {
+                // We're in the global scope, so check global symbols
+                for (Symbol symbol : globalSymbols) {
+                    if (symbol.getName().equals(name)) {
+                        return symbol;
+                    }
+                }
+            } else {
+                // We're in a local scope, so check only that scope
+                String key = getCurrentScopeKey() + ":" + name;
+                List<Symbol> symbols = symbolMap.get(key);
+                if (symbols != null && !symbols.isEmpty()) {
+                    return symbols.get(0);
+                }
+            }
         } else {
+            // Check global symbols first
+            for (Symbol symbol : globalSymbols) {
+                if (symbol.getName().equals(name)) {
+                    return symbol;
+                }
+            }
+            // Then check local scopes
             for (int i = scopes.size() - 1; i >= 0; i--) {
                 String key = scopes.get(i) + ":" + name;
                 List<Symbol> symbols = symbolMap.get(key);
@@ -54,6 +82,15 @@ public class SymbolTable {
         return null;
     }
 
+    public boolean isGlobalVariable(String name) {
+        for (Symbol symbol : globalSymbols) {
+            if (symbol.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Symbol lookupFunction(String name) {
         String key = "global:" + name;
         List<Symbol> symbols = symbolMap.get(key);
@@ -61,6 +98,35 @@ public class SymbolTable {
     }
 
     public Map<String, List<Symbol>> getAllSymbols() {
-        return new HashMap<>(symbolMap);
+        Map<String, List<Symbol>> allSymbols = new HashMap<>(symbolMap);
+        allSymbols.put("global", globalSymbols);
+        return allSymbols;
     }
+
+    private String getCurrentScopeKey() {
+        return scopes.isEmpty() ? "global" : scopes.peek();
+    }
+
+    public boolean updateSymbolType(String name, String newType) {
+        //check global symbols first
+        for (Symbol symbol : globalSymbols) {
+            if (symbol.getName().equals(name)) {
+                symbol.setType(newType);
+                return true;
+            }
+        }
+
+        //then check local scopes
+        for (int i = scopes.size() - 1; i >= 0; i--) {
+            String key = scopes.get(i) + ":" + name;
+            List<Symbol> symbols = symbolMap.get(key);
+            if (symbols != null && !symbols.isEmpty()) {
+                symbols.get(0).setType(newType);
+                return true;
+            }
+        }
+
+        return false; //symbol not found
+    }
+
 }

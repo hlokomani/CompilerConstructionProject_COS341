@@ -4,28 +4,42 @@ public class Symbol {
     private String name;
     private String kind;
     private String type;
-    private int nodeId;
+    private int unid;
 
-    public Symbol(String name, String kind, String type, int nodeId) {
+    public Symbol(String name, String kind, String type, int unid) {
         this.name = name;
         this.kind = kind;
         this.type = type;
-        this.nodeId = nodeId;
+        this.unid = unid;
     }
 
     public String getName() {
         return name;
     }
 
-    public String getType() {
-        return type;
-    }
-
     public String getKind() {
         return kind;
     }
 
-    public int getNodeId() {
-        return nodeId;
+    public String getType() {
+        return type;
+    }
+
+    public int getUnid() {
+        return unid;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "Symbol{" +
+                "name='" + name + '\'' +
+                ", kind='" + kind + '\'' +
+                ", type='" + type + '\'' +
+                ", unid=" + unid +
+                '}';
     }
 }
