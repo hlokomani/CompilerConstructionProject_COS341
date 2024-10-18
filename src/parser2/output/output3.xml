@@ -980,7 +980,7 @@
                 <TOK>
                     <ID>17</ID>
                     <CLASS>operator</CLASS>
-                    <WORD>&amp;</WORD>
+                    <WORD>&lt;</WORD>
                     <LINE>6</LINE>
                     <COLUMN>9</COLUMN>
                 </TOK>
