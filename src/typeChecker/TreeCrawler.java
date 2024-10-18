@@ -66,6 +66,7 @@ public class TreeCrawler {
             if (terminalElement.hasChildNodes()) {
                 terminalXML = elementToString(terminalElement);
             }
+            System.out.println("Terminal XML: " + terminalXML);
 
             SyntaxTreeNode leafNode = new SyntaxTreeNode(unid, "Terminal", terminalXML);
             nodeMap.put(unid, leafNode);
@@ -165,6 +166,18 @@ public class TreeCrawler {
         }
         return null;
     }
+
+    public SyntaxTreeNode getFnameForReturnCommand(SyntaxTreeNode command) {
+        //going up the tree to find the function name
+        SyntaxTreeNode temp = command;
+        while (temp != null) {
+            if (temp.getSymb() == "FNAME") {
+                return temp;
+            }
+            temp = temp.getParent();
+        }
+        return null;
+    }
     
     public SyntaxTreeNode peakNext() {
         if (currentIndex < traversedTree.size()) {
@@ -183,7 +196,7 @@ public class TreeCrawler {
     public static void main(String[] args) {
        // Crawling a tree and printing the nodes
         try {
-            TreeCrawler treeCrawler = new TreeCrawler("src/parser2/output/output2.xml");
+            TreeCrawler treeCrawler = new TreeCrawler("src/parser2/output/output3.xml");
             SyntaxTreeNode node;
             while ((node = treeCrawler.getNext()) != null) {
                 if(node.getSymb() == "Terminal")

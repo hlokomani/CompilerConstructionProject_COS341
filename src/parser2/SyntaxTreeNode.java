@@ -46,8 +46,8 @@ public class SyntaxTreeNode {
                 //System.out.println("In if 2");
                 word = "&lt;";
             }
-            if (word.contains("&")) {
-                //System.out.println("In if 3");
+            if (word.contains("&") && !word.contains("&gt;") && !word.contains("&lt;") && !word.contains("&amp;")) {
+                System.out.println("In if 3");
                 word="&amp;";
             }                  
             //replacing the contents between <WORD> and </WORD> with the sanitized word
@@ -101,5 +101,25 @@ public class SyntaxTreeNode {
 
     public String getTerminal() {
         return terminal;
+    }
+
+    public String getTerminalWord() {
+        if(terminal == null) {
+            return null;
+        }
+        if (terminal.contains("<WORD>") && terminal.contains("</WORD>")) {
+            int start = terminal.indexOf("<WORD>") + 6;
+            int end = terminal.indexOf("</WORD>");
+            return terminal.substring(start, end);
+        }
+        return terminal;
+    }
+
+    public String toString() {
+        if(isLeaf) {
+            return unid + " " + terminal;
+        } else {
+            return unid + " " + symb;
+        }
     }
 }
