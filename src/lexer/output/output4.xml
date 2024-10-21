@@ -142,8 +142,8 @@
   </TOK>
   <TOK>
     <ID>21</ID>
-    <CLASS>T</CLASS>
-    <WORD>"Calc"</WORD>
+    <CLASS>N</CLASS>
+    <WORD>1</WORD>
     <LINE>5</LINE>
     <COLUMN>34</COLUMN>
   </TOK>
@@ -152,14 +152,14 @@
     <CLASS>operator</CLASS>
     <WORD>)</WORD>
     <LINE>5</LINE>
-    <COLUMN>40</COLUMN>
+    <COLUMN>35</COLUMN>
   </TOK>
   <TOK>
     <ID>23</ID>
     <CLASS>operator</CLASS>
     <WORD>;</WORD>
     <LINE>5</LINE>
-    <COLUMN>41</COLUMN>
+    <COLUMN>36</COLUMN>
   </TOK>
   <TOK>
     <ID>24</ID>

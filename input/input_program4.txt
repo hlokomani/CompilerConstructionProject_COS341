@@ -2,7 +2,7 @@ main
 num V_n, num V_result,
 begin
   V_n = 5;
-  V_result = F_factorial(V_n, 1, "Calc");
+  V_result = F_factorial(V_n, 1, 1);
   print V_result;
 end
 
