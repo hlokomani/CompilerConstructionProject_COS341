@@ -5,7 +5,7 @@ begin
   V_str2 = "World";
   V_num1 = 5;
   V_num2 = 10;
-  if and(eq(V_str1, "Hello"), grt(V_num2, V_num1)) then
+  if and(eq(V_num1, V_num2), grt(V_num2, V_num1)) then
     begin
       V_result = "Met";
     end
@@ -17,7 +17,7 @@ begin
 
   V_sum = add(V_num1, V_num2);
 
-  if or(eq(V_str2, "Openai"), eq(V_sum, 15)) then
+  if or(eq(15, V_num1), eq(V_sum, 15)) then
     begin
       V_result = "Atlone";
     end
@@ -26,7 +26,7 @@ begin
       V_result = "Bothfal";
     end;
   print V_result;
-  F_concatenate(V_str1, V_str2, V_result);
+  F_concatenate(1, 1, 1);
   print V_result;
 end
 

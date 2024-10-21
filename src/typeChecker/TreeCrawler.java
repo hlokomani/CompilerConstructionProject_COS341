@@ -193,19 +193,19 @@ public class TreeCrawler {
         return null;
     }
 
-    public static void main(String[] args) {
-       // Crawling a tree and printing the nodes
-        try {
-            TreeCrawler treeCrawler = new TreeCrawler("src/parser2/output/output3.xml");
-            SyntaxTreeNode node;
-            while ((node = treeCrawler.getNext()) != null) {
-                if(node.getSymb() == "Terminal")
-                    System.out.println(node.getUnid() + " " + node.getTerminal());
-                else
-                    System.out.println(node.getUnid() + " " + node.getSymb());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    // public static void main(String[] args) {
+    //    // Crawling a tree and printing the nodes
+    //     try {
+    //         TreeCrawler treeCrawler = new TreeCrawler("src/parser2/output/output3.xml");
+    //         SyntaxTreeNode node;
+    //         while ((node = treeCrawler.getNext()) != null) {
+    //             if(node.getSymb() == "Terminal")
+    //                 System.out.println(node.getUnid() + " " + node.getTerminal());
+    //             else
+    //                 System.out.println(node.getUnid() + " " + node.getSymb());
+    //         }
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 }

@@ -12,10 +12,10 @@ begin
     begin
       halt;
     end;
-  F_factorial(V_count, 1, V_message);
+  F_factorial(V_count, 1, 1);
 end
 
-num F_factorial(V_n, V_result, V_msg)
+void F_factorial(V_n, V_result, V_msg)
 {
   num V_temp, num V_fun, text V_resultmsg,
   begin

@@ -290,7 +290,7 @@
   <TOK>
     <ID>42</ID>
     <CLASS>V</CLASS>
-    <WORD>V_str1</WORD>
+    <WORD>V_num1</WORD>
     <LINE>8</LINE>
     <COLUMN>13</COLUMN>
   </TOK>
@@ -303,8 +303,8 @@
   </TOK>
   <TOK>
     <ID>44</ID>
-    <CLASS>T</CLASS>
-    <WORD>"Hello"</WORD>
+    <CLASS>V</CLASS>
+    <WORD>V_num2</WORD>
     <LINE>8</LINE>
     <COLUMN>21</COLUMN>
   </TOK>
@@ -313,70 +313,70 @@
     <CLASS>operator</CLASS>
     <WORD>)</WORD>
     <LINE>8</LINE>
-    <COLUMN>28</COLUMN>
+    <COLUMN>27</COLUMN>
   </TOK>
   <TOK>
     <ID>46</ID>
     <CLASS>operator</CLASS>
     <WORD>,</WORD>
     <LINE>8</LINE>
-    <COLUMN>29</COLUMN>
+    <COLUMN>28</COLUMN>
   </TOK>
   <TOK>
     <ID>47</ID>
     <CLASS>operator</CLASS>
     <WORD>grt</WORD>
     <LINE>8</LINE>
-    <COLUMN>31</COLUMN>
+    <COLUMN>30</COLUMN>
   </TOK>
   <TOK>
     <ID>48</ID>
     <CLASS>operator</CLASS>
     <WORD>(</WORD>
     <LINE>8</LINE>
-    <COLUMN>34</COLUMN>
+    <COLUMN>33</COLUMN>
   </TOK>
   <TOK>
     <ID>49</ID>
     <CLASS>V</CLASS>
     <WORD>V_num2</WORD>
     <LINE>8</LINE>
-    <COLUMN>35</COLUMN>
+    <COLUMN>34</COLUMN>
   </TOK>
   <TOK>
     <ID>50</ID>
     <CLASS>operator</CLASS>
     <WORD>,</WORD>
     <LINE>8</LINE>
-    <COLUMN>41</COLUMN>
+    <COLUMN>40</COLUMN>
   </TOK>
   <TOK>
     <ID>51</ID>
     <CLASS>V</CLASS>
     <WORD>V_num1</WORD>
     <LINE>8</LINE>
-    <COLUMN>43</COLUMN>
+    <COLUMN>42</COLUMN>
   </TOK>
   <TOK>
     <ID>52</ID>
     <CLASS>operator</CLASS>
     <WORD>)</WORD>
     <LINE>8</LINE>
-    <COLUMN>49</COLUMN>
+    <COLUMN>48</COLUMN>
   </TOK>
   <TOK>
     <ID>53</ID>
     <CLASS>operator</CLASS>
     <WORD>)</WORD>
     <LINE>8</LINE>
-    <COLUMN>50</COLUMN>
+    <COLUMN>49</COLUMN>
   </TOK>
   <TOK>
     <ID>54</ID>
     <CLASS>reserved_keyword</CLASS>
     <WORD>then</WORD>
     <LINE>8</LINE>
-    <COLUMN>52</COLUMN>
+    <COLUMN>51</COLUMN>
   </TOK>
   <TOK>
     <ID>55</ID>
@@ -597,8 +597,8 @@
   </TOK>
   <TOK>
     <ID>86</ID>
-    <CLASS>V</CLASS>
-    <WORD>V_str2</WORD>
+    <CLASS>N</CLASS>
+    <WORD>15</WORD>
     <LINE>20</LINE>
     <COLUMN>12</COLUMN>
   </TOK>
@@ -607,84 +607,84 @@
     <CLASS>operator</CLASS>
     <WORD>,</WORD>
     <LINE>20</LINE>
-    <COLUMN>18</COLUMN>
+    <COLUMN>14</COLUMN>
   </TOK>
   <TOK>
     <ID>88</ID>
-    <CLASS>T</CLASS>
-    <WORD>"Openai"</WORD>
+    <CLASS>V</CLASS>
+    <WORD>V_num1</WORD>
     <LINE>20</LINE>
-    <COLUMN>20</COLUMN>
+    <COLUMN>16</COLUMN>
   </TOK>
   <TOK>
     <ID>89</ID>
     <CLASS>operator</CLASS>
     <WORD>)</WORD>
     <LINE>20</LINE>
-    <COLUMN>28</COLUMN>
+    <COLUMN>22</COLUMN>
   </TOK>
   <TOK>
     <ID>90</ID>
     <CLASS>operator</CLASS>
     <WORD>,</WORD>
     <LINE>20</LINE>
-    <COLUMN>29</COLUMN>
+    <COLUMN>23</COLUMN>
   </TOK>
   <TOK>
     <ID>91</ID>
     <CLASS>operator</CLASS>
     <WORD>eq</WORD>
     <LINE>20</LINE>
-    <COLUMN>31</COLUMN>
+    <COLUMN>25</COLUMN>
   </TOK>
   <TOK>
     <ID>92</ID>
     <CLASS>operator</CLASS>
     <WORD>(</WORD>
     <LINE>20</LINE>
-    <COLUMN>33</COLUMN>
+    <COLUMN>27</COLUMN>
   </TOK>
   <TOK>
     <ID>93</ID>
     <CLASS>V</CLASS>
     <WORD>V_sum</WORD>
     <LINE>20</LINE>
-    <COLUMN>34</COLUMN>
+    <COLUMN>28</COLUMN>
   </TOK>
   <TOK>
     <ID>94</ID>
     <CLASS>operator</CLASS>
     <WORD>,</WORD>
     <LINE>20</LINE>
-    <COLUMN>39</COLUMN>
+    <COLUMN>33</COLUMN>
   </TOK>
   <TOK>
     <ID>95</ID>
     <CLASS>N</CLASS>
     <WORD>15</WORD>
     <LINE>20</LINE>
-    <COLUMN>41</COLUMN>
+    <COLUMN>35</COLUMN>
   </TOK>
   <TOK>
     <ID>96</ID>
     <CLASS>operator</CLASS>
     <WORD>)</WORD>
     <LINE>20</LINE>
-    <COLUMN>43</COLUMN>
+    <COLUMN>37</COLUMN>
   </TOK>
   <TOK>
     <ID>97</ID>
     <CLASS>operator</CLASS>
     <WORD>)</WORD>
     <LINE>20</LINE>
-    <COLUMN>44</COLUMN>
+    <COLUMN>38</COLUMN>
   </TOK>
   <TOK>
     <ID>98</ID>
     <CLASS>reserved_keyword</CLASS>
     <WORD>then</WORD>
     <LINE>20</LINE>
-    <COLUMN>46</COLUMN>
+    <COLUMN>40</COLUMN>
   </TOK>
   <TOK>
     <ID>99</ID>
@@ -821,8 +821,8 @@
   </TOK>
   <TOK>
     <ID>118</ID>
-    <CLASS>V</CLASS>
-    <WORD>V_str1</WORD>
+    <CLASS>N</CLASS>
+    <WORD>1</WORD>
     <LINE>29</LINE>
     <COLUMN>17</COLUMN>
   </TOK>
@@ -831,42 +831,42 @@
     <CLASS>operator</CLASS>
     <WORD>,</WORD>
     <LINE>29</LINE>
-    <COLUMN>23</COLUMN>
+    <COLUMN>18</COLUMN>
   </TOK>
   <TOK>
     <ID>120</ID>
-    <CLASS>V</CLASS>
-    <WORD>V_str2</WORD>
+    <CLASS>N</CLASS>
+    <WORD>1</WORD>
     <LINE>29</LINE>
-    <COLUMN>25</COLUMN>
+    <COLUMN>20</COLUMN>
   </TOK>
   <TOK>
     <ID>121</ID>
     <CLASS>operator</CLASS>
     <WORD>,</WORD>
     <LINE>29</LINE>
-    <COLUMN>31</COLUMN>
+    <COLUMN>21</COLUMN>
   </TOK>
   <TOK>
     <ID>122</ID>
-    <CLASS>V</CLASS>
-    <WORD>V_result</WORD>
+    <CLASS>N</CLASS>
+    <WORD>1</WORD>
     <LINE>29</LINE>
-    <COLUMN>33</COLUMN>
+    <COLUMN>23</COLUMN>
   </TOK>
   <TOK>
     <ID>123</ID>
     <CLASS>operator</CLASS>
     <WORD>)</WORD>
     <LINE>29</LINE>
-    <COLUMN>41</COLUMN>
+    <COLUMN>24</COLUMN>
   </TOK>
   <TOK>
     <ID>124</ID>
     <CLASS>operator</CLASS>
     <WORD>;</WORD>
     <LINE>29</LINE>
-    <COLUMN>42</COLUMN>
+    <COLUMN>25</COLUMN>
   </TOK>
   <TOK>
     <ID>125</ID>
