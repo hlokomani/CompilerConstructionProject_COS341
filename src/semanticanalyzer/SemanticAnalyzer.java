@@ -391,6 +391,7 @@ public class SemanticAnalyzer {
             throw new SemanticException("Function must have exactly 3 parameters");
         }
 
+        String functionType = extractType(children.get(0));
         String functionName = extractFunctionName(children.get(1));
         if (functionNames.contains(functionName)) {
             throw new SemanticException("Function " + functionName + " is already declared");
@@ -409,7 +410,7 @@ public class SemanticAnalyzer {
         functionNames.add(functionName);
         currentFunctionName = functionName;
 
-        // Create a new scope for the function
+        symbolTable.addSymbol(new Symbol(functionName, "function", functionType, currentNode.getUnid()), true);
         enterScope(functionName);
 
         // Add parameters to the current function scope
@@ -820,7 +821,7 @@ public class SemanticAnalyzer {
 
     public static void main(String[] args) {
         try {
-            SemanticAnalyzer analyzer = new SemanticAnalyzer("src/parser2/output/output5.xml");
+            SemanticAnalyzer analyzer = new SemanticAnalyzer("src/parser2/output/output1.xml");
             analyzer.analyze();
             System.out.println("Semantic analysis completed successfully.");
             SymbolTable.getInstance().getAllSymbols().forEach((key, symbols) -> {
