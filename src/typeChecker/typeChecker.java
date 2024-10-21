@@ -585,7 +585,7 @@ public class typeChecker {
     public static void main(String[] args) {
        // Crawling a tree and printing the nodes
         try {
-            typeChecker typeChecker = new typeChecker("src/parser2/output/output4.xml");
+            typeChecker typeChecker = new typeChecker("src/parser2/output/output6.xml");
             System.out.println("The result of the type checker: " + typeChecker.typeCheck());
         } catch (Exception e) {
             e.printStackTrace();
