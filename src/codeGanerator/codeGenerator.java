@@ -369,7 +369,15 @@ public class codeGenerator {
     }
 
     public static void main(String[] args) {
-        
+        //Testing the code generator
+        try {
+            codeGenerator codeGen = new codeGenerator("src/parser2/output1.xml");
+            codeGen.translate();
+            codeGen.outputFile.close();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
     
 }
