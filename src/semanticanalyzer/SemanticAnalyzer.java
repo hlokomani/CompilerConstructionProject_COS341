@@ -20,6 +20,7 @@ public class SemanticAnalyzer {
     private boolean inGlobalScope = true;
     private boolean isDeclaringGlobals = false;
     private Set<String> calledFunctions;
+    private boolean hasReturn = false;
 
     public SemanticAnalyzer(String xmlFilePath) throws Exception {
         this.treeCrawler = new TreeCrawler(xmlFilePath);
@@ -207,8 +208,6 @@ public class SemanticAnalyzer {
         }
 
         String operator = extractOperator(children.get(1));
-
-        System.out.println("Debug: Extracted operator: '" + operator + "'"); // Debug print
 
         if (operator.equals("<")) {
             // Check if the next token is "input"
@@ -418,7 +417,7 @@ public class SemanticAnalyzer {
             SyntaxTreeNode paramNode = children.get(i);
             if (paramNode.getSymb().equals("VNAME")) {
                 String paramName = extractVariableName(paramNode);
-                symbolTable.addSymbol(new Symbol(paramName, "parameter", currentType, paramNode.getUnid()), false);
+                symbolTable.addSymbol(new Symbol(paramName, "parameter", "num", paramNode.getUnid()), false); //params will always be nums
             }
         }
     }
@@ -516,13 +515,9 @@ public class SemanticAnalyzer {
     }
 
     private void handleBodyNode() throws SemanticException {
-        List<SyntaxTreeNode> children = currentNode.getChildren();
+        hasReturn = false;
 
-        System.out.println("Body node children:");
-        for (int i = 0; i < children.size(); i++) {
-            SyntaxTreeNode child = children.get(i);
-            System.out.println(i + ": " + child.getSymb() + " (UNID: " + child.getUnid() + ")");
-        }
+        List<SyntaxTreeNode> children = currentNode.getChildren();
 
         SyntaxTreeNode locvarsNode = null;
         SyntaxTreeNode algoNode = null;
@@ -549,6 +544,11 @@ public class SemanticAnalyzer {
             handleAlgoNode(algoNode);
         } else {
             throw new SemanticException("Expected ALGO node in function body");
+        }
+
+        Symbol functionSymbol = symbolTable.lookupVariable(currentFunctionName, false);
+        if (functionSymbol != null && functionSymbol.getType().equals("num") && !hasReturn) {
+            throw new SemanticException("Function " + currentFunctionName + " must have at least one return statement");
         }
 
         // Handle SUBFUNCS only if it contains actual functions
@@ -593,12 +593,6 @@ public class SemanticAnalyzer {
     private void handleAlgoNode(SyntaxTreeNode algoNode) throws SemanticException {
         List<SyntaxTreeNode> children = algoNode.getChildren();
 
-        System.out.println("ALGO node children:");
-        for (int i = 0; i < children.size(); i++) {
-            SyntaxTreeNode child = children.get(i);
-            System.out.println(i + ": " + child.getSymb() + " (UNID: " + child.getUnid() + ")");
-        }
-
         if (children.size() != 3) {
             throw new SemanticException("Invalid ALGO structure: expected 3 children, found " + children.size() + " (UNID: " + algoNode.getUnid() + ")");
         }
@@ -625,35 +619,119 @@ public class SemanticAnalyzer {
     private void handleInstrucNode(SyntaxTreeNode instrucNode) throws SemanticException {
         // INSTRUC ::= COMMAND ; INSTRUC | ε
         List<SyntaxTreeNode> children = instrucNode.getChildren();
-        for (SyntaxTreeNode child : children) {
-            if (child.getSymb().equals("COMMAND")) {
-                handleCommandNode(child);
+
+        if (children.isEmpty()) {
+            return;
+        }
+
+        if (children.size() >= 1 && children.get(0).getSymb().equals("COMMAND")) {
+            handleCommandNode(children.get(0));
+
+            if (children.size() >= 3) {
+                handleInstrucNode(children.get(2));
             }
         }
     }
 
     private void handleCommandNode(SyntaxTreeNode commandNode) throws SemanticException {
-        // Handle different types of commands
-        SyntaxTreeNode child = commandNode.getChildren().get(0);
-        switch (child.getSymb()) {
-            case "skip":
-            case "halt":
-                // No further processing needed for these commands
-                break;
-            case "print":
-                handlePrintCommand(child);
-                break;
+        List<SyntaxTreeNode> children = commandNode.getChildren();
+
+        for (SyntaxTreeNode child : children) {
+            if (child.getSymb().equals("Terminal")) {
+                String terminal = child.getTerminal();
+                if (terminal != null) {
+                    if (terminal.contains("<WORD>return</WORD>")) {
+                        handleReturnCommand(commandNode);
+                        hasReturn = true;
+                        return;
+                    } else if (terminal.contains("<WORD>print</WORD>")) {
+                        handlePrintCommand(commandNode);
+                        return;
+                    } else if (terminal.contains("<WORD>halt</WORD>") ||
+                            terminal.contains("<WORD>skip</WORD>")) {
+                        return;
+                    }
+                }
+            }
+        }
+
+        SyntaxTreeNode firstChild = children.get(0);
+        String command = firstChild.getSymb();
+
+        switch (command) {
             case "ASSIGN":
-                handleAssignmentNode(child);
+                handleAssignmentNode(firstChild);
                 break;
             case "CALL":
                 handleFunctionCallNode(currentNode);
                 break;
             case "BRANCH":
-                handleBranchNode(child);
+                handleBranchNode(firstChild);
+                break;
+            case "ATOMIC":
+                if (children.size() == 2) {
+                    SyntaxTreeNode otherChild = children.get(1);
+                    if (otherChild.getSymb().equals("Terminal") &&
+                            otherChild.getTerminal() != null &&
+                            otherChild.getTerminal().contains("<WORD>return</WORD>")) {
+                        handleReturnCommand(commandNode);
+                        hasReturn = true;
+                        return;
+                    }
+                }
                 break;
             default:
-                throw new SemanticException("Unknown command type: " + child.getSymb());
+                throw new SemanticException("Unknown command type: " + command);
+        }
+    }
+
+    private void handleReturnCommand(SyntaxTreeNode node) throws SemanticException {
+        if (!inFunctionBody || currentFunctionName == null || currentFunctionName.equals("main")) {
+            throw new SemanticException("Return statement found outside of function body");
+        }
+
+        Symbol functionSymbol = symbolTable.lookupVariable(currentFunctionName, false);
+        if (functionSymbol == null) {
+            throw new SemanticException("Cannot find function " + currentFunctionName);
+        }
+
+        String functionType = functionSymbol.getType();
+
+        // In an INSTRUC node, return is followed by ATOMIC
+        SyntaxTreeNode atomicNode = null;
+        for (int i = 0; i < node.getChildren().size(); i++) {
+            SyntaxTreeNode child = node.getChildren().get(i);
+            if (child.getSymb().equals("ATOMIC")) {
+                atomicNode = child;
+                break;
+            }
+        }
+
+        if (atomicNode == null) {
+            throw new SemanticException("Return statement must be followed by an ATOMIC value");
+        }
+
+        if (functionType.equals("void")) {
+            throw new SemanticException("Void function cannot return a value");
+        }
+
+        if (functionType.equals("num")) {
+            SyntaxTreeNode valueNode = atomicNode.getChildren().get(0);
+            if (valueNode.getSymb().equals("VNAME")) {
+                String varName = extractVariableName(valueNode);
+                Symbol varSymbol = symbolTable.lookupVariable(varName, false);
+                if (varSymbol == null) {
+                    throw new SemanticException("Undefined variable in return statement: " + varName);
+                }
+                if (!varSymbol.getType().equals("num")) {
+                    throw new SemanticException("Return value type mismatch: expected num, got " + varSymbol.getType());
+                }
+            } else if (valueNode.getSymb().equals("CONST")) {
+                String constValue = extractFromTerminal(valueNode.getChildren().get(0).getTerminal());
+                if (constValue.startsWith("\"")) {
+                    throw new SemanticException("Return value type mismatch: expected num, got text");
+                }
+            }
         }
     }
 
@@ -666,14 +744,20 @@ public class SemanticAnalyzer {
     }
 
     private void handlePrintCommand(SyntaxTreeNode printNode) throws SemanticException {
-        // print ATOMIC
-        if (printNode.getChildren().size() != 1) {
-            throw new SemanticException("Print command must have exactly one argument");
+        List<SyntaxTreeNode> children = printNode.getChildren();
+        // Find the ATOMIC node - it should be the second child after the print Terminal
+        SyntaxTreeNode atomicNode = null;
+        for (SyntaxTreeNode child : children) {
+            if (child.getSymb().equals("ATOMIC")) {
+                atomicNode = child;
+                break;
+            }
         }
-        SyntaxTreeNode atomicNode = printNode.getChildren().get(0);
-        if (!atomicNode.getSymb().equals("ATOMIC")) {
-            throw new SemanticException("Print command argument must be ATOMIC");
+
+        if (atomicNode == null) {
+            throw new SemanticException("Print command must have exactly one ATOMIC argument");
         }
+
         handleAtomicNode(atomicNode);
     }
 
@@ -703,10 +787,8 @@ public class SemanticAnalyzer {
         // BRANCH ::= if COND then ALGO else ALGO
         List<SyntaxTreeNode> children = branchNode.getChildren();
 
-        System.out.println("Branch node children:");
         for (int i = 0; i < children.size(); i++) {
             SyntaxTreeNode child = children.get(i);
-            System.out.println(i + ": " + child.getSymb() + " (UNID: " + child.getUnid() + ")");
         }
 
         if (children.size() != 6) {
@@ -821,7 +903,7 @@ public class SemanticAnalyzer {
 
     public static void main(String[] args) {
         try {
-            SemanticAnalyzer analyzer = new SemanticAnalyzer("src/parser2/output/output1.xml");
+            SemanticAnalyzer analyzer = new SemanticAnalyzer("src/parser2/output/output4.xml");
             analyzer.analyze();
             System.out.println("Semantic analysis completed successfully.");
             SymbolTable.getInstance().getAllSymbols().forEach((key, symbols) -> {
