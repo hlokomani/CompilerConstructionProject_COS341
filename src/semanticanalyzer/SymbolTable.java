@@ -78,6 +78,15 @@ public class SymbolTable {
                     return symbols.get(0);
                 }
             }
+
+            for (String scope : symbolMap.keySet()) {
+                if (scope.endsWith(":" + name)) {
+                    List<Symbol> scopedSymbols = symbolMap.get(scope);
+                    if (scopedSymbols != null && !scopedSymbols.isEmpty()) {
+                        return scopedSymbols.get(0);
+                    }
+                }
+            }
         }
         return null;
     }
@@ -92,9 +101,35 @@ public class SymbolTable {
     }
 
     public Symbol lookupFunction(String name) {
+        // Check global symbols first (where functions should be)
+        for (Symbol symbol : globalSymbols) {
+            if (symbol.getName().equals(name) && symbol.getKind().equals("function")) {
+                return symbol;
+            }
+        }
+
+        // Also check symbol map with global scope
         String key = "global:" + name;
         List<Symbol> symbols = symbolMap.get(key);
-        return (symbols != null && !symbols.isEmpty()) ? symbols.get(0) : null;
+        if (symbols != null && !symbols.isEmpty()) {
+            Symbol symbol = symbols.get(0);
+            if (symbol.getKind().equals("function")) {
+                return symbol;
+            }
+        }
+        return null;
+    }
+
+    public Symbol lookupParameter(String name, String functionScope) {
+        String key = functionScope + ":" + name;
+        List<Symbol> symbols = symbolMap.get(key);
+        if (symbols != null && !symbols.isEmpty()) {
+            Symbol symbol = symbols.get(0);
+            if (symbol.getKind().equals("parameter")) {
+                return symbol;
+            }
+        }
+        return null;
     }
 
     public Map<String, List<Symbol>> getAllSymbols() {
