@@ -9,11 +9,19 @@ public class SymbolTableAccessor {
     }
 
     public static Symbol lookupVariable(String name) {
-        return SymbolTable.getInstance().lookupVariable(name, false);
+        Symbol symbol = SymbolTable.getInstance().lookupVariable(name, false);
+        if (symbol != null && (symbol.getKind().equals("variable") || symbol.getKind().equals("parameter"))) {
+            return symbol;
+        }
+        return null;
     }
 
     public static Symbol lookupFunction(String name) {
         return SymbolTable.getInstance().lookupFunction(name);
+    }
+
+    public static Symbol lookupParameter(String name, String functionName) {
+        return SymbolTable.getInstance().lookupParameter(name, functionName);
     }
 
     public static int getSymbolId(String name) {
@@ -26,6 +34,15 @@ public class SymbolTableAccessor {
             return symbol.getUnid();
         }
         return -1; // Return -1 if symbol is not found
+    }
+
+    public static String getGeneratedName(String name) {
+        Symbol symbol = lookupVariable(name);
+        if (symbol != null) {
+            return symbol.getGeneratedName();
+        }
+
+        return null;
     }
 
     public static String getSymbolType(String name) {
