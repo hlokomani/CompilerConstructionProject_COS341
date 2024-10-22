@@ -226,7 +226,11 @@ public class typeChecker {
             System.out.println("ASSIGN -> VNAME := TERM");
             System.out.println("VNAME: " + children.get(0).toString());
             System.out.println("TERM: " + children.get(2).toString());
-            if (this.typeOfVNAME(children.get(0)).equals(this.typeOfTERM(children.get(2)))) {
+            String typeVname = this.typeOfVNAME(children.get(0));
+            String typeTerm = this.typeOfTERM(children.get(2));
+            System.out.println("typeVname: " + typeVname);
+            System.out.println("typeTerm: " + typeTerm);
+            if (typeVname.equals(typeTerm)) {
                 System.out.println("Returning true from ASSIGN");
                 return true;
             } else {
@@ -244,13 +248,17 @@ public class typeChecker {
         System.out.println("Type checking TERM");
         System.out.println("term: " + term.toString());
         SyntaxTreeNode next = children.get(0);
-        if(next.getSymb().equals("ATOMIC")) { //Case 1: TERM -> ATOMIC
+        if (next.getSymb().equals("ATOMIC")) { //Case 1: TERM -> ATOMIC
+            System.out.println("TERM -> ATOMIC");
             return this.typeOfATOMIC(next);
-        }else if(next.getSymb().equals("CALL")) { //Case 2: TERM -> CALL
+        } else if (next.getSymb().equals("CALL")) { //Case 2: TERM -> CALL
+            System.out.println("TERM -> CALL");
             return this.typeOfCall(next);
         } else if (next.getSymb().equals("OP")) { //Case 3: TERM -> OP
+            System.out.println("TERM -> OP");
             return this.typeOfOP(next);
-        }else {
+        } else {
+            System.out.println("Returning u");
             return "u";
         }
     }
@@ -279,10 +287,17 @@ public class typeChecker {
         System.out.println("op: " + op.toString());
         SyntaxTreeNode next = children.get(0);
         System.out.println("next: " + next.toString());
-        if(next.getSymb().equals("UNOP")) { //Case 1: OP -> UNOP ( ARG )
-            if( this.typeOfUNOP(next).equals("b") && this.typeOfARG(children.get(2)).equals("b")) {
+        if (next.getSymb().equals("UNOP")) { //Case 1: OP -> UNOP ( ARG )
+            String unop = typeOfUNOP(next);
+            String arg = typeOfARG(children.get(2));
+            if (unop.equals("b") && arg.equals("b")) {
+                System.out.println("Returning b");
+                return "b";
+            } else if (unop.equals("n") && arg.equals("n")){
+                System.out.println("Returning n");
                 return "n";
             } else {
+                System.out.println("Returning u");
                 return "u";
             }
         } else if(next.getSymb().equals("BINOP")) { //Case 2: OP -> BINOP ( ARG , ARG )
@@ -330,9 +345,11 @@ public class typeChecker {
         System.out.println("Type checking UNOP");
         System.out.println("unop: " + unop.toString());
         SyntaxTreeNode next = children.get(0);
-        if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>not</WORD>")) { //Case 1: UNOP -> not
+        if (next.getTerminal() != null && next.getTerminal().contains("<WORD>not</WORD>")) { //Case 1: UNOP -> not
+            System.out.println("UNOP -> not");
             return "b";
-        } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>sqrt</WORD>")) { //Case 2: UNOP -> sqrt
+        } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>sqrt</WORD>")) { //Case 2: UNOP -> sqrt
+            System.out.println("UNOP -> sqrt");
             return "n";
         } else {
             return "u";

@@ -903,7 +903,7 @@ public class SemanticAnalyzer {
 
     public static void main(String[] args) {
         try {
-            SemanticAnalyzer analyzer = new SemanticAnalyzer("src/parser2/output/output4.xml");
+            SemanticAnalyzer analyzer = new SemanticAnalyzer("src/parser2/output/output5.xml");
             analyzer.analyze();
             System.out.println("Semantic analysis completed successfully.");
             SymbolTable.getInstance().getAllSymbols().forEach((key, symbols) -> {
