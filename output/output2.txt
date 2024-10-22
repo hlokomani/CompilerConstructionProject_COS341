@@ -1,27 +1,26 @@
-
-LET var0 = 10 
-LET V_a = var0
-LET var1 = 5 
-LET V_b = var1
-LET var3 = V_a 
-LET var4 = V_b 
-LET var2 = var3 + var4
-LET V_result = var2
-PRINT V_result
-LET var6 = V_a 
-LET var7 = V_b 
-LET var5 = var6 - var7
-LET V_result = var5
-PRINT V_result
-LET var9 = V_a 
-LET var10 = V_b 
-LET var8 = var9 * var10
-LET V_result = var8
-PRINT V_result
-LET var12 = V_a 
-LET var13 = V_b 
-LET var11 = var12 / var13
-LET V_result = var11
-PRINT V_result
-REM END
-REM END
+1	LET var0 = 10 
+2	LET V_a = var0
+3	LET var1 = 5 
+4	LET V_b = var1
+5	LET var3 = V_a 
+6	LET var4 = V_b 
+7	LET var2 = var3 + var4
+8	LET V_result = var2
+9	PRINT V_result
+10	LET var6 = V_a 
+11	LET var7 = V_b 
+12	LET var5 = var6 - var7
+13	LET V_result = var5
+14	PRINT V_result
+15	LET var9 = V_a 
+16	LET var10 = V_b 
+17	LET var8 = var9 * var10
+18	LET V_result = var8
+19	PRINT V_result
+20	LET var12 = V_a 
+21	LET var13 = V_b 
+22	LET var11 = var12 / var13
+23	LET V_result = var11
+24	PRINT V_result
+25	REM END
+26	REM END

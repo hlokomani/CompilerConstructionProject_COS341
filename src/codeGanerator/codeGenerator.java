@@ -30,20 +30,23 @@ public class codeGenerator {
         //Create text file to write the translated code
         //extracting the output name from the xml file name from src/parser2/output1.xml
         String outputName = xmlFilePath.substring(xmlFilePath.lastIndexOf("/") + 1, xmlFilePath.lastIndexOf("."));
-        String outputFilePath = "output/" + outputName + ".txt";
+        String outputFilePath = "output/" + outputName + "Temp.txt";
         File output = new File(outputFilePath);
         output.createNewFile();
         output.setWritable(true);
         outputFile = new FileWriter(output, true);
-        // this.inputFilePath = outputFilePath;
-        // this.outputFilePath = "output/" + outputName + ".txt";  
+        this.inputFilePath = outputFilePath;
+        this.outputFilePath = "output/" + outputName + ".txt";  
     }
    
     public void translate() {
         try {
             translatePROG(treeCrawler.getNext());
-            // outputFile.close();
-            // addLineNumbers(inputFilePath, outputFilePath);
+            outputFile.close();
+            addLineNumbers(inputFilePath, outputFilePath);
+            //delete inputFilePath
+            File file = new File(inputFilePath);
+            file.delete();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -93,7 +96,7 @@ public class codeGenerator {
                 // Skip empty lines
                 if (!line.trim().isEmpty()) {
                     System.out.println("Writing line: " + lineNumber + ": " + line);
-                    writer.println(lineNumber + ": " + line);
+                    writer.println(lineNumber + "\t" + line);
                     lineNumber++;
                 } else {
                     System.out.println("Skipped empty/whitespace line.");
