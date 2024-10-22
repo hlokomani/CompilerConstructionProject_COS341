@@ -15,9 +15,7 @@ public class typeChecker {
     
     public typeChecker(String xmlFilePath) throws Exception {
         //Initialize symbol table 
-        treeCrawler = new TreeCrawler(xmlFilePath);
-        SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(xmlFilePath);
-        semanticAnalyzer.analyze();     
+        treeCrawler = new TreeCrawler(xmlFilePath);     
     }
 
     public boolean typeCheck() throws Exception {
@@ -589,8 +587,11 @@ public class typeChecker {
 
     public static void main(String[] args) {
        // Crawling a tree and printing the nodes
-        try {
-            typeChecker typeChecker = new typeChecker("src/parser2/output/output6.xml");
+       try {
+            String xmlFilePath = "src/parser2/output/output6.xml";
+            SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(xmlFilePath);
+            semanticAnalyzer.analyze();
+            typeChecker typeChecker = new typeChecker(xmlFilePath);
             System.out.println("The result of the type checker: " + typeChecker.typeCheck());
         } catch (Exception e) {
             e.printStackTrace();
