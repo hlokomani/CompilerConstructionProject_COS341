@@ -1,8 +1,12 @@
 package codeGanerator;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import parser2.SyntaxTreeNode;
@@ -14,6 +18,7 @@ public class codeGenerator {
     private TreeCrawler treeCrawler;
     private FileWriter outputFile;
     private int varCounter, labelCounter;
+    private String inputFilePath, outputFilePath;
 
     public codeGenerator(String xmlFilePath) throws Exception {
         //Initialize symbol table 
@@ -29,15 +34,78 @@ public class codeGenerator {
         File output = new File(outputFilePath);
         output.createNewFile();
         output.setWritable(true);
-        outputFile = new FileWriter(output, true);       
+        outputFile = new FileWriter(output, true);
+        // this.inputFilePath = outputFilePath;
+        // this.outputFilePath = "output/" + outputName + ".txt";  
     }
    
     public void translate() {
         try {
             translatePROG(treeCrawler.getNext());
+            // outputFile.close();
+            // addLineNumbers(inputFilePath, outputFilePath);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+    }
+
+
+    public static void addLineNumbers(String inputFilePath, String outputFilePath) {
+        // Check if input file exists and is readable
+        File inputFile = new File(inputFilePath);
+        if (!inputFile.exists() || !inputFile.isFile()) {
+            System.err.println("Input file does not exist or is not a file: " + inputFilePath);
+            return;
+        }
+
+        // Check if we can write to the output file
+        File outputFile = new File(outputFilePath);
+        try {
+            if (outputFile.exists() && !outputFile.canWrite()) {
+                System.err.println("Cannot write to output file: " + outputFilePath);
+                return;
+            }
+        } catch (SecurityException e) {
+            System.err.println("Security exception when checking output file: " + e.getMessage());
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFilePath));
+             PrintWriter writer = new PrintWriter(new FileWriter(outputFilePath))) {
+
+            String line;
+            int lineNumber = 1;
+
+            System.out.println("Starting to process the file...");
+
+            // Extra check: Ensure the file isn't empty
+            if (inputFile.length() == 0) {
+                System.out.println("Input file is empty!");
+                return;
+            }
+
+            // Reading and processing each line
+            while ((line = reader.readLine()) != null) {
+                // Debugging: Print the raw line content for each read
+                System.out.println("Raw line read: '" + line + "' (length: " + line.length() + ")");
+
+                // Skip empty lines
+                if (!line.trim().isEmpty()) {
+                    System.out.println("Writing line: " + lineNumber + ": " + line);
+                    writer.println(lineNumber + ": " + line);
+                    lineNumber++;
+                } else {
+                    System.out.println("Skipped empty/whitespace line.");
+                }
+            }
+
+            System.out.println("Finished writing to the file.");
+
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("I/O error: " + e.getMessage());
         }
     }
     
@@ -65,6 +133,12 @@ public class codeGenerator {
         outputFile.write(newName);
     }
 
+    public void translateVNAME(SyntaxTreeNode vname, String place) throws IOException {
+        SyntaxTreeNode next = vname.getChildren().get(0);
+        String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
+        outputFile.write("\nLET " + newName + " = " + place + " ");
+    }
+
     public void translateALGO(SyntaxTreeNode algo) throws IOException {
         // ALGO -> begin INSTRUC end
         translateINSTRUC(algo.getChildren().get(1));
@@ -74,7 +148,7 @@ public class codeGenerator {
         List<SyntaxTreeNode> children = instruc.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getTerminal()!=null && next.getTerminal().isEmpty()) { //Case 1: INSTRUC -> 
-                outputFile.write("REM END");
+                outputFile.write("\nREM END");
         } else if(next.getSymb().equals("COMMAND")) { //Case 2: INSTRUC -> COMMAND ; INSTRUC
             translateCOMMAND(next);
             translateINSTRUC(children.get(2));
@@ -86,11 +160,11 @@ public class codeGenerator {
         List<SyntaxTreeNode> children = command.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>skip</WORD>")) { //Case 1: COMMAND -> skip
-            outputFile.write("REM DO NOTHING");
+            outputFile.write("\nREM DO NOTHING");
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>halt</WORD>")) { //Case 2: COMMAND -> halt
-            outputFile.write("STOP");
+            outputFile.write("\nSTOP");
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>print</WORD>")) {//Case 3: COMMAND -> print ATOMIC
-            outputFile.write("PRINT ");
+            outputFile.write("\nPRINT ");
             translateATOMIC(children.get(1));
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>return</WORD>")) {//Case 4: COMMAND -> return ATOMIC
             //TODO: Implement return
@@ -106,10 +180,20 @@ public class codeGenerator {
     public void translateATOMIC(SyntaxTreeNode atomic) throws IOException {
         List<SyntaxTreeNode> children = atomic.getChildren();
         SyntaxTreeNode next = children.get(0);
-        if(next.getSymb().equals("VNAME")) { //Case 1: ATOMIC -> VNAME
+        if (next.getSymb().equals("VNAME")) { //Case 1: ATOMIC -> VNAME
             translateVNAME(next);
-        } else if(next.getSymb().equals("CONST")) { //Case 2: ATOMIC -> CONST
+        } else if (next.getSymb().equals("CONST")) { //Case 2: ATOMIC -> CONST
             translateCONST(next);
+        }
+    }
+    
+    public void translateATOMIC(SyntaxTreeNode atomic, String place) throws IOException {
+        List<SyntaxTreeNode> children = atomic.getChildren();
+        SyntaxTreeNode next = children.get(0);
+        if(next.getSymb().equals("VNAME")) { //Case 1: ATOMIC -> VNAME
+            translateVNAME(next, place);
+        } else if(next.getSymb().equals("CONST")) { //Case 2: ATOMIC -> CONST
+            translateCONST(next, place);
         } 
     }
 
@@ -118,6 +202,13 @@ public class codeGenerator {
         SyntaxTreeNode next = children.get(0);
         //Case 1: CONST -> TokenN  && Case 2: CONST -> TokenT
         outputFile.write(next.getTerminalWord());
+    }
+
+    public void translateCONST(SyntaxTreeNode cons, String place) throws IOException {
+        List<SyntaxTreeNode> children = cons.getChildren();
+        SyntaxTreeNode next = children.get(0);
+        //Case 1: CONST -> TokenN  && Case 2: CONST -> TokenT
+        outputFile.write("\nLET " + place + " = " + next.getTerminalWord()  + " ");
     }
 
     public void translateASSIGN(SyntaxTreeNode assign) throws IOException {
@@ -139,9 +230,9 @@ public class codeGenerator {
         List<SyntaxTreeNode> children = term.getChildren();
         SyntaxTreeNode next = children.get(0);
         if(next.getSymb().equals("ATOMIC")) { //Case 1: TERM -> ATOMIC
-            translateATOMIC(next);
+            translateATOMIC(next, place);
         }else if(next.getSymb().equals("CALL")) { //Case 2: TERM -> CALL
-            translateCALL(next);
+            translateCALL(next, place);
         } else if (next.getSymb().equals("OP")) { //Case 3: TERM -> OP
             translateOP(next, place);
         }
@@ -150,6 +241,19 @@ public class codeGenerator {
     public void translateCALL(SyntaxTreeNode call) throws IOException {
         // Call -> FNAME ( ATOMIC , ATOMIC , ATOMIC )
         outputFile.write("CALL ");
+        translateFNAME(call.getChildren().get(0));
+        outputFile.write("(");
+        translateATOMIC(call.getChildren().get(2));
+        outputFile.write(",");
+        translateATOMIC(call.getChildren().get(4));
+        outputFile.write(",");
+        translateATOMIC(call.getChildren().get(6));
+        outputFile.write(")");
+    }
+
+    public void translateCALL(SyntaxTreeNode call, String place) throws IOException {
+        // Call -> FNAME ( ATOMIC , ATOMIC , ATOMIC )
+        outputFile.write("\nLET" + place + " = CALL ");
         translateFNAME(call.getChildren().get(0));
         outputFile.write("(");
         translateATOMIC(call.getChildren().get(2));
@@ -189,7 +293,7 @@ public class codeGenerator {
         List<SyntaxTreeNode> children = arg.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getSymb().equals("ATOMIC")) { //Case 1: ARG -> ATOMIC
-            translateATOMIC(next);
+            translateATOMIC(next, place);
         } else if (next.getSymb().equals("OP")) { //Case 2: ARG -> OP
             translateOP(next, place);
         }
@@ -201,7 +305,7 @@ public class codeGenerator {
         if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>not</WORD>")) { //Case 1: UNOP -> not
             //TODO: figure out how to implement not
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>sqrt</WORD>")) { //Case 2: UNOP -> sqrt
-            outputFile.write("SQR ");
+            outputFile.write(" SQR ");
         }
     }
 
@@ -214,17 +318,17 @@ public class codeGenerator {
         } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>and</WORD>")) { //Case 2: BINOP -> and
             //TODO: figure out how to implement and
         } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>eq</WORD>")) { //Case 3: BINOP -> eq
-            outputFile.write("=");
+            outputFile.write(" = ");
         } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>grt</WORD>")) { //Case 4: BINOP -> grt
-            outputFile.write(">");
+            outputFile.write(" > ");
         } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>add</WORD>")) { //Case 5: BINOP -> add
-            outputFile.write("+");
+            outputFile.write(" + ");
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>sub</WORD>")) { //Case 6: BINOP -> sub
-            outputFile.write("-");
+            outputFile.write(" - ");
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>mul</WORD>")) { //Case 7: BINOP -> mul
-            outputFile.write("*");
+            outputFile.write(" * ");
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>div</WORD>")) { //Case 8: BINOP -> div
-            outputFile.write("/");
+            outputFile.write(" / ");
         }
     }
 
@@ -249,12 +353,13 @@ public class codeGenerator {
             translateCOMPOSIT(children.get(2), label1, label2, "");
         }
         
-        outputFile.write("LABEL" + label1);
+        outputFile.write("\nLABEL" + label1);
         translateALGO(children.get(4));
-        outputFile.write("GOTO " + label3);
-        outputFile.write("LABEL" + label2);
+        outputFile.write("\nGOTO " + label3);
+        outputFile.write("\nLABEL" + label2);
         translateALGO(children.get(6));
-        outputFile.write("LABEL" + label3);
+        outputFile.write("\nLABEL" + label3);
+
     }
 
     public void translateCOND(SyntaxTreeNode cond) throws IOException {
@@ -307,10 +412,10 @@ public class codeGenerator {
         List<SyntaxTreeNode> children = functions.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getTerminal()!= null && next.getTerminal().isEmpty()) { //Case 1: FUNCTIONS -> 
-            outputFile.write("REM END");
+            outputFile.write("\nREM END");
         } else if(next.getSymb().equals("DECL")) { //Case 2: FUNCTIONS -> DECL FUNCTIONS
             translateDECL(next);
-            outputFile.write(" STOP ");
+            outputFile.write("\nSTOP ");
             translateFUNCTIONS(children.get(1));
         } 
     }
@@ -342,12 +447,12 @@ public class codeGenerator {
 
     public void translatePROLOG(SyntaxTreeNode  prolog) throws IOException {
         //PROLOG->{
-        outputFile.write("REM BEGIN");
+        outputFile.write("\nREM BEGIN");
     }
 
     public void translateEPILOG(SyntaxTreeNode epilog) throws IOException {
         //EPILOG->}
-        outputFile.write("REM END");
+        outputFile.write("\nREM END");
     }
 
     public void translateLOCVARS(SyntaxTreeNode locvars) {
@@ -371,7 +476,7 @@ public class codeGenerator {
     public static void main(String[] args) {
         //Testing the code generator
         try {
-            codeGenerator codeGen = new codeGenerator("src/parser2/output1.xml");
+            codeGenerator codeGen = new codeGenerator("src/parser2/output/output2.xml");
             codeGen.translate();
             codeGen.outputFile.close();
         } catch (Exception e) {

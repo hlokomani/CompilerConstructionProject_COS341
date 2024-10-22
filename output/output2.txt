@@ -1,0 +1,17 @@
+
+LET var0 = 10 V_a = var0
+LET var1 = 5 V_b = var1
+LET V_a = var3 
+LET V_b = var4 var2 = var3 + var4V_result = var2
+PRINT V_result
+LET V_a = var6 
+LET V_b = var7 var5 = var6 - var7V_result = var5
+PRINT V_result
+LET V_a = var9 
+LET V_b = var10 var8 = var9 * var10V_result = var8
+PRINT V_result
+LET V_a = var12 
+LET V_b = var13 var11 = var12 / var13V_result = var11
+PRINT V_result
+REM END
+REM END
