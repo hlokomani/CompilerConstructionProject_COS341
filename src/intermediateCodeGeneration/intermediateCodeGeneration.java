@@ -8,13 +8,13 @@ import semanticanalyzer.SemanticAnalyzer;
 import semanticanalyzer.SymbolTableAccessor;
 import typeChecker.TreeCrawler;
 
-public class intermeridateCodeGeneration {
+public class intermediateCodeGeneration {
     private TreeCrawler treeCrawler;
     private FileWriter outputFile;
     private int varCounter, labelCounter;
     private SyntaxTreeNode root;
 
-    public intermeridateCodeGeneration(String xmlFilePath) throws Exception {
+    public intermediateCodeGeneration(String xmlFilePath) throws Exception {
         //Initialize symbol table 
         treeCrawler = new TreeCrawler(xmlFilePath);
         varCounter = 0;
@@ -24,7 +24,7 @@ public class intermeridateCodeGeneration {
         //Create text file to write the translated code
         //extracting the output name from the xml file name from src/parser2/output1.xml
         String outputName = xmlFilePath.substring(xmlFilePath.lastIndexOf("/") + 1, xmlFilePath.lastIndexOf("."));
-        String outputFilePath = "output/" + outputName + ".txt";
+        String outputFilePath = "src/intermediateCodeGeneration/output/" + outputName + ".txt";
         File output = new File(outputFilePath);
         output.createNewFile();
         output.setWritable(true);
@@ -35,6 +35,11 @@ public class intermeridateCodeGeneration {
         try {
             root = treeCrawler.getNext();
             String intermediateCode = transPROG(root);
+            System.out.println("intermediateCode: " + intermediateCode);
+            //checking if the first character is a new line character
+            if(intermediateCode.charAt(0) == '\n') {
+                intermediateCode = intermediateCode.substring(1);
+            }
             outputFile.write(intermediateCode);
             outputFile.close();
         } catch (IOException e) {
@@ -68,8 +73,8 @@ public class intermeridateCodeGeneration {
         String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
         
         //adding it to the syntax tree
-        vname.setIntermediateCode("\n " + place  + " = " + newName+ " ");
-        return "\n " + place  + " = " + newName+ " ";
+        vname.setIntermediateCode("\n" + place  + " = " + newName+ " ");
+        return "\n" + place  + " = " + newName+ " ";
     }
 
     public String transALGO(SyntaxTreeNode algo) throws IOException {
@@ -175,8 +180,8 @@ public class intermeridateCodeGeneration {
         SyntaxTreeNode next = children.get(0);
         //Case 1: CONST -> TokenN  && Case 2: CONST -> TokenT
         //adding to the syntax tree
-        cons.setIntermediateCode("\n " + place + " = " + next.getTerminalWord()  + " ");
-        return "\n " + place + " = " + next.getTerminalWord()  + " ";
+        cons.setIntermediateCode("\n" + place + " = " + next.getTerminalWord()  + " ");
+        return "\n" + place + " = " + next.getTerminalWord()  + " ";
     }
 
     public String transASSIGN(SyntaxTreeNode assign) throws IOException {
@@ -247,10 +252,7 @@ public class intermeridateCodeGeneration {
         if (next.getSymb().equals("UNOP")) { //Case 1: OP -> UNOP ( ARG )
             String place1 = newVar();
             String arg =transARG(children.get(2), place1);
-            outputFile.write(place);
-            outputFile.write(" = ");
             String unop = transUNOP(next);
-            outputFile.write(place1);
             //adding to the syntax tree
             op.setIntermediateCode(arg + place + " = " + unop + " " + place1 + " ");
             return arg + place + " = " + unop + " " + place1 + " ";
@@ -262,8 +264,8 @@ public class intermeridateCodeGeneration {
             String arg2 = transARG(children.get(4), place2);
             String binop = transBINOP(next);
             //adding to the syntax tree
-            op.setIntermediateCode(arg1 + " " + arg2 + "\n " + place + " = " + place1 + " " + binop + " " + place2);
-            return arg1 + " " + arg2 + "\n " + place + " = " + place1 + " " + binop + " " + place2;
+            op.setIntermediateCode(arg1 + " " + arg2 + "\n" + place + " = " + place1 + " " + binop + " " + place2);
+            return arg1 + " " + arg2 + "\n" + place + " = " + place1 + " " + binop + " " + place2;
         }
         return "";
     }
@@ -333,7 +335,6 @@ public class intermeridateCodeGeneration {
             binop.setIntermediateCode(" * ");
             return " * ";
         } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>div</WORD>")) { //Case 8: BINOP -> div
-            outputFile.write(" / ");
             //adding to the syntax tree
             binop.setIntermediateCode(" / ");
             return " / ";
@@ -505,7 +506,7 @@ public class intermeridateCodeGeneration {
     public static void main(String[] args) {
         //Testing the code generator
         try {
-            intermeridateCodeGeneration codeGen = new intermeridateCodeGeneration("src/parser2/output/output2.xml");
+            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output2.xml");
             codeGen.trans();
             codeGen.outputFile.close();
         } catch (Exception e) {

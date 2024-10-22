@@ -1,0 +1,26 @@
+var0 = 10 
+V_a = var0
+var1 = 5 
+V_b = var1
+var3 = V_a  
+var4 = V_b 
+var2 = var3  +  var4
+V_result = var2
+PRINTV_result
+var6 = V_a  
+var7 = V_b 
+var5 = var6  -  var7
+V_result = var5
+PRINTV_result
+var9 = V_a  
+var10 = V_b 
+var8 = var9  *  var10
+V_result = var8
+PRINTV_result
+var12 = V_a  
+var13 = V_b 
+var11 = var12  /  var13
+V_result = var11
+PRINTV_result
+REM END
+REM END
