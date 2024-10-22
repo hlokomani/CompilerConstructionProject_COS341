@@ -1,4 +1,4 @@
-package codeGanerator;
+package targetCodeGeneration;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,13 +14,13 @@ import semanticanalyzer.SemanticAnalyzer;
 import semanticanalyzer.SymbolTableAccessor;
 import typeChecker.TreeCrawler;
 
-public class codeGenerator {
+public class targetCodeGenerator {
     private TreeCrawler treeCrawler;
     private FileWriter outputFile;
     private int varCounter, labelCounter;
     private String inputFilePath, outputFilePath;
 
-    public codeGenerator(String xmlFilePath) throws Exception {
+    public targetCodeGenerator(String xmlFilePath) throws Exception {
         //Initialize symbol table 
         treeCrawler = new TreeCrawler(xmlFilePath);
         varCounter = 0;
@@ -39,9 +39,9 @@ public class codeGenerator {
         this.outputFilePath = "output/" + outputName + ".txt";  
     }
    
-    public void translate() {
+    public void trans() {
         try {
-            translatePROG(treeCrawler.getNext());
+            transPROG(treeCrawler.getNext());
             outputFile.close();
             addLineNumbers(inputFilePath, outputFilePath);
             //delete inputFilePath
@@ -112,54 +112,54 @@ public class codeGenerator {
         }
     }
     
-    public void translatePROG(SyntaxTreeNode prog) throws IOException {
+    public void transPROG(SyntaxTreeNode prog) throws IOException {
         //PROG->main GLOBVARS ALGO FUNCTIONS
-        translateALGO(prog.getChildren().get(2));
-        translateFUNCTIONS(prog.getChildren().get(3));
+        transALGO(prog.getChildren().get(2));
+        transFUNCTIONS(prog.getChildren().get(3));
     }
     
-    public void translateGLOBVARS() {
-        //Not translated
+    public void transGLOBVARS() {
+        //Not transd
         //Case 1: GLOBVARS ->
         //Case 2: GLOBVARS -> VTYP VNAME , GLOBVARS
     }
 
-    public void translateVTYP() {
-        //Not translated
+    public void transVTYP() {
+        //Not transd
         //Case 1: VTYP -> num
         //Case 2: VTYP -> text
     }
 
-    public void translateVNAME(SyntaxTreeNode vname) throws IOException {
+    public void transVNAME(SyntaxTreeNode vname) throws IOException {
         SyntaxTreeNode next = vname.getChildren().get(0);
         String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
         outputFile.write(newName);
     }
 
-    public void translateVNAME(SyntaxTreeNode vname, String place) throws IOException {
+    public void transVNAME(SyntaxTreeNode vname, String place) throws IOException {
         SyntaxTreeNode next = vname.getChildren().get(0);
         String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
         outputFile.write("\nLET " + place  + " = " + newName+ " ");
     }
 
-    public void translateALGO(SyntaxTreeNode algo) throws IOException {
+    public void transALGO(SyntaxTreeNode algo) throws IOException {
         // ALGO -> begin INSTRUC end
-        translateINSTRUC(algo.getChildren().get(1));
+        transINSTRUC(algo.getChildren().get(1));
     }
 
-    public void translateINSTRUC(SyntaxTreeNode instruc) throws IOException {
+    public void transINSTRUC(SyntaxTreeNode instruc) throws IOException {
         System.out.println("In instruct");
         List<SyntaxTreeNode> children = instruc.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getTerminal()!=null && next.getTerminal().isEmpty()) { //Case 1: INSTRUC -> 
                 outputFile.write("\nREM END");
         } else if(next.getSymb().equals("COMMAND")) { //Case 2: INSTRUC -> COMMAND ; INSTRUC
-            translateCOMMAND(next);
-            translateINSTRUC(children.get(2));
+            transCOMMAND(next);
+            transINSTRUC(children.get(2));
         } 
     }
 
-    public void translateCOMMAND(SyntaxTreeNode command) throws IOException {
+    public void transCOMMAND(SyntaxTreeNode command) throws IOException {
         System.out.println("In command");
         List<SyntaxTreeNode> children = command.getChildren();
         SyntaxTreeNode next = children.get(0);
@@ -169,141 +169,141 @@ public class codeGenerator {
             outputFile.write("\nSTOP");
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>print</WORD>")) {//Case 3: COMMAND -> print ATOMIC
             outputFile.write("\nPRINT ");
-            translateATOMIC(children.get(1));
+            transATOMIC(children.get(1));
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>return</WORD>")) {//Case 4: COMMAND -> return ATOMIC
             //TODO: Implement return
         } else if (next.getSymb().equals("ASSIGN")) {//Case 5: COMMAND -> ASSIGN
-           translateASSIGN(children.get(0));
+           transASSIGN(children.get(0));
         } else if (next.getSymb().equals("CALL")) { //Case 6: COMMAND -> CALL
-            translateCALL(children.get(0));
+            transCALL(children.get(0));
         } else if (next.getSymb().equals("BRANCH")) { //Case 7: COMMAND -> BRANCH
-            translateBRANCH(children.get(0));
+            transBRANCH(children.get(0));
         }
     }
 
-    public void translateATOMIC(SyntaxTreeNode atomic) throws IOException {
+    public void transATOMIC(SyntaxTreeNode atomic) throws IOException {
         List<SyntaxTreeNode> children = atomic.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getSymb().equals("VNAME")) { //Case 1: ATOMIC -> VNAME
-            translateVNAME(next);
+            transVNAME(next);
         } else if (next.getSymb().equals("CONST")) { //Case 2: ATOMIC -> CONST
-            translateCONST(next);
+            transCONST(next);
         }
     }
     
-    public void translateATOMIC(SyntaxTreeNode atomic, String place) throws IOException {
+    public void transATOMIC(SyntaxTreeNode atomic, String place) throws IOException {
         List<SyntaxTreeNode> children = atomic.getChildren();
         SyntaxTreeNode next = children.get(0);
         if(next.getSymb().equals("VNAME")) { //Case 1: ATOMIC -> VNAME
-            translateVNAME(next, place);
+            transVNAME(next, place);
         } else if(next.getSymb().equals("CONST")) { //Case 2: ATOMIC -> CONST
-            translateCONST(next, place);
+            transCONST(next, place);
         } 
     }
 
-    public void translateCONST(SyntaxTreeNode cons) throws IOException {
+    public void transCONST(SyntaxTreeNode cons) throws IOException {
         List<SyntaxTreeNode> children = cons.getChildren();
         SyntaxTreeNode next = children.get(0);
         //Case 1: CONST -> TokenN  && Case 2: CONST -> TokenT
         outputFile.write(next.getTerminalWord());
     }
 
-    public void translateCONST(SyntaxTreeNode cons, String place) throws IOException {
+    public void transCONST(SyntaxTreeNode cons, String place) throws IOException {
         List<SyntaxTreeNode> children = cons.getChildren();
         SyntaxTreeNode next = children.get(0);
         //Case 1: CONST -> TokenN  && Case 2: CONST -> TokenT
         outputFile.write("\nLET " + place + " = " + next.getTerminalWord()  + " ");
     }
 
-    public void translateASSIGN(SyntaxTreeNode assign) throws IOException {
+    public void transASSIGN(SyntaxTreeNode assign) throws IOException {
         System.out.println("In assign");
         List<SyntaxTreeNode> children = assign.getChildren();
         SyntaxTreeNode symbol = children.get(1);
         
         if (symbol.getTerminal()!=null && symbol.getTerminal().contains("<WORD>&lt;</WORD>")) { // ASSIGN -> VNAME < input
             outputFile.write("INPUT ");
-            translateVNAME(children.get(0));
+            transVNAME(children.get(0));
         } else if (symbol.getTerminal() != null && symbol.getTerminal().contains("<WORD>=</WORD>")) { //Case 2: ASSIGN -> VNAME := TERM
             String place = newVar();
-            translateTERM(children.get(2), place);
+            transTERM(children.get(2), place);
             outputFile.write("\nLET ");
-            translateVNAME(children.get(0));
+            transVNAME(children.get(0));
             outputFile.write(" = " + place);
         }
     }
 
-    public void translateTERM(SyntaxTreeNode term, String place) throws IOException {
+    public void transTERM(SyntaxTreeNode term, String place) throws IOException {
         List<SyntaxTreeNode> children = term.getChildren();
         SyntaxTreeNode next = children.get(0);
         if(next.getSymb().equals("ATOMIC")) { //Case 1: TERM -> ATOMIC
-            translateATOMIC(next, place);
+            transATOMIC(next, place);
         }else if(next.getSymb().equals("CALL")) { //Case 2: TERM -> CALL
-            translateCALL(next, place);
+            transCALL(next, place);
         } else if (next.getSymb().equals("OP")) { //Case 3: TERM -> OP
-            translateOP(next, place);
+            transOP(next, place);
         }
     }
 
-    public void translateCALL(SyntaxTreeNode call) throws IOException {
+    public void transCALL(SyntaxTreeNode call) throws IOException {
         // Call -> FNAME ( ATOMIC , ATOMIC , ATOMIC )
         outputFile.write("CALL ");
-        translateFNAME(call.getChildren().get(0));
+        transFNAME(call.getChildren().get(0));
         outputFile.write("(");
-        translateATOMIC(call.getChildren().get(2));
+        transATOMIC(call.getChildren().get(2));
         outputFile.write(",");
-        translateATOMIC(call.getChildren().get(4));
+        transATOMIC(call.getChildren().get(4));
         outputFile.write(",");
-        translateATOMIC(call.getChildren().get(6));
+        transATOMIC(call.getChildren().get(6));
         outputFile.write(")");
     }
 
-    public void translateCALL(SyntaxTreeNode call, String place) throws IOException {
+    public void transCALL(SyntaxTreeNode call, String place) throws IOException {
         // Call -> FNAME ( ATOMIC , ATOMIC , ATOMIC )
         outputFile.write("\nLET" + place + " = CALL ");
-        translateFNAME(call.getChildren().get(0));
+        transFNAME(call.getChildren().get(0));
         outputFile.write("(");
-        translateATOMIC(call.getChildren().get(2));
+        transATOMIC(call.getChildren().get(2));
         outputFile.write(",");
-        translateATOMIC(call.getChildren().get(4));
+        transATOMIC(call.getChildren().get(4));
         outputFile.write(",");
-        translateATOMIC(call.getChildren().get(6));
+        transATOMIC(call.getChildren().get(6));
         outputFile.write(")");
     }
 
-    public void translateOP(SyntaxTreeNode op, String place) throws IOException {
+    public void transOP(SyntaxTreeNode op, String place) throws IOException {
         List<SyntaxTreeNode> children = op.getChildren();
         SyntaxTreeNode next = children.get(0);
 
         if (next.getSymb().equals("UNOP")) { //Case 1: OP -> UNOP ( ARG )
             String place1 = newVar();
-            translateARG(children.get(2), place1);
+            transARG(children.get(2), place1);
             outputFile.write(place);
             outputFile.write(" = ");
-            translateUNOP(next);
+            transUNOP(next);
             outputFile.write(place1);
            
         } else if (next.getSymb().equals("BINOP")) { //Case 2: OP -> BINOP ( ARG , ARG )
             String place1 = newVar();
             String place2 = newVar();
-            translateARG(children.get(2), place1);
-            translateARG(children.get(4), place2);
+            transARG(children.get(2), place1);
+            transARG(children.get(4), place2);
             outputFile.write("\nLET " + place + " = " + place1);
-            translateBINOP(next);
+            transBINOP(next);
             outputFile.write(place2);
         }
     }
 
-    public void translateARG(SyntaxTreeNode arg, String place) throws IOException {
+    public void transARG(SyntaxTreeNode arg, String place) throws IOException {
         List<SyntaxTreeNode> children = arg.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getSymb().equals("ATOMIC")) { //Case 1: ARG -> ATOMIC
-            translateATOMIC(next, place);
+            transATOMIC(next, place);
         } else if (next.getSymb().equals("OP")) { //Case 2: ARG -> OP
-            translateOP(next, place);
+            transOP(next, place);
         }
     }
 
-    public void translateUNOP(SyntaxTreeNode unop) throws IOException {
+    public void transUNOP(SyntaxTreeNode unop) throws IOException {
         List<SyntaxTreeNode> children = unop.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>not</WORD>")) { //Case 1: UNOP -> not
@@ -313,7 +313,7 @@ public class codeGenerator {
         }
     }
 
-    public void translateBINOP(SyntaxTreeNode binop) throws IOException {
+    public void transBINOP(SyntaxTreeNode binop) throws IOException {
         List<SyntaxTreeNode> children = binop.getChildren();
         SyntaxTreeNode next = children.get(0);
 
@@ -336,7 +336,7 @@ public class codeGenerator {
         }
     }
 
-    public void translateBRANCH(SyntaxTreeNode branch) throws IOException {
+    public void transBRANCH(SyntaxTreeNode branch) throws IOException {
         //BRANCH->if COND then ALGO else ALGO   
 
         //NOT SURE ABOUT THIS IMPLEMENTATION
@@ -351,122 +351,122 @@ public class codeGenerator {
 
         
         if (next.getSymb().equals("SIMPLE")) {//CASE 1 : COND -> SIMPLE
-            translateSIMPLE(children.get(2), label1, label2);
+            transSIMPLE(children.get(2), label1, label2);
 
         } else if (next.getSymb().equals("COMPOSIT")) { //CASE 2: COND -> COMPOSIT
-            translateCOMPOSIT(children.get(2), label1, label2, "");
+            transCOMPOSIT(children.get(2), label1, label2, "");
         }
         
         outputFile.write("\nLABEL" + label1);
-        translateALGO(children.get(4));
+        transALGO(children.get(4));
         outputFile.write("\nGOTO " + label3);
         outputFile.write("\nLABEL" + label2);
-        translateALGO(children.get(6));
+        transALGO(children.get(6));
         outputFile.write("\nLABEL" + label3);
 
     }
 
-    public void translateCOND(SyntaxTreeNode cond) throws IOException {
+    public void transCOND(SyntaxTreeNode cond) throws IOException {
         //NOT NEEDED
     }
 
-    public void translateSIMPLE(SyntaxTreeNode simple, String labelt, String labelf) throws IOException {
+    public void transSIMPLE(SyntaxTreeNode simple, String labelt, String labelf) throws IOException {
         //SIMPLE->BINOP ( ATOMIC , ATOMIC )
         List<SyntaxTreeNode> children = simple.getChildren();
         String t1 = newVar();
         String t2 = newVar();
 
-        translateARG(children.get(2), t1);
-        translateARG(children.get(4), t2);
+        transARG(children.get(2), t1);
+        transARG(children.get(4), t2);
         outputFile.write("IF " + t1);
-        translateOP(children.get(0), t2);
+        transOP(children.get(0), t2);
         outputFile.write(t2 + " THEN " + labelt + " ELSE " + labelf);
     }
 
-    public void translateCOMPOSIT(SyntaxTreeNode composit, String labelt, String labelf, String place) throws IOException {
+    public void transCOMPOSIT(SyntaxTreeNode composit, String labelt, String labelf, String place) throws IOException {
         // NOT SURE ABOUT THIS IMPLEMENTATION
         List<SyntaxTreeNode> children = composit.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getSymb().equals("BINOP") ) { //Case 1: COMPOSIT -> BINOP ( SIMPLE , SIMPLE )
             String t1 = newVar();
             String t2 = newVar();
-            translateSIMPLE(children.get(2), t1, t2);
-            translateSIMPLE(children.get(4), t1, t2);
+            transSIMPLE(children.get(2), t1, t2);
+            transSIMPLE(children.get(4), t1, t2);
             outputFile.write("IF " + t1);
-            translateOP(children.get(0), t2);
+            transOP(children.get(0), t2);
             outputFile.write(t2 +" THEN " + labelt + " ELSE " + labelf);
         } else if (next.getSymb().equals("UNOP")) {//Case 2: COMPOSIT -> UNOP ( SIMPLE )
             String place1 = newVar();
-            translateSIMPLE(children.get(2), labelt, labelf);
+            transSIMPLE(children.get(2), labelt, labelf);
             outputFile.write(place);
             outputFile.write(" = ");
-            translateUNOP(next);
+            transUNOP(next);
             outputFile.write(place1);
         } 
     }
 
-    public void translateFNAME(SyntaxTreeNode fname) throws IOException {
+    public void transFNAME(SyntaxTreeNode fname) throws IOException {
         SyntaxTreeNode next = fname.getChildren().get(0);
         String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
         outputFile.write(newName);
     }
 
 
-    public void translateFUNCTIONS(SyntaxTreeNode functions) throws IOException {
+    public void transFUNCTIONS(SyntaxTreeNode functions) throws IOException {
         List<SyntaxTreeNode> children = functions.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getTerminal()!= null && next.getTerminal().isEmpty()) { //Case 1: FUNCTIONS -> 
             outputFile.write("\nREM END");
         } else if(next.getSymb().equals("DECL")) { //Case 2: FUNCTIONS -> DECL FUNCTIONS
-            translateDECL(next);
+            transDECL(next);
             outputFile.write("\nSTOP ");
-            translateFUNCTIONS(children.get(1));
+            transFUNCTIONS(children.get(1));
         } 
     }
 
-    public void translateDECL(SyntaxTreeNode decl) {
+    public void transDECL(SyntaxTreeNode decl) {
         //DECL->HEADER BODY
         List<SyntaxTreeNode> children = decl.getChildren();
         //TODO: Implement this
     }
 
-    public void translateHEADER(SyntaxTreeNode header) {
+    public void transHEADER(SyntaxTreeNode header) {
         //HEADER->FTYP FNAME ( VNAME , VNAME , VNAME )
         List<SyntaxTreeNode> children = header.getChildren();
         //TODO: Implement this
     }
 
-    public void translateFTYP(SyntaxTreeNode ftyp) {
-        //Not translated
+    public void transFTYP(SyntaxTreeNode ftyp) {
+        //Not transd
     }
     
-    public void translateBODY(SyntaxTreeNode body) throws IOException {
+    public void transBODY(SyntaxTreeNode body) throws IOException {
         //BODY->PROLOG LOCVARS ALGO EPILOG SUBFUNCS end
         List<SyntaxTreeNode> children = body.getChildren();
-        translatePROLOG(children.get(0));
-        translateALGO(children.get(2));
-        translateEPILOG(children.get(3));
-        translateSUBFUNCS(children.get(4));
+        transPROLOG(children.get(0));
+        transALGO(children.get(2));
+        transEPILOG(children.get(3));
+        transSUBFUNCS(children.get(4));
     }  
 
-    public void translatePROLOG(SyntaxTreeNode  prolog) throws IOException {
+    public void transPROLOG(SyntaxTreeNode  prolog) throws IOException {
         //PROLOG->{
         outputFile.write("\nREM BEGIN");
     }
 
-    public void translateEPILOG(SyntaxTreeNode epilog) throws IOException {
+    public void transEPILOG(SyntaxTreeNode epilog) throws IOException {
         //EPILOG->}
         outputFile.write("\nREM END");
     }
 
-    public void translateLOCVARS(SyntaxTreeNode locvars) {
-        //Not translated
+    public void transLOCVARS(SyntaxTreeNode locvars) {
+        //Not transd
     }
 
-    public void translateSUBFUNCS(SyntaxTreeNode subfuncs) throws IOException {
+    public void transSUBFUNCS(SyntaxTreeNode subfuncs) throws IOException {
         //SUBFUNCS->FUNCTIONS
         List<SyntaxTreeNode> children = subfuncs.getChildren();
-        translateFUNCTIONS(children.get(0));
+        transFUNCTIONS(children.get(0));
     }
 
     private String newVar() {
@@ -480,8 +480,8 @@ public class codeGenerator {
     public static void main(String[] args) {
         //Testing the code generator
         try {
-            codeGenerator codeGen = new codeGenerator("src/parser2/output/output2.xml");
-            codeGen.translate();
+            targetCodeGenerator codeGen = new targetCodeGenerator("src/parser2/output/output2.xml");
+            codeGen.trans();
             codeGen.outputFile.close();
         } catch (Exception e) {
             // TODO Auto-generated catch block
