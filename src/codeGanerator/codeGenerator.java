@@ -136,7 +136,7 @@ public class codeGenerator {
     public void translateVNAME(SyntaxTreeNode vname, String place) throws IOException {
         SyntaxTreeNode next = vname.getChildren().get(0);
         String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
-        outputFile.write("\nLET " + newName + " = " + place + " ");
+        outputFile.write("\nLET " + place  + " = " + newName+ " ");
     }
 
     public void translateALGO(SyntaxTreeNode algo) throws IOException {
@@ -145,6 +145,7 @@ public class codeGenerator {
     }
 
     public void translateINSTRUC(SyntaxTreeNode instruc) throws IOException {
+        System.out.println("In instruct");
         List<SyntaxTreeNode> children = instruc.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getTerminal()!=null && next.getTerminal().isEmpty()) { //Case 1: INSTRUC -> 
@@ -156,7 +157,7 @@ public class codeGenerator {
     }
 
     public void translateCOMMAND(SyntaxTreeNode command) throws IOException {
-        
+        System.out.println("In command");
         List<SyntaxTreeNode> children = command.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>skip</WORD>")) { //Case 1: COMMAND -> skip
@@ -212,6 +213,7 @@ public class codeGenerator {
     }
 
     public void translateASSIGN(SyntaxTreeNode assign) throws IOException {
+        System.out.println("In assign");
         List<SyntaxTreeNode> children = assign.getChildren();
         SyntaxTreeNode symbol = children.get(1);
         
@@ -221,6 +223,7 @@ public class codeGenerator {
         } else if (symbol.getTerminal() != null && symbol.getTerminal().contains("<WORD>=</WORD>")) { //Case 2: ASSIGN -> VNAME := TERM
             String place = newVar();
             translateTERM(children.get(2), place);
+            outputFile.write("\nLET ");
             translateVNAME(children.get(0));
             outputFile.write(" = " + place);
         }
@@ -281,9 +284,7 @@ public class codeGenerator {
             String place2 = newVar();
             translateARG(children.get(2), place1);
             translateARG(children.get(4), place2);
-            outputFile.write(place);
-            outputFile.write(" = ");
-            outputFile.write(place1);
+            outputFile.write("\nLET " + place + " = " + place1);
             translateBINOP(next);
             outputFile.write(place2);
         }
