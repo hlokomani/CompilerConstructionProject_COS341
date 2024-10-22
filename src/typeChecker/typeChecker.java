@@ -258,10 +258,10 @@ public class typeChecker {
     }
 
     private String typeOfCall(SyntaxTreeNode call) {
+        // Call -> FNAME ( ATOMIC , ATOMIC , ATOMIC )
         List<SyntaxTreeNode> children = call.getChildren();
         System.out.println("Type checking CALL");
         System.out.println("call: " + call.toString());
-        // Call -> FNAME ( ATOMIC , ATOMIC , ATOMIC )
         String typeAtomic1 = typeOfATOMIC(children.get(2));
         String typeAtomic2 = typeOfATOMIC(children.get(4));
         String typeAtomic3 = typeOfATOMIC(children.get(6));
@@ -484,18 +484,19 @@ public class typeChecker {
     }
 
     private boolean typeCheckDECL(SyntaxTreeNode decl) {
+        //DECL->HEADER BODY
         List<SyntaxTreeNode> children = decl.getChildren();
         System.out.println("Type checking DECL");
         System.out.println("decl: " + decl.toString());
-        //DECL->HEADER BODY
         return typeCheckHEADER(children.get(0)) && typeCheckBODY(children.get(1));
     }
 
     private boolean typeCheckHEADER(SyntaxTreeNode header) {
+        //HEADER->FTYP FNAME ( VNAME , VNAME , VNAME )
         List<SyntaxTreeNode> children = header.getChildren();
         System.out.println("Type checking HEADER");
         System.out.println("header: " + header.toString());
-        //HEADER->FTYP FNAME ( VNAME , VNAME , VNAME )
+        
         if (this.typeOfFNAME(children.get(1)) != this.typeOfFTYP(children.get(0))) {
             return false;
         }
@@ -533,35 +534,38 @@ public class typeChecker {
     }
 
     private boolean typeCheckBODY(SyntaxTreeNode body) {
+        //BODY->PROLOG LOCVARS ALGO EPILOG SUBFUNCS end
         List<SyntaxTreeNode> children = body.getChildren();
         System.out.println("Type checking BODY");
         System.out.println("body: " + body.toString());
-        //BODY->PROLOG LOCVARS ALGO EPILOG SUBFUNCS end
+        
         return this.typeCheckPROLOG(children.get(0)) && this.typeCheckLOCVARS(children.get(1))
                 && this.typeCheckALGO(children.get(2)) && this.typeCheckEPILOG(children.get(3))
                 && this.typeCheckSUBFUNCS(children.get(4));
     }
     
     private boolean typeCheckPROLOG(SyntaxTreeNode prolog) {
+        //PROLOG->{
         System.out.println("Type checking PROLOG");
         System.out.println("prolog: " + prolog.toString());
-        //PROLOG->{
+        
         return true;
     }
 
     private boolean typeCheckEPILOG(SyntaxTreeNode epilog) {
+        //EPILOG->}
         System.out.println("Type checking EPILOG");
         System.out.println("epilog: " + epilog.toString());
-        //EPILOG->}
+        
         return true;
     }
 
     private boolean typeCheckLOCVARS(SyntaxTreeNode locvars) {
+        //LOCVARS->VTYP VNAME , VTYP VNAME , VTYP VNAME ,
         List<SyntaxTreeNode> children = locvars.getChildren();
         System.out.println("Type checking LOCVARS");
         System.out.println("locvars: " + locvars.toString());
-        //LOCVARS->VTYP VNAME , VTYP VNAME , VTYP VNAME ,
-    
+        
         if (this.typeOfVNAME(children.get(1)) != this.typeOfVTYP(children.get(0))) {
             return false;
         }
@@ -575,10 +579,11 @@ public class typeChecker {
     }
 
     private boolean typeCheckSUBFUNCS(SyntaxTreeNode subfuncs) {
+        //SUBFUNCS->FUNCTIONS
         List<SyntaxTreeNode> children = subfuncs.getChildren();
         System.out.println("Type checking SUBFUNCS");
         System.out.println("subfuncs: " + subfuncs.toString());
-        //SUBFUNCS->FUNCTIONS
+        
         return this.typeCheckFUNCTIONS(children.get(0));
     }
 
