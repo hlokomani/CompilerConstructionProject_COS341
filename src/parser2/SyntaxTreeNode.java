@@ -11,6 +11,7 @@ public class SyntaxTreeNode {
     private boolean isLeaf;
     private boolean isRoot;
     private String terminal;
+    private String intermediateCode;
 
     public SyntaxTreeNode(int unid, String symb) {
         this.unid = unid;
@@ -48,14 +49,22 @@ public class SyntaxTreeNode {
             }
             if (word.contains("&") && !word.contains("&gt;") && !word.contains("&lt;") && !word.contains("&amp;")) {
                 System.out.println("In if 3");
-                word="&amp;";
-            }                  
+                word = "&amp;";
+            }
             //replacing the contents between <WORD> and </WORD> with the sanitized word
             //System.out.println("Sanitized word: " + word);
             terminal = terminal.substring(0, start) + word + terminal.substring(end);
             //System.out.println("The sanitized terminal: " + terminal);
         }
         return terminal;
+    }
+    
+    public String getIntermediateCode() {
+        return intermediateCode;
+    }
+
+    public void setIntermediateCode(String intermediateCode) {
+        this.intermediateCode = intermediateCode;
     }
 
     public int getUnid() {

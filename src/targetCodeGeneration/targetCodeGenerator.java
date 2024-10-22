@@ -15,14 +15,13 @@ import semanticanalyzer.SymbolTableAccessor;
 import typeChecker.TreeCrawler;
 
 public class targetCodeGenerator {
-    private TreeCrawler treeCrawler;
+    private SyntaxTreeNode root;
     private FileWriter outputFile;
     private int varCounter, labelCounter;
     private String inputFilePath, outputFilePath;
 
-    public targetCodeGenerator(String xmlFilePath) throws Exception {
-        //Initialize symbol table 
-        treeCrawler = new TreeCrawler(xmlFilePath);
+    public targetCodeGenerator(String xmlFilePath, SyntaxTreeNode root) throws Exception {
+        this.root = root;
         varCounter = 0;
         labelCounter = 0;
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(xmlFilePath);

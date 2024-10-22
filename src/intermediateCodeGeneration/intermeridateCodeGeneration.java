@@ -18,7 +18,7 @@ public class intermeridateCodeGeneration {
     private TreeCrawler treeCrawler;
     private FileWriter outputFile;
     private int varCounter, labelCounter;
-    private String inputFilePath, outputFilePath;
+    private SyntaxTreeNode root;
 
     public intermeridateCodeGeneration(String xmlFilePath) throws Exception {
         //Initialize symbol table 
@@ -30,317 +30,327 @@ public class intermeridateCodeGeneration {
         //Create text file to write the translated code
         //extracting the output name from the xml file name from src/parser2/output1.xml
         String outputName = xmlFilePath.substring(xmlFilePath.lastIndexOf("/") + 1, xmlFilePath.lastIndexOf("."));
-        String outputFilePath = "output/" + outputName + "Temp.txt";
+        String outputFilePath = "output/" + outputName + ".txt";
         File output = new File(outputFilePath);
         output.createNewFile();
         output.setWritable(true);
         outputFile = new FileWriter(output, true);
-        this.inputFilePath = outputFilePath;
-        this.outputFilePath = "output/" + outputName + ".txt";  
     }
    
-    public void trans() {
+    public SyntaxTreeNode trans() {
         try {
-            transPROG(treeCrawler.getNext());
+            root = treeCrawler.getNext();
+            String intermediateCode = transPROG(root);
+            outputFile.write(intermediateCode);
             outputFile.close();
-            addLineNumbers(inputFilePath, outputFilePath);
-            //delete inputFilePath
-            File file = new File(inputFilePath);
-            file.delete();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
-
-
-    public static void addLineNumbers(String inputFilePath, String outputFilePath) {
-        // Check if input file exists and is readable
-        File inputFile = new File(inputFilePath);
-        if (!inputFile.exists() || !inputFile.isFile()) {
-            System.err.println("Input file does not exist or is not a file: " + inputFilePath);
-            return;
-        }
-
-        // Check if we can write to the output file
-        File outputFile = new File(outputFilePath);
-        try {
-            if (outputFile.exists() && !outputFile.canWrite()) {
-                System.err.println("Cannot write to output file: " + outputFilePath);
-                return;
-            }
-        } catch (SecurityException e) {
-            System.err.println("Security exception when checking output file: " + e.getMessage());
-            return;
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(inputFilePath));
-             PrintWriter writer = new PrintWriter(new FileWriter(outputFilePath))) {
-
-            String line;
-            int lineNumber = 1;
-
-            System.out.println("Starting to process the file...");
-
-            // Extra check: Ensure the file isn't empty
-            if (inputFile.length() == 0) {
-                System.out.println("Input file is empty!");
-                return;
-            }
-
-            // Reading and processing each line
-            while ((line = reader.readLine()) != null) {
-                // Debugging: Print the raw line content for each read
-                System.out.println("Raw line read: '" + line + "' (length: " + line.length() + ")");
-
-                // Skip empty lines
-                if (!line.trim().isEmpty()) {
-                    System.out.println("Writing line: " + lineNumber + ": " + line);
-                    writer.println(lineNumber + "\t" + line);
-                    lineNumber++;
-                } else {
-                    System.out.println("Skipped empty/whitespace line.");
-                }
-            }
-
-            System.out.println("Finished writing to the file.");
-
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found: " + e.getMessage());
-        } catch (IOException e) {
-            System.err.println("I/O error: " + e.getMessage());
-        }
+        return root;
     }
     
-    public void transPROG(SyntaxTreeNode prog) throws IOException {
+    public String transPROG(SyntaxTreeNode prog) throws IOException {
         //PROG->main GLOBVARS ALGO FUNCTIONS
-        transALGO(prog.getChildren().get(2));
-        transFUNCTIONS(prog.getChildren().get(3));
-    }
-    
-    public void transGLOBVARS() {
-        //Not transd
-        //Case 1: GLOBVARS ->
-        //Case 2: GLOBVARS -> VTYP VNAME , GLOBVARS
+        String algo = transALGO(prog.getChildren().get(2));
+        String functions = transFUNCTIONS(prog.getChildren().get(3));
+
+        //adding it to the syntax tree
+        prog.setIntermediateCode(algo + functions);
+        return algo + functions;
     }
 
-    public void transVTYP() {
-        //Not transd
-        //Case 1: VTYP -> num
-        //Case 2: VTYP -> text
-    }
-
-    public void transVNAME(SyntaxTreeNode vname) throws IOException {
+    public String transVNAME(SyntaxTreeNode vname) throws IOException {
         SyntaxTreeNode next = vname.getChildren().get(0);
         String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
-        outputFile.write(newName);
+
+        //adding it to the syntax tree
+        vname.setIntermediateCode(newName);
+
+        return newName;
     }
 
-    public void transVNAME(SyntaxTreeNode vname, String place) throws IOException {
+    public String transVNAME(SyntaxTreeNode vname, String place) throws IOException {
         SyntaxTreeNode next = vname.getChildren().get(0);
         String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
-        outputFile.write("\nLET " + place  + " = " + newName+ " ");
+        
+        //adding it to the syntax tree
+        vname.setIntermediateCode("\n " + place  + " = " + newName+ " ");
+        return "\n " + place  + " = " + newName+ " ";
     }
 
-    public void transALGO(SyntaxTreeNode algo) throws IOException {
+    public String transALGO(SyntaxTreeNode algo) throws IOException {
         // ALGO -> begin INSTRUC end
-        transINSTRUC(algo.getChildren().get(1));
+        String instruc = transINSTRUC(algo.getChildren().get(1));
+        //adding it to the syntax tree
+        algo.setIntermediateCode(instruc);
+        return instruc;
     }
 
-    public void transINSTRUC(SyntaxTreeNode instruc) throws IOException {
-        System.out.println("In instruct");
+    public String transINSTRUC(SyntaxTreeNode instruc) throws IOException {
         List<SyntaxTreeNode> children = instruc.getChildren();
         SyntaxTreeNode next = children.get(0);
-        if (next.getTerminal()!=null && next.getTerminal().isEmpty()) { //Case 1: INSTRUC -> 
-                outputFile.write("\nREM END");
-        } else if(next.getSymb().equals("COMMAND")) { //Case 2: INSTRUC -> COMMAND ; INSTRUC
-            transCOMMAND(next);
-            transINSTRUC(children.get(2));
-        } 
+        if (next.getTerminal() != null && next.getTerminal().isEmpty()) { //Case 1: INSTRUC -> 
+            //adding to the syntax tree
+            instruc.setIntermediateCode("\nREM END");
+            return "\nREM END";
+        } else if (next.getSymb().equals("COMMAND")) { //Case 2: INSTRUC -> COMMAND ; INSTRUC
+            String command = transCOMMAND(next);
+            String instruc2 = transINSTRUC(children.get(2));
+            //adding to the syntax tree
+            instruc.setIntermediateCode(command + instruc2);
+            return command + instruc2;
+        }
+        return "";
     }
 
-    public void transCOMMAND(SyntaxTreeNode command) throws IOException {
-        System.out.println("In command");
+    public String transCOMMAND(SyntaxTreeNode command) throws IOException {
         List<SyntaxTreeNode> children = command.getChildren();
         SyntaxTreeNode next = children.get(0);
-        if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>skip</WORD>")) { //Case 1: COMMAND -> skip
-            outputFile.write("\nREM DO NOTHING");
+        if (next.getTerminal() != null && next.getTerminal().contains("<WORD>skip</WORD>")) { //Case 1: COMMAND -> skip
+            //adding to the syntax tree
+            command.setIntermediateCode("\nREM DO NOTHING");
+            return "\nREM DO NOTHING";
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>halt</WORD>")) { //Case 2: COMMAND -> halt
-            outputFile.write("\nSTOP");
+            command.setIntermediateCode("\nSTOP");
+            return "\nSTOP";
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>print</WORD>")) {//Case 3: COMMAND -> print ATOMIC
-            outputFile.write("\nPRINT ");
-            transATOMIC(children.get(1));
+            String atomic = transATOMIC(children.get(1));
+            command.setIntermediateCode("\nPRINT" +  atomic);
+            return "\nPRINT" +  atomic;
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>return</WORD>")) {//Case 4: COMMAND -> return ATOMIC
-            //TODO: Implement return
+            String atomic = transATOMIC(children.get(1));
+            command.setIntermediateCode("\nreturn" +  atomic);
+            return "\nreturn" +  atomic;
         } else if (next.getSymb().equals("ASSIGN")) {//Case 5: COMMAND -> ASSIGN
-           transASSIGN(children.get(0));
+            String assign = transASSIGN(children.get(0));
+            command.setIntermediateCode(assign);
+            return assign;
         } else if (next.getSymb().equals("CALL")) { //Case 6: COMMAND -> CALL
-            transCALL(children.get(0));
+            String call = transCALL(children.get(0));
+            command.setIntermediateCode(call);
+            return call;
         } else if (next.getSymb().equals("BRANCH")) { //Case 7: COMMAND -> BRANCH
-            transBRANCH(children.get(0));
+            String branch = transBRANCH(children.get(0));
+            command.setIntermediateCode(branch);
+            return branch;
         }
+        return "";
     }
 
-    public void transATOMIC(SyntaxTreeNode atomic) throws IOException {
+    public String transATOMIC(SyntaxTreeNode atomic) throws IOException {
         List<SyntaxTreeNode> children = atomic.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getSymb().equals("VNAME")) { //Case 1: ATOMIC -> VNAME
-            transVNAME(next);
+            String vname = transVNAME(next);
+            atomic.setIntermediateCode(vname);
+            return vname;
         } else if (next.getSymb().equals("CONST")) { //Case 2: ATOMIC -> CONST
-            transCONST(next);
+            String cons = transCONST(next);
+            atomic.setIntermediateCode(cons);
+            return cons;
         }
+        return "";
     }
     
-    public void transATOMIC(SyntaxTreeNode atomic, String place) throws IOException {
+    public String transATOMIC(SyntaxTreeNode atomic, String place) throws IOException {
         List<SyntaxTreeNode> children = atomic.getChildren();
         SyntaxTreeNode next = children.get(0);
         if(next.getSymb().equals("VNAME")) { //Case 1: ATOMIC -> VNAME
-            transVNAME(next, place);
-        } else if(next.getSymb().equals("CONST")) { //Case 2: ATOMIC -> CONST
-            transCONST(next, place);
-        } 
+            String vname = transVNAME(next, place);
+            atomic.setIntermediateCode(vname);
+            return vname;
+        } else if (next.getSymb().equals("CONST")) { //Case 2: ATOMIC -> CONST
+            String cons = transCONST(next, place);
+            atomic.setIntermediateCode(cons);
+            return cons;
+        }
+        return "";
     }
 
-    public void transCONST(SyntaxTreeNode cons) throws IOException {
+    public String transCONST(SyntaxTreeNode cons) throws IOException {
         List<SyntaxTreeNode> children = cons.getChildren();
         SyntaxTreeNode next = children.get(0);
         //Case 1: CONST -> TokenN  && Case 2: CONST -> TokenT
-        outputFile.write(next.getTerminalWord());
+        //adding to the syntax tree
+        cons.setIntermediateCode(next.getTerminalWord());
+        return next.getTerminalWord();
     }
 
-    public void transCONST(SyntaxTreeNode cons, String place) throws IOException {
+    public String transCONST(SyntaxTreeNode cons, String place) throws IOException {
         List<SyntaxTreeNode> children = cons.getChildren();
         SyntaxTreeNode next = children.get(0);
         //Case 1: CONST -> TokenN  && Case 2: CONST -> TokenT
-        outputFile.write("\nLET " + place + " = " + next.getTerminalWord()  + " ");
+        //adding to the syntax tree
+        cons.setIntermediateCode("\n " + place + " = " + next.getTerminalWord()  + " ");
+        return "\n " + place + " = " + next.getTerminalWord()  + " ";
     }
 
-    public void transASSIGN(SyntaxTreeNode assign) throws IOException {
-        System.out.println("In assign");
+    public String transASSIGN(SyntaxTreeNode assign) throws IOException {
         List<SyntaxTreeNode> children = assign.getChildren();
         SyntaxTreeNode symbol = children.get(1);
         
         if (symbol.getTerminal()!=null && symbol.getTerminal().contains("<WORD>&lt;</WORD>")) { // ASSIGN -> VNAME < input
-            outputFile.write("INPUT ");
-            transVNAME(children.get(0));
+            String vname = transVNAME(children.get(0));
+            assign.setIntermediateCode("INPUT " + vname);
+            return "INPUT " + vname;
         } else if (symbol.getTerminal() != null && symbol.getTerminal().contains("<WORD>=</WORD>")) { //Case 2: ASSIGN -> VNAME := TERM
             String place = newVar();
-            transTERM(children.get(2), place);
-            outputFile.write("\nLET ");
-            transVNAME(children.get(0));
-            outputFile.write(" = " + place);
+            String term = transTERM(children.get(2), place);
+            String vname =transVNAME(children.get(0));
+            assign.setIntermediateCode(term + "\n" + vname + " = " + place);
+            return term + "\n" + vname + " = " + place;
         }
+        return "";
     }
 
-    public void transTERM(SyntaxTreeNode term, String place) throws IOException {
+    public String transTERM(SyntaxTreeNode term, String place) throws IOException {
         List<SyntaxTreeNode> children = term.getChildren();
         SyntaxTreeNode next = children.get(0);
         if(next.getSymb().equals("ATOMIC")) { //Case 1: TERM -> ATOMIC
-            transATOMIC(next, place);
+            String atomic = transATOMIC(next, place);
+            term.setIntermediateCode(atomic);
+            return atomic;
         }else if(next.getSymb().equals("CALL")) { //Case 2: TERM -> CALL
-            transCALL(next, place);
+            String call = transCALL(next, place);
+            term.setIntermediateCode(call);
+            return call;
         } else if (next.getSymb().equals("OP")) { //Case 3: TERM -> OP
-            transOP(next, place);
+            String op = transOP(next, place);
+            term.setIntermediateCode(op);
+            return op;
         }
+        return "";
     }
 
-    public void transCALL(SyntaxTreeNode call) throws IOException {
+    public String transCALL(SyntaxTreeNode call) throws IOException {
         // Call -> FNAME ( ATOMIC , ATOMIC , ATOMIC )
-        outputFile.write("CALL ");
-        transFNAME(call.getChildren().get(0));
-        outputFile.write("(");
-        transATOMIC(call.getChildren().get(2));
-        outputFile.write(",");
-        transATOMIC(call.getChildren().get(4));
-        outputFile.write(",");
-        transATOMIC(call.getChildren().get(6));
-        outputFile.write(")");
+        String fname = transFNAME(call.getChildren().get(0));
+        String atomic1 = transATOMIC(call.getChildren().get(2));
+        String atomic2 = transATOMIC(call.getChildren().get(4));
+        String atomic3 = transATOMIC(call.getChildren().get(6));
+        
+        //adding to the syntax tree
+        call.setIntermediateCode("CALL " + fname + "(" + atomic1 + "," + atomic2 + "," + atomic3 + ")");
+        return "CALL " + fname + "(" + atomic1 + "," + atomic2 + "," + atomic3 + ")";
     }
 
-    public void transCALL(SyntaxTreeNode call, String place) throws IOException {
+    public String transCALL(SyntaxTreeNode call, String place) throws IOException {
         // Call -> FNAME ( ATOMIC , ATOMIC , ATOMIC )
-        outputFile.write("\nLET" + place + " = CALL ");
-        transFNAME(call.getChildren().get(0));
-        outputFile.write("(");
-        transATOMIC(call.getChildren().get(2));
-        outputFile.write(",");
-        transATOMIC(call.getChildren().get(4));
-        outputFile.write(",");
-        transATOMIC(call.getChildren().get(6));
-        outputFile.write(")");
+        String fname = transFNAME(call.getChildren().get(0));
+        String atomic1 = transATOMIC(call.getChildren().get(2));
+        String atomic2 = transATOMIC(call.getChildren().get(4));
+        String atomic3 = transATOMIC(call.getChildren().get(6));
+        
+        //adding to the syntax tree
+        call.setIntermediateCode("CALL " + fname + "(" + atomic1 + "," + atomic2 + "," + atomic3 + ")");
+        return "CALL " + fname + "(" + atomic1 + "," + atomic2 + "," + atomic3 + ")";
     }
 
-    public void transOP(SyntaxTreeNode op, String place) throws IOException {
+    public String transOP(SyntaxTreeNode op, String place) throws IOException {
         List<SyntaxTreeNode> children = op.getChildren();
         SyntaxTreeNode next = children.get(0);
 
         if (next.getSymb().equals("UNOP")) { //Case 1: OP -> UNOP ( ARG )
             String place1 = newVar();
-            transARG(children.get(2), place1);
+            String arg =transARG(children.get(2), place1);
             outputFile.write(place);
             outputFile.write(" = ");
-            transUNOP(next);
+            String unop = transUNOP(next);
             outputFile.write(place1);
+            //adding to the syntax tree
+            op.setIntermediateCode(arg + place + " = " + unop + " " + place1 + " ");
+            return arg + place + " = " + unop + " " + place1 + " ";
            
         } else if (next.getSymb().equals("BINOP")) { //Case 2: OP -> BINOP ( ARG , ARG )
             String place1 = newVar();
             String place2 = newVar();
-            transARG(children.get(2), place1);
-            transARG(children.get(4), place2);
-            outputFile.write("\nLET " + place + " = " + place1);
-            transBINOP(next);
-            outputFile.write(place2);
+            String arg1 = transARG(children.get(2), place1);
+            String arg2 = transARG(children.get(4), place2);
+            String binop = transBINOP(next);
+            //adding to the syntax tree
+            op.setIntermediateCode(arg1 + " " + arg2 + "\n " + place + " = " + place1 + " " + binop + " " + place2);
+            return arg1 + " " + arg2 + "\n " + place + " = " + place1 + " " + binop + " " + place2;
         }
+        return "";
     }
 
-    public void transARG(SyntaxTreeNode arg, String place) throws IOException {
+    public String transARG(SyntaxTreeNode arg, String place) throws IOException {
         List<SyntaxTreeNode> children = arg.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getSymb().equals("ATOMIC")) { //Case 1: ARG -> ATOMIC
-            transATOMIC(next, place);
+            String atomic = transATOMIC(next, place);
+            //adding to the syntax tree
+            arg.setIntermediateCode(atomic);
+            return atomic;
         } else if (next.getSymb().equals("OP")) { //Case 2: ARG -> OP
-            transOP(next, place);
+            String op = transOP(next, place);
+            //adding to the syntax tree
+            arg.setIntermediateCode(op);
+            return op;
         }
+        return "";
     }
 
-    public void transUNOP(SyntaxTreeNode unop) throws IOException {
+    public String transUNOP(SyntaxTreeNode unop) throws IOException {
         List<SyntaxTreeNode> children = unop.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>not</WORD>")) { //Case 1: UNOP -> not
-            //TODO: figure out how to implement not
-        } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>sqrt</WORD>")) { //Case 2: UNOP -> sqrt
-            outputFile.write(" SQR ");
+            //adding to the syntax tree
+            unop.setIntermediateCode("NOT");
+            return "NOT";
+        } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>sqrt</WORD>")) { //Case 2: UNOP -> sqrt
+            //adding to the syntax tree
+            unop.setIntermediateCode("SQR");
+            return "SQR";
         }
+        return "";
     }
 
-    public void transBINOP(SyntaxTreeNode binop) throws IOException {
+    public String transBINOP(SyntaxTreeNode binop) throws IOException {
         List<SyntaxTreeNode> children = binop.getChildren();
         SyntaxTreeNode next = children.get(0);
 
         if (next.getTerminal() != null && next.getTerminal().contains("<WORD>or</WORD>")) { //Case 1: BINOP -> or
-            //TODO: figure out how to implement or
+            //adding to the syntax tree
+            binop.setIntermediateCode(" OR ");
+            return " OR ";
         } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>and</WORD>")) { //Case 2: BINOP -> and
-            //TODO: figure out how to implement and
+            //adding to the syntax tree
+            binop.setIntermediateCode(" AND ");
+            return " AND ";
         } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>eq</WORD>")) { //Case 3: BINOP -> eq
-            outputFile.write(" = ");
+            //adding to the syntax tree
+            binop.setIntermediateCode(" = ");
+            return " = ";
         } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>grt</WORD>")) { //Case 4: BINOP -> grt
-            outputFile.write(" > ");
+            //adding to the syntax tree
+            binop.setIntermediateCode(" > ");
+            return " > ";
         } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>add</WORD>")) { //Case 5: BINOP -> add
-            outputFile.write(" + ");
+            //adding to the syntax tree
+            binop.setIntermediateCode(" + ");
+            return " + ";
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>sub</WORD>")) { //Case 6: BINOP -> sub
-            outputFile.write(" - ");
+            //adding to the syntax tree
+            binop.setIntermediateCode(" - ");
+            return " - ";
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>mul</WORD>")) { //Case 7: BINOP -> mul
-            outputFile.write(" * ");
-        } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>div</WORD>")) { //Case 8: BINOP -> div
+            //adding to the syntax tree
+            binop.setIntermediateCode(" * ");
+            return " * ";
+        } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>div</WORD>")) { //Case 8: BINOP -> div
             outputFile.write(" / ");
+            //adding to the syntax tree
+            binop.setIntermediateCode(" / ");
+            return " / ";
         }
+        return "";
     }
+    
 
-    public void transBRANCH(SyntaxTreeNode branch) throws IOException {
+    public String transBRANCH(SyntaxTreeNode branch) throws IOException {
+        //NOT SURE ABOUT THIS
         //BRANCH->if COND then ALGO else ALGO   
-
-        //NOT SURE ABOUT THIS IMPLEMENTATION
-
         List<SyntaxTreeNode> children = branch.getChildren();
         SyntaxTreeNode cond = children.get(1);
         SyntaxTreeNode next = cond.getChildren().get(0);
@@ -349,124 +359,145 @@ public class intermeridateCodeGeneration {
         String label2 = newLabel();
         String label3 = newLabel();
 
+        String condCode;
         
         if (next.getSymb().equals("SIMPLE")) {//CASE 1 : COND -> SIMPLE
-            transSIMPLE(children.get(2), label1, label2);
+            condCode = transSIMPLE(children.get(2), label1, label2);
 
         } else if (next.getSymb().equals("COMPOSIT")) { //CASE 2: COND -> COMPOSIT
-            transCOMPOSIT(children.get(2), label1, label2, "");
+            condCode = transCOMPOSIT(children.get(2), label1, label2, "");
+        } else {
+            condCode = "";
         }
         
-        outputFile.write("\nLABEL" + label1);
-        transALGO(children.get(4));
-        outputFile.write("\nGOTO " + label3);
-        outputFile.write("\nLABEL" + label2);
-        transALGO(children.get(6));
-        outputFile.write("\nLABEL" + label3);
-
+        String algo1 = transALGO(children.get(4));
+        String algo2 = transALGO(children.get(6));
+        //adding to the syntax tree
+        branch.setIntermediateCode(condCode + "\nLABEL" + label1 + "\n" + algo1 + "\nGOTO " + label3 + "\nLABEL" + label2 + "\n" + algo2 + "\nLABEL" + label3);
+        return condCode + "\nLABEL" + label1 + "\n" + algo1 + "\nGOTO " + label3 + "\nLABEL" + label2 + "\n" + algo2 + "\nLABEL" + label3;
     }
 
-    public void transCOND(SyntaxTreeNode cond) throws IOException {
-        //NOT NEEDED
-    }
-
-    public void transSIMPLE(SyntaxTreeNode simple, String labelt, String labelf) throws IOException {
+    public String transSIMPLE(SyntaxTreeNode simple, String labelt, String labelf) throws IOException {
         //SIMPLE->BINOP ( ATOMIC , ATOMIC )
         List<SyntaxTreeNode> children = simple.getChildren();
         String t1 = newVar();
         String t2 = newVar();
+        String arg1 = transARG(children.get(2), t1);
+        String arg2 = transARG(children.get(4), t2);
+        String op = transOP(children.get(0), t2);
 
-        transARG(children.get(2), t1);
-        transARG(children.get(4), t2);
-        outputFile.write("IF " + t1);
-        transOP(children.get(0), t2);
-        outputFile.write(t2 + " THEN " + labelt + " ELSE " + labelf);
+        //adding to the syntax tree
+        simple.setIntermediateCode(arg1 + arg2 + "IF " + t1 + " " + op + " " + t2 + " THEN " + labelt + " ELSE " + labelf);
+        return arg1 + arg2 + "IF " + t1 + " " + op + " " + t2 + " THEN " + labelt + " ELSE " + labelf;
     }
 
-    public void transCOMPOSIT(SyntaxTreeNode composit, String labelt, String labelf, String place) throws IOException {
+    public String transCOMPOSIT(SyntaxTreeNode composit, String labelt, String labelf, String place) throws IOException {
         // NOT SURE ABOUT THIS IMPLEMENTATION
         List<SyntaxTreeNode> children = composit.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getSymb().equals("BINOP") ) { //Case 1: COMPOSIT -> BINOP ( SIMPLE , SIMPLE )
             String t1 = newVar();
             String t2 = newVar();
-            transSIMPLE(children.get(2), t1, t2);
-            transSIMPLE(children.get(4), t1, t2);
-            outputFile.write("IF " + t1);
-            transOP(children.get(0), t2);
-            outputFile.write(t2 +" THEN " + labelt + " ELSE " + labelf);
+            String simple1 = transSIMPLE(children.get(2), t1, t2);
+            String simple2 = transSIMPLE(children.get(4), t1, t2);
+            String binop = transBINOP(children.get(0));
+            //adding to the syntax tree
+            composit.setIntermediateCode(simple1 + simple2 + "IF " + t1 + " " + binop + " " + t2 + " THEN " + labelt + " ELSE " + labelf);
+            return simple1 + simple2 + "IF " + t1 + " " + t2 + " THEN " + labelt + " ELSE " + labelf;
         } else if (next.getSymb().equals("UNOP")) {//Case 2: COMPOSIT -> UNOP ( SIMPLE )
             String place1 = newVar();
-            transSIMPLE(children.get(2), labelt, labelf);
-            outputFile.write(place);
-            outputFile.write(" = ");
-            transUNOP(next);
-            outputFile.write(place1);
-        } 
+            String simple = transSIMPLE(children.get(2), labelt, labelf);
+            String unop = transUNOP(next);
+            //adding to the syntax tree
+            composit.setIntermediateCode(simple + place + " = " + unop + " " + place1 + " ");
+            return simple + place + " = " + unop + " " + place1 + " ";
+        }
+        return "";
     }
 
-    public void transFNAME(SyntaxTreeNode fname) throws IOException {
+    public String transFNAME(SyntaxTreeNode fname) throws IOException {
         SyntaxTreeNode next = fname.getChildren().get(0);
         String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
-        outputFile.write(newName);
+        //adding to the syntax tree
+        fname.setIntermediateCode(newName);
+        return newName;
     }
 
 
-    public void transFUNCTIONS(SyntaxTreeNode functions) throws IOException {
+    public String transFUNCTIONS(SyntaxTreeNode functions) throws IOException {
         List<SyntaxTreeNode> children = functions.getChildren();
         SyntaxTreeNode next = children.get(0);
         if (next.getTerminal()!= null && next.getTerminal().isEmpty()) { //Case 1: FUNCTIONS -> 
-            outputFile.write("\nREM END");
-        } else if(next.getSymb().equals("DECL")) { //Case 2: FUNCTIONS -> DECL FUNCTIONS
-            transDECL(next);
-            outputFile.write("\nSTOP ");
-            transFUNCTIONS(children.get(1));
-        } 
+            //adding to the syntax tree
+            functions.setIntermediateCode("\nREM END");
+            return "\nREM END";
+        } else if (next.getSymb().equals("DECL")) { //Case 2: FUNCTIONS -> DECL FUNCTIONS
+            String decl = transDECL(next);
+            String function = transFUNCTIONS(children.get(1));
+            //adding to the syntax tree
+            functions.setIntermediateCode(decl + "\nSTOP " + function);
+            return decl + "\nSTOP " + function;
+        }
+        return "";
     }
 
-    public void transDECL(SyntaxTreeNode decl) {
+    public String transDECL(SyntaxTreeNode decl) throws IOException {
         //DECL->HEADER BODY
         List<SyntaxTreeNode> children = decl.getChildren();
-        //TODO: Implement this
+        String header = transHEADER(children.get(0));
+        String body = transBODY(children.get(1));
+        //adding to the syntax tree
+        decl.setIntermediateCode(header + body);
+        return header + body;
     }
 
-    public void transHEADER(SyntaxTreeNode header) {
+    public String transHEADER(SyntaxTreeNode header) throws IOException {
         //HEADER->FTYP FNAME ( VNAME , VNAME , VNAME )
         List<SyntaxTreeNode> children = header.getChildren();
-        //TODO: Implement this
-    }
+        String ftype = children.get(0).getTerminalWord();
+        String fname = transFNAME(children.get(1));
+        String vname1 = transVNAME(children.get(3));
+        String vname2 = transVNAME(children.get(5));
+        String vname3 = transVNAME(children.get(7));
+        //adding to the syntax tree
+        header.setIntermediateCode(ftype + " " + fname + " (" + vname1 + "," + vname2 + "," + vname3 + ")");
+        return ftype + " " + fname + " (" + vname1 + "," + vname2 + "," + vname3 + ")";
 
-    public void transFTYP(SyntaxTreeNode ftyp) {
-        //Not transd
     }
     
-    public void transBODY(SyntaxTreeNode body) throws IOException {
+    public String transBODY(SyntaxTreeNode body) throws IOException {
         //BODY->PROLOG LOCVARS ALGO EPILOG SUBFUNCS end
         List<SyntaxTreeNode> children = body.getChildren();
-        transPROLOG(children.get(0));
-        transALGO(children.get(2));
-        transEPILOG(children.get(3));
-        transSUBFUNCS(children.get(4));
+        String prolog = transPROLOG(children.get(0));
+        String algo = transALGO(children.get(2));
+        String epilog = transEPILOG(children.get(3));
+        String subfuncs = transSUBFUNCS(children.get(4));
+        //adding to the syntax tree
+        body.setIntermediateCode(prolog + algo + epilog + subfuncs);
+        return prolog + algo + epilog + subfuncs;
     }  
 
-    public void transPROLOG(SyntaxTreeNode  prolog) throws IOException {
+    public String transPROLOG(SyntaxTreeNode  prolog) throws IOException {
         //PROLOG->{
-        outputFile.write("\nREM BEGIN");
+        //adding to the syntax tree
+        prolog.setIntermediateCode("\nREM BEGIN");
+        return "\nREM BEGIN";
     }
 
-    public void transEPILOG(SyntaxTreeNode epilog) throws IOException {
+    public String transEPILOG(SyntaxTreeNode epilog) throws IOException {
         //EPILOG->}
-        outputFile.write("\nREM END");
+        //adding to the syntax tree
+        epilog.setIntermediateCode("\nREM END");
+        return "\nREM END";
     }
 
-    public void transLOCVARS(SyntaxTreeNode locvars) {
-        //Not transd
-    }
-
-    public void transSUBFUNCS(SyntaxTreeNode subfuncs) throws IOException {
+    public String transSUBFUNCS(SyntaxTreeNode subfuncs) throws IOException {
         //SUBFUNCS->FUNCTIONS
         List<SyntaxTreeNode> children = subfuncs.getChildren();
-        transFUNCTIONS(children.get(0));
+        String functions = transFUNCTIONS(children.get(0));
+        //adding to the syntax tree
+        subfuncs.setIntermediateCode(functions);
+        return functions;
     }
 
     private String newVar() {
