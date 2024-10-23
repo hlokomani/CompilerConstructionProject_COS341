@@ -132,7 +132,7 @@ public class intermediateCodeGeneration {
             command.setIntermediateCode(call);
             return call;
         } else if (next.getSymb().equals("BRANCH")) { //Case 7: COMMAND -> BRANCH
-            String branch = transBRANCH(children.get(0));
+            String branch = transBRANCH(children.get(0), "place");
             command.setIntermediateCode(branch);
             return branch;
         }
@@ -301,11 +301,12 @@ public class intermediateCodeGeneration {
     public String transUNOP(SyntaxTreeNode unop) throws IOException {
         List<SyntaxTreeNode> children = unop.getChildren();
         SyntaxTreeNode next = children.get(0);
-        if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>not</WORD>")) { //Case 1: UNOP -> not
-            //adding to the syntax tree
-            unop.setIntermediateCode("NOT");
-            return "NOT";
-        } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>sqrt</WORD>")) { //Case 2: UNOP -> sqrt
+        // if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>not</WORD>")) { //Case 1: UNOP -> not
+        //     //adding to the syntax tree
+        //     unop.setIntermediateCode("NOT");
+        //     return "NOT";
+        // } else 
+        if (next.getTerminal() != null && next.getTerminal().contains("<WORD>sqrt</WORD>")) { //Case 2: UNOP -> sqrt
             //adding to the syntax tree
             unop.setIntermediateCode("SQR");
             return "SQR";
@@ -317,15 +318,16 @@ public class intermediateCodeGeneration {
         List<SyntaxTreeNode> children = binop.getChildren();
         SyntaxTreeNode next = children.get(0);
 
-        if (next.getTerminal() != null && next.getTerminal().contains("<WORD>or</WORD>")) { //Case 1: BINOP -> or
-            //adding to the syntax tree
-            binop.setIntermediateCode(" OR ");
-            return " OR ";
-        } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>and</WORD>")) { //Case 2: BINOP -> and
-            //adding to the syntax tree
-            binop.setIntermediateCode(" AND ");
-            return " AND ";
-        } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>eq</WORD>")) { //Case 3: BINOP -> eq
+        // if (next.getTerminal() != null && next.getTerminal().contains("<WORD>or</WORD>")) { //Case 1: BINOP -> or
+        //     //adding to the syntax tree
+        //     binop.setIntermediateCode(" OR ");
+        //     return " OR ";
+        // } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>and</WORD>")) { //Case 2: BINOP -> and
+        //     //adding to the syntax tree
+        //     binop.setIntermediateCode(" AND ");
+        //     return " AND ";
+        // } else 
+        if (next.getTerminal() != null && next.getTerminal().contains("<WORD>eq</WORD>")) { //Case 3: BINOP -> eq
             //adding to the syntax tree
             binop.setIntermediateCode(" = ");
             return " = ";
@@ -354,33 +356,36 @@ public class intermediateCodeGeneration {
     }
     
 
-    public String transBRANCH(SyntaxTreeNode branch) throws IOException {
+    public String transBRANCH(SyntaxTreeNode branch, String place) throws IOException {
         //NOT SURE ABOUT THIS
         //BRANCH->if COND then ALGO else ALGO   
         List<SyntaxTreeNode> children = branch.getChildren();
         SyntaxTreeNode cond = children.get(1);
         SyntaxTreeNode next = cond.getChildren().get(0);
 
-        String label1 = newLabel();
-        String label2 = newLabel();
-        String label3 = newLabel();
-
-        String condCode;
+        
         
         if (next.getSymb().equals("SIMPLE")) {//CASE 1 : COND -> SIMPLE
-            condCode = transSIMPLE(children.get(1).getChildren().get(0), label1, label2);
+            String label1 = newLabel();
+            String label2 = newLabel();
+            String label3 = newLabel();
 
+            String condCode = transSIMPLE(children.get(1).getChildren().get(0), label1, label2);
+            String algo1 = transALGO(children.get(3));
+            String algo2 = transALGO(children.get(5));
+            //adding to the syntax tree
+            branch.setIntermediateCode(condCode + "\nLABEL " + label1 + "\n" + algo1 + "\nGOTO " + label3 + "\nLABEL " + label2 + "\n" + algo2 + "\nLABEL " + label3);
+            return condCode + "\nLABEL " + label1 + "\n" + algo1 + "\nGOTO " + label3 + "\nLABEL " + label2 + "\n" + algo2 + "\nLABEL " + label3;
         } else if (next.getSymb().equals("COMPOSIT")) { //CASE 2: COND -> COMPOSIT
-            condCode = transCOMPOSIT(children.get(1).getChildren().get(0), label1, label2, "");
+            String label1 = newLabel();
+            String label2 = newLabel();
+            String condCode = transCOMPOSIT(children.get(1).getChildren().get(0), label1, label2, "");
+            //adding to the syntax tree
+            branch.setIntermediateCode("\n" + place + " = 0 " + condCode + "\nLABEL " + label1 + "\n" + place + " = 1\nLABEL " + label2);
+            return "\n" + place + " = 0 " + condCode + "\nLABEL " + label1 + "\n" + place + " = 1\nLABEL " + label2;
         } else {
-            condCode = "";
+            return "";
         }
-        
-        String algo1 = transALGO(children.get(3));
-        String algo2 = transALGO(children.get(5));
-        //adding to the syntax tree
-        branch.setIntermediateCode(condCode + "\nLABEL " + label1 + "\n" + algo1 + "\nGOTO " + label3 + "\nLABEL " + label2 + "\n" + algo2 + "\nLABEL " + label3);
-        return condCode + "\nLABEL " + label1 + "\n" + algo1 + "\nGOTO " + label3 + "\nLABEL " + label2 + "\n" + algo2 + "\nLABEL " + label3;
     }
 
     public String transSIMPLE(SyntaxTreeNode simple, String labelt, String labelf) throws IOException {
@@ -392,14 +397,14 @@ public class intermediateCodeGeneration {
         System.out.println("children.get(0): " + children.get(0));
         String t1 = newVar();
         String t2 = newVar();
-        String arg1 = transARG(children.get(2), t1);
-        String arg2 = transARG(children.get(4), t2);
+        String atomic1 = transATOMIC(children.get(2), t1);
+        String atomic2 = transATOMIC(children.get(4), t2);
         String op = transBINOP(children.get(0));
         System.out.println("op: " + op);
 
         //adding to the syntax tree
-        simple.setIntermediateCode(arg1 + arg2 + "\nIF " + t1 + " " + op + " " + t2 + " THEN " + labelt + " ELSE " + labelf);
-        return arg1 + arg2 + "\nIF " + t1 + " " + op + " " + t2 + " THEN " + labelt + " ELSE " + labelf;
+        simple.setIntermediateCode(atomic1 + atomic2 + "\nIF " + t1 + " " + op + " " + t2 + " THEN " + labelt + " ELSE " + labelf);
+        return atomic1 + atomic2 + "\nIF " + t1 + " " + op + " " + t2 + " THEN " + labelt + " ELSE " + labelf;
     }
 
     public String transCOMPOSIT(SyntaxTreeNode composit, String labelt, String labelf, String place) throws IOException {
@@ -409,22 +414,50 @@ public class intermediateCodeGeneration {
         SyntaxTreeNode next = children.get(0);
         if (next.getSymb().equals("BINOP")) { //Case 1: COMPOSIT -> BINOP ( SIMPLE , SIMPLE )
             System.out.println("BINOP");
-            String t1 = newVar();
-            String t2 = newVar();
-            String simple1 = transSIMPLE(children.get(2), t1, t2);
-            String simple2 = transSIMPLE(children.get(4), t1, t2);
-            String binop = transBINOP(children.get(0));
-            //adding to the syntax tree
-            composit.setIntermediateCode(simple1 + simple2 + "\nIF " + t1 + " " + binop + " " + t2 + " THEN " + labelt + " ELSE " + labelf);
-            return simple1 + simple2 + "\nIF " + t1 + " " + t2 + " THEN " + labelt + " ELSE " + labelf;
+            //checking for and / or operator
+            if(next.getChildren().get(0).getTerminal().contains("<WORD>and</WORD>")) {
+                String arg2 = newLabel();
+                String code1 = transSIMPLE(children.get(2), arg2, labelf);
+                String code2 = transSIMPLE(children.get(4), labelt, labelf);
+                //adding to the syntax tree
+                composit.setIntermediateCode(code1 + "\nLABEL " + arg2 + "\n" + code2);
+                return code1 + "\nLABEL " + arg2 + "\n" + code2;
+            } else if (next.getChildren().get(0).getTerminal().contains("<WORD>or</WORD>")) {
+                String arg2 = newLabel();
+                String code1 = transSIMPLE(children.get(2), labelt, arg2);
+                String code2 = transSIMPLE(children.get(4), labelt, labelf);
+                //adding to the syntax tree
+                composit.setIntermediateCode(code1 + "\nLABEL " + arg2 + "\n" + code2);
+                return code1 + "\nLABEL " + arg2 + "\n" + code2;
+            } else {
+                String t1 = newVar();
+                String t2 = newVar();
+                String simple1 = transSIMPLE(children.get(2), t1, t2);
+                String simple2 = transSIMPLE(children.get(4), t1, t2);
+                String binop = transBINOP(children.get(0));
+                //adding to the syntax tree
+                composit.setIntermediateCode(simple1 + simple2 + "\nIF " + t1 + " " + binop + " " + t2 + " THEN " + labelt + " ELSE " + labelf);
+                return simple1 + simple2 + "\nIF " + t1 + " " + t2 + " THEN " + labelt + " ELSE " + labelf;
+            }
+            
         } else if (next.getSymb().equals("UNOP")) {//Case 2: COMPOSIT -> UNOP ( SIMPLE )
             System.out.println("UNOP");
-            String place1 = newVar();
-            String simple = transSIMPLE(children.get(2), labelt, labelf);
-            String unop = transUNOP(next);
-            //adding to the syntax tree
-            composit.setIntermediateCode(simple + place + " = " + unop + " " + place1 + " ");
-            return simple + place + " = " + unop + " " + place1 + " ";
+            //checking for not operator
+            if(next.getChildren().get(0).getTerminal().contains("<WORD>not</WORD>")) {
+                String place1 = newVar();
+                String simple = transSIMPLE(children.get(2), labelf, labelt);
+                String unop = transUNOP(next);
+                //adding to the syntax tree
+                composit.setIntermediateCode(simple + place + " = " + unop + " " + place1 + " ");
+                return simple + place + " = " + unop + " " + place1 + " ";
+            } else {
+                String place1 = newVar();
+                String simple = transSIMPLE(children.get(2), labelt, labelf);
+                String unop = transUNOP(next);
+                //adding to the syntax tree
+                composit.setIntermediateCode(simple + place + " = " + unop + " " + place1 + " ");
+                return simple + place + " = " + unop + " " + place1 + " ";
+            }
         }
         return "";
     }
@@ -434,7 +467,7 @@ public class intermediateCodeGeneration {
         SyntaxTreeNode next = fname.getChildren().get(0);
         System.out.println("next: " + next);
         System.out.println("SymbolTableAccessor.lookupFunction(next.getTerminalWord()): " + SymbolTableAccessor.lookupFunction(next.getTerminalWord()));
-        String newName = SymbolTableAccessor.lookupFunction(next.getTerminalWord()).getName();
+        String newName = SymbolTableAccessor.lookupFunction(next.getTerminalWord()).getGeneratedName();
         //adding to the syntax tree
         fname.setIntermediateCode(newName);
         return newName;
@@ -531,7 +564,7 @@ public class intermediateCodeGeneration {
     public static void main(String[] args) {
         //Testing the code generator
         try {
-            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output8.xml");
+            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output6.xml");
             codeGen.trans();
             codeGen.outputFile.close();
         } catch (Exception e) {
