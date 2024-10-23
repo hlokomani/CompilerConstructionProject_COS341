@@ -1,0 +1,25 @@
+10 DIM M(7,30)
+20 SP = 0
+30 LET var0$ = "Enter"
+40 LET A$ = var0$
+50 PRINT A$
+60 INPUT A
+70 LET var1 = A
+80 LET var2 = 18
+90 IF var1 > var2 THEN GOTO 110
+100 GOTO 170
+110 REM label0
+120 LET var3$ = "Adult"
+130 LET A$ = var3$
+140 PRINT A$
+150 REM END
+160 GOTO 220
+170 REM label1
+180 LET var4$ = "Minor"
+190 LET A$ = var4$
+200 PRINT A$
+210 REM END
+220 REM label2
+230 REM END
+240 END
+250 REM END

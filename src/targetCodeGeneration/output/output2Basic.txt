@@ -1,0 +1,29 @@
+10 DIM M(7,30)
+20 SP = 0
+30 LET var0 = 10
+40 LET A = var0
+50 LET var1 = 5
+60 LET A1 = var1
+70 LET var3 = A
+80 LET var4 = A1
+90 LET var2 = var3  +  var4
+100 LET A2 = var2
+110 PRINT A2
+120 LET var6 = A
+130 LET var7 = A1
+140 LET var5 = var6  -  var7
+150 LET A2 = var5
+160 PRINT A2
+170 LET var9 = A
+180 LET var10 = A1
+190 LET var8 = var9  *  var10
+200 LET A2 = var8
+210 PRINT A2
+220 LET var12 = A
+230 LET var13 = A1
+240 LET var11 = var12  /  var13
+250 LET A2 = var11
+260 PRINT A2
+270 REM END
+280 END
+290 REM END
