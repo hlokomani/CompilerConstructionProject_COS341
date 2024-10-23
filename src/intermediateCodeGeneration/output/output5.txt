@@ -1,0 +1,45 @@
+var0 = 10 
+V_a = var0
+var1 = 5 
+V_b = var1
+var2 = 2 
+V_c = var2
+var6 = V_a  
+var7 = V_b 
+var4 = var6  *  var7 
+var10 = V_c  
+var11 = V_a 
+var8 = var10  -  var11 
+var9 = V_b 
+var5 = var8  /  var9
+var3 = var4  +  var5
+V_result = var3
+PRINT V_result
+var12 =  CALL F_complex(V_a,V_b,V_c)
+V_result = var12
+PRINT V_result
+REM END
+STOP
+num F_complex (V_x,V_y,V_z)
+REM BEGIN
+var16 = V_x  
+var17 = V_y 
+var14 = var16  *  var17 
+var18 = V_z  
+var19 = 2 
+var15 = var18  /  var19
+var13 = var14  +  var15
+V_tempa = var13
+var24 = V_tempa  
+var25 = V_tempa 
+var22 = var24  *  var25 
+var23 = V_z 
+var21 = var22  +  var23
+var20 = SQR var21 
+V_tempb = var20
+returnV_tempb
+REM END
+REM END
+REM END
+STOP 
+REM END

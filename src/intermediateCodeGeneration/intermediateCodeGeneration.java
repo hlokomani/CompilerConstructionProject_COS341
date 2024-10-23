@@ -264,8 +264,8 @@ public class intermediateCodeGeneration {
             String arg =transARG(children.get(2), place1);
             String unop = transUNOP(next);
             //adding to the syntax tree
-            op.setIntermediateCode(arg + place + " = " + unop + " " + place1 + " ");
-            return arg + place + " = " + unop + " " + place1 + " ";
+            op.setIntermediateCode(arg + "\n" +  place + " = " + unop + " " + place1 + " ");
+            return arg + "\n" +  place + " = " + unop + " " + place1 + " ";
            
         } else if (next.getSymb().equals("BINOP")) { //Case 2: OP -> BINOP ( ARG , ARG )
             System.out.println("BINOP");
@@ -531,7 +531,7 @@ public class intermediateCodeGeneration {
     public static void main(String[] args) {
         //Testing the code generator
         try {
-            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output3.xml");
+            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output5.xml");
             codeGen.trans();
             codeGen.outputFile.close();
         } catch (Exception e) {
