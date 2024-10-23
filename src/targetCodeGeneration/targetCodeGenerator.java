@@ -318,7 +318,7 @@ public class targetCodeGenerator {
 
     public void transFNAME(SyntaxTreeNode fname) throws IOException {
         SyntaxTreeNode next = fname.getChildren().get(0);
-        String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
+        String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getGeneratedName();
         outputFile.write(newName);
     }
 

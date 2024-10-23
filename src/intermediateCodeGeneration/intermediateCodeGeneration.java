@@ -434,7 +434,7 @@ public class intermediateCodeGeneration {
         SyntaxTreeNode next = fname.getChildren().get(0);
         System.out.println("next: " + next);
         System.out.println("SymbolTableAccessor.lookupFunction(next.getTerminalWord()): " + SymbolTableAccessor.lookupFunction(next.getTerminalWord()));
-        String newName = SymbolTableAccessor.lookupFunction(next.getTerminalWord()).getName();
+        String newName = SymbolTableAccessor.lookupFunction(next.getTerminalWord()).getGeneratedName();
         //adding to the syntax tree
         fname.setIntermediateCode(newName);
         return newName;
@@ -531,7 +531,7 @@ public class intermediateCodeGeneration {
     public static void main(String[] args) {
         //Testing the code generator
         try {
-            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output8.xml");
+            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output4.xml");
             codeGen.trans();
             codeGen.outputFile.close();
         } catch (Exception e) {
