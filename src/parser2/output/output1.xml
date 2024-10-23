@@ -2457,7 +2457,7 @@
                     <CLASS>operator</CLASS>
                     <WORD>)</WORD>
                     <LINE>18</LINE>
-                    <COLUMN>38</COLUMN>
+                    <COLUMN>37</COLUMN>
                 </TOK>
             </TERMINAL>
         </LEAF>
@@ -2470,7 +2470,7 @@
                     <CLASS>V</CLASS>
                     <WORD>V_msg</WORD>
                     <LINE>18</LINE>
-                    <COLUMN>33</COLUMN>
+                    <COLUMN>32</COLUMN>
                 </TOK>
             </TERMINAL>
         </LEAF>
@@ -2483,7 +2483,7 @@
                     <CLASS>operator</CLASS>
                     <WORD>,</WORD>
                     <LINE>18</LINE>
-                    <COLUMN>31</COLUMN>
+                    <COLUMN>30</COLUMN>
                 </TOK>
             </TERMINAL>
         </LEAF>
@@ -2496,7 +2496,7 @@
                     <CLASS>V</CLASS>
                     <WORD>V_result</WORD>
                     <LINE>18</LINE>
-                    <COLUMN>23</COLUMN>
+                    <COLUMN>22</COLUMN>
                 </TOK>
             </TERMINAL>
         </LEAF>
@@ -2509,7 +2509,7 @@
                     <CLASS>operator</CLASS>
                     <WORD>,</WORD>
                     <LINE>18</LINE>
-                    <COLUMN>21</COLUMN>
+                    <COLUMN>20</COLUMN>
                 </TOK>
             </TERMINAL>
         </LEAF>
@@ -2522,7 +2522,7 @@
                     <CLASS>V</CLASS>
                     <WORD>V_n</WORD>
                     <LINE>18</LINE>
-                    <COLUMN>18</COLUMN>
+                    <COLUMN>17</COLUMN>
                 </TOK>
             </TERMINAL>
         </LEAF>
@@ -2535,7 +2535,7 @@
                     <CLASS>operator</CLASS>
                     <WORD>(</WORD>
                     <LINE>18</LINE>
-                    <COLUMN>17</COLUMN>
+                    <COLUMN>16</COLUMN>
                 </TOK>
             </TERMINAL>
         </LEAF>
@@ -2548,7 +2548,7 @@
                     <CLASS>F</CLASS>
                     <WORD>F_factorial</WORD>
                     <LINE>18</LINE>
-                    <COLUMN>6</COLUMN>
+                    <COLUMN>5</COLUMN>
                 </TOK>
             </TERMINAL>
         </LEAF>
@@ -2559,7 +2559,7 @@
                 <TOK>
                     <ID>55</ID>
                     <CLASS>reserved_keyword</CLASS>
-                    <WORD>void</WORD>
+                    <WORD>num</WORD>
                     <LINE>18</LINE>
                     <COLUMN>1</COLUMN>
                 </TOK>
