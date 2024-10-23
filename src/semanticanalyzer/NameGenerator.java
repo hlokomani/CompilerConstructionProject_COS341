@@ -5,6 +5,7 @@ public class NameGenerator {
     private char currentTextLetter = 'A';
     private char currentNumLetter = 'A';
     private int currentNumSuffix = 0;
+    private int currentFuncNumber = 1;
 
     private NameGenerator() {}
 
@@ -23,6 +24,12 @@ public class NameGenerator {
             currentTextLetter = 'A';
         }
 
+        return name;
+    }
+
+    public String getNextFunctionName() {
+        String name = "F" + currentFuncNumber;
+        currentFuncNumber++;
         return name;
     }
 
@@ -50,5 +57,6 @@ public class NameGenerator {
         currentTextLetter = 'A';
         currentNumLetter = 'A';
         currentNumSuffix = 0;
+        currentFuncNumber = 1;
     }
 }
