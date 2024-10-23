@@ -17,7 +17,7 @@ var4 = A
 var5 = A5 
 IF var4  ==  var5 THEN label0 ELSE label1
 LABEL label0
-returnA3
+return A3
 REM END
 GOTO label2
 LABEL label1
@@ -31,7 +31,7 @@ var9 = var10  *  var11
 A3 = var9
 var12 =  CALL F1(A,A3,A4)
 A6 = var12
-returnA6
+return A6
 REM END
 LABEL label2
 REM END

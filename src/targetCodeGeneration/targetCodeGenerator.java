@@ -1,389 +1,334 @@
 package targetCodeGeneration;
-import java.io.*;
-import java.util.List;
-import intermediateCodeGeneration.intermediateCodeGeneration;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
+
 import parser2.SyntaxTreeNode;
 import semanticanalyzer.SemanticAnalyzer;
 import semanticanalyzer.SymbolTableAccessor;
 import typeChecker.TreeCrawler;
 
 public class targetCodeGenerator {
-    private SyntaxTreeNode root;
     private FileWriter outputFile;
+    private int lineNumber = 10;  // Start from line 10
+    private String inputFilePath, outputFilePath;
+    private Map<String, String> tempVarMap = new HashMap<>();
+    private Map<String, Integer> labelLineNumbers = new HashMap<>();
+    private List<String> generatedCode = new ArrayList<>();
+    private Set<String> stringVariables = new HashSet<>();
 
-    public targetCodeGenerator(String xmlFilePath, SyntaxTreeNode root) throws Exception {
-        this.root = root;
-        String outputName = xmlFilePath.substring(xmlFilePath.lastIndexOf("/") + 1, xmlFilePath.lastIndexOf("."));
-        String outputFilePath = "output/" + outputName + ".txt";
+    public targetCodeGenerator(String intermediateCodeFile) throws Exception {
+        this.inputFilePath = intermediateCodeFile;
+
+
+        File inputFile = new File(intermediateCodeFile);
+        String outputName = inputFile.getName();
+        outputName = outputName.substring(0, outputName.lastIndexOf("."));
+        outputFilePath = "src/targetCodeGeneration/output/" + outputName + "Basic.txt";
         File output = new File(outputFilePath);
-        output.createNewFile();
-        output.setWritable(true);
-        outputFile = new FileWriter(output, true);  
-    }
-   
-    public void trans() {
-        try {
-            //Adding the declaration for the runtime stack
-            int n = 50;
-            outputFile.write("0 \t DIM M(7," + n + ")\n");
-            
-            transPROG(root);
-            outputFile.close();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-    
-    public void transPROG(SyntaxTreeNode prog) throws IOException {
-        //PROG->main GLOBVARS ALGO FUNCTIONS
-        transALGO(prog.getChildren().get(2));
-        transFUNCTIONS(prog.getChildren().get(3));
+        PrintWriter writer = new PrintWriter(output);
+        writer.print("");
+        writer.close();
+        outputFile = new FileWriter(output, true);
     }
 
-    public void transVNAME(SyntaxTreeNode vname) throws IOException {
-        SyntaxTreeNode next = vname.getChildren().get(0);
-        String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
-        outputFile.write(newName);
+    public void generateBasicCode() throws IOException {
+        //first pass: Generate all code with placeholder GOTOs
+        generateInitialCode();
+
+        //second pass: Find all label positions
+        findLabelPositions();
+
+        //third pass: Update GOTO statements with correct line numbers
+        updateGotoStatements();
+
+        writeToFile();
     }
 
-    public void transVNAME(SyntaxTreeNode vname, String place) throws IOException {
-        SyntaxTreeNode next = vname.getChildren().get(0);
-        String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
-        outputFile.write("\nLET " + place  + " = " + newName+ " ");
-    }
+    private void generateInitialCode() throws IOException {
+        generatedCode.add(lineNumber + " DIM M(7,30)");
+        incrementLineNumber();
+        generatedCode.add(lineNumber + " SP = 0");
+        incrementLineNumber();
 
-    public void transALGO(SyntaxTreeNode algo) throws IOException {
-        // ALGO -> begin INSTRUC end
-        transINSTRUC(algo.getChildren().get(1));
-    }
-
-    public void transINSTRUC(SyntaxTreeNode instruc) throws IOException {
-        System.out.println("In instruct");
-        List<SyntaxTreeNode> children = instruc.getChildren();
-        SyntaxTreeNode next = children.get(0);
-        if (next.getTerminal()!=null && next.getTerminal().isEmpty()) { //Case 1: INSTRUC -> 
-                outputFile.write("\nREM END");
-        } else if(next.getSymb().equals("COMMAND")) { //Case 2: INSTRUC -> COMMAND ; INSTRUC
-            transCOMMAND(next);
-            transINSTRUC(children.get(2));
-        } 
-    }
-
-    public void transCOMMAND(SyntaxTreeNode command) throws IOException {
-        System.out.println("In command");
-        List<SyntaxTreeNode> children = command.getChildren();
-        SyntaxTreeNode next = children.get(0);
-        if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>skip</WORD>")) { //Case 1: COMMAND -> skip
-            outputFile.write("\nREM DO NOTHING");
-        } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>halt</WORD>")) { //Case 2: COMMAND -> halt
-            outputFile.write("\nSTOP");
-        } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>print</WORD>")) {//Case 3: COMMAND -> print ATOMIC
-            outputFile.write("\nPRINT ");
-            transATOMIC(children.get(1));
-        } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>return</WORD>")) {//Case 4: COMMAND -> return ATOMIC
-            //TODO: Implement return
-        } else if (next.getSymb().equals("ASSIGN")) {//Case 5: COMMAND -> ASSIGN
-           transASSIGN(children.get(0));
-        } else if (next.getSymb().equals("CALL")) { //Case 6: COMMAND -> CALL
-            transCALL(children.get(0));
-        } else if (next.getSymb().equals("BRANCH")) { //Case 7: COMMAND -> BRANCH
-            transBRANCH(children.get(0));
+        // Generate code with placeholder GOTOs
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFilePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (!line.trim().isEmpty()) {
+                    String basicCode = translateLineToBasic(line.trim());
+                    if (!basicCode.isEmpty()) {
+                        for (String l : basicCode.split("\n")) {
+                            if (!l.trim().isEmpty()) {
+                                generatedCode.add(l);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
-    public void transATOMIC(SyntaxTreeNode atomic) throws IOException {
-        List<SyntaxTreeNode> children = atomic.getChildren();
-        SyntaxTreeNode next = children.get(0);
-        if (next.getSymb().equals("VNAME")) { //Case 1: ATOMIC -> VNAME
-            transVNAME(next);
-        } else if (next.getSymb().equals("CONST")) { //Case 2: ATOMIC -> CONST
-            transCONST(next);
-        }
-    }
-    
-    public void transATOMIC(SyntaxTreeNode atomic, String place) throws IOException {
-        List<SyntaxTreeNode> children = atomic.getChildren();
-        SyntaxTreeNode next = children.get(0);
-        if(next.getSymb().equals("VNAME")) { //Case 1: ATOMIC -> VNAME
-            transVNAME(next, place);
-        } else if(next.getSymb().equals("CONST")) { //Case 2: ATOMIC -> CONST
-            transCONST(next, place);
-        } 
-    }
-
-    public void transCONST(SyntaxTreeNode cons) throws IOException {
-        List<SyntaxTreeNode> children = cons.getChildren();
-        SyntaxTreeNode next = children.get(0);
-        //Case 1: CONST -> TokenN  && Case 2: CONST -> TokenT
-        outputFile.write(next.getTerminalWord());
-    }
-
-    public void transCONST(SyntaxTreeNode cons, String place) throws IOException {
-        List<SyntaxTreeNode> children = cons.getChildren();
-        SyntaxTreeNode next = children.get(0);
-        //Case 1: CONST -> TokenN  && Case 2: CONST -> TokenT
-        outputFile.write("\nLET " + place + " = " + next.getTerminalWord()  + " ");
-    }
-
-    public void transASSIGN(SyntaxTreeNode assign) throws IOException {
-        System.out.println("In assign");
-        List<SyntaxTreeNode> children = assign.getChildren();
-        SyntaxTreeNode symbol = children.get(1);
-        
-        if (symbol.getTerminal()!=null && symbol.getTerminal().contains("<WORD>&lt;</WORD>")) { // ASSIGN -> VNAME < input
-            outputFile.write("INPUT ");
-            transVNAME(children.get(0));
-        } else if (symbol.getTerminal() != null && symbol.getTerminal().contains("<WORD>=</WORD>")) { //Case 2: ASSIGN -> VNAME := TERM
-            String place = newVar();
-            transTERM(children.get(2), place);
-            outputFile.write("\nLET ");
-            transVNAME(children.get(0));
-            outputFile.write(" = " + place);
+    private void updateGotoStatements() {
+        // Go through and update all GOTO statements with correct line numbers
+        for (int i = 0; i < generatedCode.size(); i++) {
+            String line = generatedCode.get(i);
+            if (line.contains("GOTO NULL_")) {
+                //extract label name from NULL_labelname
+                String label = line.substring(line.indexOf("NULL_") + 5).trim();
+                Integer targetLine = labelLineNumbers.get(label);
+                if (targetLine != null) {
+                    //replace NULL_labelname with the actual line number
+                    String updatedLine = line.replace("NULL_" + label, targetLine.toString());
+                    generatedCode.set(i, updatedLine);
+                }
+            }
+            else if (line.contains("THEN GOTO NULL_")) {
+                // handle IF statement GOTOs
+                String label = line.substring(line.indexOf("NULL_") + 5).trim();
+                Integer targetLine = labelLineNumbers.get(label);
+                if (targetLine != null) {
+                    String updatedLine = line.replace("NULL_" + label, targetLine.toString());
+                    generatedCode.set(i, updatedLine);
+                }
+            }
         }
     }
 
-    public void transTERM(SyntaxTreeNode term, String place) throws IOException {
-        List<SyntaxTreeNode> children = term.getChildren();
-        SyntaxTreeNode next = children.get(0);
-        if(next.getSymb().equals("ATOMIC")) { //Case 1: TERM -> ATOMIC
-            transATOMIC(next, place);
-        }else if(next.getSymb().equals("CALL")) { //Case 2: TERM -> CALL
-            transCALL(next, place);
-        } else if (next.getSymb().equals("OP")) { //Case 3: TERM -> OP
-            transOP(next, place);
+    private void findLabelPositions() {
+        labelLineNumbers.clear();
+
+        for (int i = 0; i < generatedCode.size(); i++) {
+            String line = generatedCode.get(i);
+            if (line.contains("REM label")) {
+                String label = line.substring(line.indexOf("REM ") + 4).trim();
+                // Line numbers start at 10 and increment by 10
+                int actualLineNumber = 10 + (i * 10);
+                labelLineNumbers.put(label, actualLineNumber);
+                System.out.println("Found " + label + " at line " + actualLineNumber);
+            }
         }
     }
 
-    public void transCALL(SyntaxTreeNode call) throws IOException {
-        // Call -> FNAME ( ATOMIC , ATOMIC , ATOMIC )
-        outputFile.write("CALL ");
-        transFNAME(call.getChildren().get(0));
-        outputFile.write("(");
-        transATOMIC(call.getChildren().get(2));
-        outputFile.write(",");
-        transATOMIC(call.getChildren().get(4));
-        outputFile.write(",");
-        transATOMIC(call.getChildren().get(6));
-        outputFile.write(")");
-    }
-
-    public void transCALL(SyntaxTreeNode call, String place) throws IOException {
-        // Call -> FNAME ( ATOMIC , ATOMIC , ATOMIC )
-        outputFile.write("\nLET" + place + " = CALL ");
-        transFNAME(call.getChildren().get(0));
-        outputFile.write("(");
-        transATOMIC(call.getChildren().get(2));
-        outputFile.write(",");
-        transATOMIC(call.getChildren().get(4));
-        outputFile.write(",");
-        transATOMIC(call.getChildren().get(6));
-        outputFile.write(")");
-    }
-
-    public void transOP(SyntaxTreeNode op, String place) throws IOException {
-        List<SyntaxTreeNode> children = op.getChildren();
-        SyntaxTreeNode next = children.get(0);
-
-        if (next.getSymb().equals("UNOP")) { //Case 1: OP -> UNOP ( ARG )
-            String place1 = newVar();
-            transARG(children.get(2), place1);
-            outputFile.write(place);
-            outputFile.write(" = ");
-            transUNOP(next);
-            outputFile.write(place1);
-           
-        } else if (next.getSymb().equals("BINOP")) { //Case 2: OP -> BINOP ( ARG , ARG )
-            String place1 = newVar();
-            String place2 = newVar();
-            transARG(children.get(2), place1);
-            transARG(children.get(4), place2);
-            outputFile.write("\nLET " + place + " = " + place1);
-            transBINOP(next);
-            outputFile.write(place2);
+    private void writeToFile() throws IOException {
+        try (FileWriter writer = new FileWriter(outputFilePath)) {
+            for (String line : generatedCode) {
+                writer.write(line + "\n");
+            }
         }
     }
 
-    public void transARG(SyntaxTreeNode arg, String place) throws IOException {
-        List<SyntaxTreeNode> children = arg.getChildren();
-        SyntaxTreeNode next = children.get(0);
-        if (next.getSymb().equals("ATOMIC")) { //Case 1: ARG -> ATOMIC
-            transATOMIC(next, place);
-        } else if (next.getSymb().equals("OP")) { //Case 2: ARG -> OP
-            transOP(next, place);
+    private String translateLineToBasic(String line) {
+        if (line.isEmpty()) return "";
+
+        String translatedLine = "";
+
+        if (line.startsWith("REM")) {
+            translatedLine = lineNumber + " " + line;
+        }
+        else if (line.startsWith("PRINT")) {
+            translatedLine = lineNumber + " " + line;
+        }
+        else if (line.startsWith("INPUT")) {
+            translatedLine = lineNumber + " " + line;
+        }
+        else if (line.startsWith("STOP")) {
+            translatedLine = lineNumber + " END";
+        }
+        else if (line.startsWith("LABEL")) {
+            String label = line.substring(6);
+            translatedLine = lineNumber + " REM " + label;
+        }
+        else if (line.startsWith("GOTO")) {
+            String label = line.substring(5).trim();
+            // Use placeholder that we'll replace later
+            translatedLine = lineNumber + " GOTO NULL_" + label;
+        }
+        else if (line.startsWith("num F") || line.startsWith("void F")) {
+            String[] parts = line.split("[\\(\\)]");
+            String funcType = parts[0].trim().split("\\s+")[0]; // "num" or "void"
+            String funcName = parts[0].trim().split("\\s+")[1];  // F1, F2, etc.
+            translatedLine = lineNumber + " REM " + funcType + " " + funcName;
+        }
+        else if (line.startsWith("IF")) {
+            String[] parts = line.split("\\s+");
+            String var1 = parts[1];
+            String op = parts[2];
+            String var2 = parts[3];
+            String thenLabel = parts[5];
+            String elseLabel = parts[7];
+
+            if (op.equals("==")) op = "=";
+
+            translatedLine = lineNumber + " IF " + var1 + " " + op + " " + var2 +
+                    " THEN GOTO NULL_" + thenLabel + "\n";
+            incrementLineNumber();
+            translatedLine += lineNumber + " GOTO NULL_" + elseLabel;
+        }
+        else if (line.startsWith("CALL")) {
+            translatedLine = translateFunctionCall(line);
+        }
+        else if (line.contains("=")) {
+            translatedLine = translateAssignment(line);
+        }
+        else if (line.startsWith("return")) {
+            // Get the value being returned (after "return ")
+            String returnValue = line.substring(7).trim();
+            // Store return value in M(0,SP)
+            translatedLine = lineNumber + " LET M(0,SP) = " + returnValue + "\n";
+            incrementLineNumber();
+            // Return to caller
+            translatedLine += lineNumber + " RETURN";
+        }
+
+        incrementLineNumber();
+        return translatedLine;
+    }
+
+    private String translateAssignment(String line) {
+        String[] parts = line.split("=", 2);
+        String lhs = parts[0].trim();
+        String rhs = parts[1].trim();
+
+        // Handle string assignments (check if rhs is a quoted string)
+        if (rhs.startsWith("\"") && rhs.endsWith("\"")) {
+            // Add the variable to our string tracking set
+            stringVariables.add(lhs);
+            // Only add $ if it's not already there
+            String lhsWithDollar = lhs.endsWith("$") ? lhs : lhs + "$";
+            return lineNumber + " LET " + lhsWithDollar + " = " + rhs;
+        }
+
+        if (rhs.contains("SQR")) {
+            String arg = rhs.substring(4).trim();
+            return lineNumber + " LET " + lhs + " = SQR(" + arg + ")";
+        }
+
+        // Handle normal assignments
+        if (rhs.contains(" + ") || rhs.contains(" - ") ||
+                rhs.contains(" * ") || rhs.contains(" / ")) {
+            tempVarMap.put(lhs, rhs);
+            return lineNumber + " LET " + lhs + " = " + rhs;
+        }
+
+        // Check if the rhs variable is a string variable
+        if (stringVariables.contains(rhs)) {
+            // If assigning from a string variable, the target becomes a string variable too
+            stringVariables.add(lhs);
+            String lhsWithDollar = lhs.endsWith("$") ? lhs : lhs + "$";
+            String rhsWithDollar = rhs.endsWith("$") ? rhs : rhs + "$";
+            return lineNumber + " LET " + lhsWithDollar + " = " + rhsWithDollar;
+        }
+
+        return lineNumber + " LET " + lhs + " = " + rhs;
+    }
+
+    private String getVariableName(String var) {
+        return stringVariables.contains(var) ? var + "$" : var;
+    }
+
+    private String translateFunctionCall(String line) {
+        if (line.contains("=")) {
+            // Assignment with function call: var1 = CALL F1(A,1,1)
+            // This must be a num function since we're assigning its result
+            String[] parts = line.split("=", 2);
+            String resultVar = parts[0].trim();
+            String call = parts[1].trim();
+
+            // Parse function call
+            String[] callParts = call.substring(5).split("[\\(\\)]"); // Remove "CALL "
+            String funcName = callParts[0].trim();  // F1, F2, etc.
+            String[] params = callParts[1].split(",");
+
+            StringBuilder basic = new StringBuilder();
+
+            // Increment stack pointer for new frame
+            basic.append(lineNumber).append(" SP = SP + 1\n");
+            incrementLineNumber();
+
+            // Store parameters in positions 1-3 of current frame
+            for (int i = 0; i < params.length; i++) {
+                basic.append(lineNumber).append(" LET M(").append(i+1).append(",SP) = ")
+                        .append(params[i].trim()).append("\n");
+                incrementLineNumber();
+            }
+
+            // Call the function
+            basic.append(lineNumber).append(" GOSUB ").append(funcName).append("\n");
+            incrementLineNumber();
+
+            // Get return value from M(0,SP)
+            basic.append(lineNumber).append(" LET ").append(resultVar)
+                    .append(" = M(0,SP)\n");
+            incrementLineNumber();
+
+            // Decrement stack pointer to remove frame
+            basic.append(lineNumber).append(" SP = SP - 1");
+            incrementLineNumber();
+
+            return basic.toString();
+        } else {
+            // Direct function call without assignment: CALL F1(1,1,1)
+            // This could be either void or num function
+            String[] callParts = line.substring(5).split("[\\(\\)]");
+            String funcName = callParts[0].trim();  // F1, F2, etc.
+            String[] params = callParts[1].split(",");
+
+            StringBuilder basic = new StringBuilder();
+
+            // Increment stack pointer for new frame
+            basic.append(lineNumber).append(" SP = SP + 1\n");
+            incrementLineNumber();
+
+            // Store parameters in positions 1-3 of current frame
+            for (int i = 0; i < params.length; i++) {
+                basic.append(lineNumber).append(" LET M(").append(i+1).append(",SP) = ")
+                        .append(params[i].trim()).append("\n");
+                incrementLineNumber();
+            }
+
+            // Call the function
+            basic.append(lineNumber).append(" GOSUB ").append(funcName).append("\n");
+            incrementLineNumber();
+
+            // Decrement stack pointer to remove frame
+            basic.append(lineNumber).append(" SP = SP - 1");
+            incrementLineNumber();
+
+            return basic.toString();
         }
     }
 
-    public void transUNOP(SyntaxTreeNode unop) throws IOException {
-        List<SyntaxTreeNode> children = unop.getChildren();
-        SyntaxTreeNode next = children.get(0);
-        if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>not</WORD>")) { //Case 1: UNOP -> not
-            //TODO: figure out how to implement not
-        } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>sqrt</WORD>")) { //Case 2: UNOP -> sqrt
-            outputFile.write(" SQR ");
-        }
-    }
-
-    public void transBINOP(SyntaxTreeNode binop) throws IOException {
-        List<SyntaxTreeNode> children = binop.getChildren();
-        SyntaxTreeNode next = children.get(0);
-
-        if (next.getTerminal() != null && next.getTerminal().contains("<WORD>or</WORD>")) { //Case 1: BINOP -> or
-            //TODO: figure out how to implement or
-        } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>and</WORD>")) { //Case 2: BINOP -> and
-            //TODO: figure out how to implement and
-        } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>eq</WORD>")) { //Case 3: BINOP -> eq
-            outputFile.write(" = ");
-        } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>grt</WORD>")) { //Case 4: BINOP -> grt
-            outputFile.write(" > ");
-        } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>add</WORD>")) { //Case 5: BINOP -> add
-            outputFile.write(" + ");
-        } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>sub</WORD>")) { //Case 6: BINOP -> sub
-            outputFile.write(" - ");
-        } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>mul</WORD>")) { //Case 7: BINOP -> mul
-            outputFile.write(" * ");
-        } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>div</WORD>")) { //Case 8: BINOP -> div
-            outputFile.write(" / ");
-        }
-    }
-
-    public void transBRANCH(SyntaxTreeNode branch) throws IOException {
-        //BRANCH->if COND then ALGO else ALGO   
-
-        //NOT SURE ABOUT THIS IMPLEMENTATION
-
-        List<SyntaxTreeNode> children = branch.getChildren();
-        SyntaxTreeNode cond = children.get(1);
-        SyntaxTreeNode next = cond.getChildren().get(0);
-
-        String label1 = newLabel();
-        String label2 = newLabel();
-        String label3 = newLabel();
-
-        
-        if (next.getSymb().equals("SIMPLE")) {//CASE 1 : COND -> SIMPLE
-            transSIMPLE(children.get(2), label1, label2);
-
-        } else if (next.getSymb().equals("COMPOSIT")) { //CASE 2: COND -> COMPOSIT
-            transCOMPOSIT(children.get(2), label1, label2, "");
-        }
-        
-        outputFile.write("\nLABEL" + label1);
-        transALGO(children.get(4));
-        outputFile.write("\nGOTO " + label3);
-        outputFile.write("\nLABEL" + label2);
-        transALGO(children.get(6));
-        outputFile.write("\nLABEL" + label3);
-
-    }
-
-    public void transCOND(SyntaxTreeNode cond) throws IOException {
-        //NOT NEEDED
-    }
-
-    public void transSIMPLE(SyntaxTreeNode simple, String labelt, String labelf) throws IOException {
-        //SIMPLE->BINOP ( ATOMIC , ATOMIC )
-        List<SyntaxTreeNode> children = simple.getChildren();
-        String t1 = newVar();
-        String t2 = newVar();
-
-        transARG(children.get(2), t1);
-        transARG(children.get(4), t2);
-        outputFile.write("IF " + t1);
-        transOP(children.get(0), t2);
-        outputFile.write(t2 + " THEN " + labelt + " ELSE " + labelf);
-    }
-
-    public void transCOMPOSIT(SyntaxTreeNode composit, String labelt, String labelf, String place) throws IOException {
-        // NOT SURE ABOUT THIS IMPLEMENTATION
-        List<SyntaxTreeNode> children = composit.getChildren();
-        SyntaxTreeNode next = children.get(0);
-        if (next.getSymb().equals("BINOP") ) { //Case 1: COMPOSIT -> BINOP ( SIMPLE , SIMPLE )
-            String t1 = newVar();
-            String t2 = newVar();
-            transSIMPLE(children.get(2), t1, t2);
-            transSIMPLE(children.get(4), t1, t2);
-            outputFile.write("IF " + t1);
-            transOP(children.get(0), t2);
-            outputFile.write(t2 +" THEN " + labelt + " ELSE " + labelf);
-        } else if (next.getSymb().equals("UNOP")) {//Case 2: COMPOSIT -> UNOP ( SIMPLE )
-            String place1 = newVar();
-            transSIMPLE(children.get(2), labelt, labelf);
-            outputFile.write(place);
-            outputFile.write(" = ");
-            transUNOP(next);
-            outputFile.write(place1);
-        } 
-    }
-
-    public void transFNAME(SyntaxTreeNode fname) throws IOException {
-        SyntaxTreeNode next = fname.getChildren().get(0);
-        String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getGeneratedName();
-        outputFile.write(newName);
-    }
-
-
-    public void transFUNCTIONS(SyntaxTreeNode functions) throws IOException {
-        List<SyntaxTreeNode> children = functions.getChildren();
-        SyntaxTreeNode next = children.get(0);
-        if (next.getTerminal()!= null && next.getTerminal().isEmpty()) { //Case 1: FUNCTIONS -> 
-            outputFile.write("\nREM END");
-        } else if(next.getSymb().equals("DECL")) { //Case 2: FUNCTIONS -> DECL FUNCTIONS
-            transDECL(next);
-            outputFile.write("\nSTOP ");
-            transFUNCTIONS(children.get(1));
-        } 
-    }
-
-    public void transDECL(SyntaxTreeNode decl) {
-        //DECL->HEADER BODY
-        List<SyntaxTreeNode> children = decl.getChildren();
-        //TODO: Implement this
-    }
-
-    public void transHEADER(SyntaxTreeNode header) {
-        //HEADER->FTYP FNAME ( VNAME , VNAME , VNAME )
-        List<SyntaxTreeNode> children = header.getChildren();
-        //TODO: Implement this
-    }
-    
-    public void transBODY(SyntaxTreeNode body) throws IOException {
-        //BODY->PROLOG LOCVARS ALGO EPILOG SUBFUNCS end
-        List<SyntaxTreeNode> children = body.getChildren();
-        transPROLOG(children.get(0));
-        transALGO(children.get(2));
-        transEPILOG(children.get(3));
-        transSUBFUNCS(children.get(4));
-    }  
-
-    public void transPROLOG(SyntaxTreeNode  prolog) throws IOException {
-        //PROLOG->{
-        outputFile.write("\nREM BEGIN");
-    }
-
-    public void transEPILOG(SyntaxTreeNode epilog) throws IOException {
-        //EPILOG->}
-        outputFile.write("\nREM END");
-    }
-
-    public void transSUBFUNCS(SyntaxTreeNode subfuncs) throws IOException {
-        //SUBFUNCS->FUNCTIONS
-        List<SyntaxTreeNode> children = subfuncs.getChildren();
-        transFUNCTIONS(children.get(0));
+    private void incrementLineNumber() {
+        lineNumber += 10;
     }
 
     public static void main(String[] args) {
-        //Testing the code generator
         try {
-            String xmlString = "src/parser2/output/output2.xml";
-            intermediateCodeGeneration gen = new intermediateCodeGeneration(xmlString);
-            targetCodeGenerator codeGen = new targetCodeGenerator(xmlString, gen.trans());
-            codeGen.trans();
-            codeGen.outputFile.close();
+            targetCodeGenerator generator = new targetCodeGenerator("src/intermediateCodeGeneration/output/output2.txt");
+            generator.generateBasicCode();
+            generator.showGeneratedCode();
+
         } catch (Exception e) {
-            // TODO Auto-generated catch block
+            System.err.println("Error during code generation: " + e.getMessage());
             e.printStackTrace();
         }
     }
-    
+
+    public void showGeneratedCode() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(outputFilePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

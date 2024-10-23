@@ -1,0 +1,46 @@
+10 DIM M(7,30)
+20 SP = 0
+30 LET var0 = 10
+40 LET A = var0
+50 LET var1 = 5
+60 LET A1 = var1
+70 LET var2 = 2
+80 LET A2 = var2
+90 LET var6 = A
+100 LET var7 = A1
+110 LET var4 = var6  *  var7
+120 LET var10 = A2
+130 LET var11 = A
+140 LET var8 = var10  -  var11
+150 LET var9 = A1
+160 LET var5 = var8  /  var9
+170 LET var3 = var4  +  var5
+180 LET A3 = var3
+190 PRINT A3
+200 LET var12 = CALL F_complex(A,A1,A2)
+210 LET A3 = var12
+220 PRINT A3
+230 REM END
+240 END
+250 complex:
+260 REM BEGIN
+270 LET var16 = A5
+280 LET var17 = A6
+290 LET var14 = var16  *  var17
+300 LET var18 = A7
+310 LET var19 = 2
+320 LET var15 = var18  /  var19
+330 LET var13 = var14  +  var15
+340 LET A8 = var13
+350 LET var24 = A8
+360 LET var25 = A8
+370 LET var22 = var24  *  var25
+380 LET var23 = A7
+390 LET var21 = var22  +  var23
+400 LET var20 = SQR(var21)
+410 LET A9 = var20
+430 REM END
+440 REM END
+450 REM END
+460 END
+470 REM END
