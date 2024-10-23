@@ -1,14 +1,7 @@
 package targetCodeGeneration;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.List;
-
+import intermediateCodeGeneration.intermediateCodeGeneration;
 import parser2.SyntaxTreeNode;
 import semanticanalyzer.SemanticAnalyzer;
 import semanticanalyzer.SymbolTableAccessor;
@@ -17,97 +10,28 @@ import typeChecker.TreeCrawler;
 public class targetCodeGenerator {
     private SyntaxTreeNode root;
     private FileWriter outputFile;
-    private int varCounter, labelCounter;
-    private String inputFilePath, outputFilePath;
 
     public targetCodeGenerator(String xmlFilePath, SyntaxTreeNode root) throws Exception {
         this.root = root;
-        varCounter = 0;
-        labelCounter = 0;
-        SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(xmlFilePath);
-        semanticAnalyzer.analyze();
-        //Create text file to write the translated code
-        //extracting the output name from the xml file name from src/parser2/output1.xml
         String outputName = xmlFilePath.substring(xmlFilePath.lastIndexOf("/") + 1, xmlFilePath.lastIndexOf("."));
-        String outputFilePath = "output/" + outputName + "Temp.txt";
+        String outputFilePath = "output/" + outputName + ".txt";
         File output = new File(outputFilePath);
         output.createNewFile();
         output.setWritable(true);
-        outputFile = new FileWriter(output, true);
-        this.inputFilePath = outputFilePath;
-        this.outputFilePath = "output/" + outputName + ".txt";  
+        outputFile = new FileWriter(output, true);  
     }
    
     public void trans() {
         try {
-            transPROG(treeCrawler.getNext());
+            //Adding the declaration for the runtime stack
+            int n = 50;
+            outputFile.write("0 \t DIM M(7," + n + ")\n");
+            
+            transPROG(root);
             outputFile.close();
-            addLineNumbers(inputFilePath, outputFilePath);
-            //delete inputFilePath
-            File file = new File(inputFilePath);
-            file.delete();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
-    }
-
-
-    public static void addLineNumbers(String inputFilePath, String outputFilePath) {
-        // Check if input file exists and is readable
-        File inputFile = new File(inputFilePath);
-        if (!inputFile.exists() || !inputFile.isFile()) {
-            System.err.println("Input file does not exist or is not a file: " + inputFilePath);
-            return;
-        }
-
-        // Check if we can write to the output file
-        File outputFile = new File(outputFilePath);
-        try {
-            if (outputFile.exists() && !outputFile.canWrite()) {
-                System.err.println("Cannot write to output file: " + outputFilePath);
-                return;
-            }
-        } catch (SecurityException e) {
-            System.err.println("Security exception when checking output file: " + e.getMessage());
-            return;
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(inputFilePath));
-             PrintWriter writer = new PrintWriter(new FileWriter(outputFilePath))) {
-
-            String line;
-            int lineNumber = 1;
-
-            System.out.println("Starting to process the file...");
-
-            // Extra check: Ensure the file isn't empty
-            if (inputFile.length() == 0) {
-                System.out.println("Input file is empty!");
-                return;
-            }
-
-            // Reading and processing each line
-            while ((line = reader.readLine()) != null) {
-                // Debugging: Print the raw line content for each read
-                System.out.println("Raw line read: '" + line + "' (length: " + line.length() + ")");
-
-                // Skip empty lines
-                if (!line.trim().isEmpty()) {
-                    System.out.println("Writing line: " + lineNumber + ": " + line);
-                    writer.println(lineNumber + "\t" + line);
-                    lineNumber++;
-                } else {
-                    System.out.println("Skipped empty/whitespace line.");
-                }
-            }
-
-            System.out.println("Finished writing to the file.");
-
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found: " + e.getMessage());
-        } catch (IOException e) {
-            System.err.println("I/O error: " + e.getMessage());
         }
     }
     
@@ -115,18 +39,6 @@ public class targetCodeGenerator {
         //PROG->main GLOBVARS ALGO FUNCTIONS
         transALGO(prog.getChildren().get(2));
         transFUNCTIONS(prog.getChildren().get(3));
-    }
-    
-    public void transGLOBVARS() {
-        //Not transd
-        //Case 1: GLOBVARS ->
-        //Case 2: GLOBVARS -> VTYP VNAME , GLOBVARS
-    }
-
-    public void transVTYP() {
-        //Not transd
-        //Case 1: VTYP -> num
-        //Case 2: VTYP -> text
     }
 
     public void transVNAME(SyntaxTreeNode vname) throws IOException {
@@ -434,10 +346,6 @@ public class targetCodeGenerator {
         List<SyntaxTreeNode> children = header.getChildren();
         //TODO: Implement this
     }
-
-    public void transFTYP(SyntaxTreeNode ftyp) {
-        //Not transd
-    }
     
     public void transBODY(SyntaxTreeNode body) throws IOException {
         //BODY->PROLOG LOCVARS ALGO EPILOG SUBFUNCS end
@@ -458,28 +366,18 @@ public class targetCodeGenerator {
         outputFile.write("\nREM END");
     }
 
-    public void transLOCVARS(SyntaxTreeNode locvars) {
-        //Not transd
-    }
-
     public void transSUBFUNCS(SyntaxTreeNode subfuncs) throws IOException {
         //SUBFUNCS->FUNCTIONS
         List<SyntaxTreeNode> children = subfuncs.getChildren();
         transFUNCTIONS(children.get(0));
     }
 
-    private String newVar() {
-        return "var" + varCounter++;
-    }
-
-    private String newLabel() {
-        return "label" + labelCounter++;
-    }
-
     public static void main(String[] args) {
         //Testing the code generator
         try {
-            targetCodeGenerator codeGen = new targetCodeGenerator("src/parser2/output/output2.xml");
+            String xmlString = "src/parser2/output/output2.xml";
+            intermediateCodeGeneration gen = new intermediateCodeGeneration(xmlString);
+            targetCodeGenerator codeGen = new targetCodeGenerator(xmlString, gen.trans());
             codeGen.trans();
             codeGen.outputFile.close();
         } catch (Exception e) {
