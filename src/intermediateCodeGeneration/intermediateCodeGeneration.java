@@ -57,8 +57,8 @@ public class intermediateCodeGeneration {
         String functions = transFUNCTIONS(prog.getChildren().get(3));
 
         //adding it to the syntax tree
-        prog.setIntermediateCode(algo + functions);
-        return algo + functions;
+        prog.setIntermediateCode(algo + "\nSTOP\n" + functions);
+        return algo + "\nSTOP\n" + functions;
     }
 
     public String transVNAME(SyntaxTreeNode vname) throws IOException {
@@ -531,7 +531,7 @@ public class intermediateCodeGeneration {
     public static void main(String[] args) {
         //Testing the code generator
         try {
-            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output4.xml");
+            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output3.xml");
             codeGen.trans();
             codeGen.outputFile.close();
         } catch (Exception e) {

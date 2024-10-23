@@ -16,4 +16,5 @@ PRINT V_message
 REM END
 LABEL label2
 REM END
+STOP
 REM END

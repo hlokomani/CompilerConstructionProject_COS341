@@ -4,6 +4,7 @@ var1 =  CALL F_factorial(V_n,1,1)
 V_result = var1
 PRINT V_result
 REM END
+STOP
 num F_factorial (V_n,V_acc,V_msg)
 REM BEGIN
 var2 = 0 
