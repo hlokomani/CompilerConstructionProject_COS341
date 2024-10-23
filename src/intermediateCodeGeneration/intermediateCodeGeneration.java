@@ -26,8 +26,9 @@ public class intermediateCodeGeneration {
         String outputName = xmlFilePath.substring(xmlFilePath.lastIndexOf("/") + 1, xmlFilePath.lastIndexOf("."));
         String outputFilePath = "src/intermediateCodeGeneration/output/" + outputName + ".txt";
         File output = new File(outputFilePath);
-        output.createNewFile();
-        output.setWritable(true);
+        PrintWriter writer = new PrintWriter(output);
+        writer.print("");
+        writer.close();
         outputFile = new FileWriter(output, true);
     }
    
@@ -121,8 +122,8 @@ public class intermediateCodeGeneration {
             return "\nPRINT " +  atomic;
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>return</WORD>")) {//Case 4: COMMAND -> return ATOMIC
             String atomic = transATOMIC(children.get(1));
-            command.setIntermediateCode("\nreturn" +  atomic);
-            return "\nreturn" +  atomic;
+            command.setIntermediateCode("\nreturn " +  atomic);
+            return "\nreturn " +  atomic;
         } else if (next.getSymb().equals("ASSIGN")) {//Case 5: COMMAND -> ASSIGN
             String assign = transASSIGN(children.get(0));
             command.setIntermediateCode(assign);
@@ -561,7 +562,7 @@ public class intermediateCodeGeneration {
     public static void main(String[] args) {
         //Testing the code generator
         try {
-            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output8.xml");
+            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output4.xml");
             codeGen.trans();
             codeGen.outputFile.close();
         } catch (Exception e) {
