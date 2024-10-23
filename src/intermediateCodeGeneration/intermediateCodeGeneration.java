@@ -63,7 +63,7 @@ public class intermediateCodeGeneration {
 
     public String transVNAME(SyntaxTreeNode vname) throws IOException {
         SyntaxTreeNode next = vname.getChildren().get(0);
-        String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
+        String newName = SymbolTableAccessor.getGeneratedName(next.getTerminalWord());
 
         //adding it to the syntax tree
         vname.setIntermediateCode(newName);
@@ -73,7 +73,7 @@ public class intermediateCodeGeneration {
 
     public String transVNAME(SyntaxTreeNode vname, String place) throws IOException {
         SyntaxTreeNode next = vname.getChildren().get(0);
-        String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
+        String newName = SymbolTableAccessor.getGeneratedName(next.getTerminalWord());
         
         //adding it to the syntax tree
         vname.setIntermediateCode("\n" + place  + " = " + newName+ " ");
