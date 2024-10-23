@@ -1,0 +1,19 @@
+var0 = "Enter" 
+V_message = var0
+PRINT V_message
+INPUT V_age
+IF var1  >  var2 THEN label0 ELSE label1
+LABEL label0
+var3 = "Adult" 
+V_message = var3
+PRINT V_message
+REM END
+GOTO label2
+LABEL label1
+var4 = "Minor" 
+V_message = var4
+PRINT V_message
+REM END
+LABEL label2
+REM END
+REM END
