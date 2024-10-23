@@ -66,7 +66,7 @@ public class TreeCrawler {
             if (terminalElement.hasChildNodes()) {
                 terminalXML = elementToString(terminalElement);
             }
-            System.out.println("Terminal XML: " + terminalXML);
+//            System.out.println("Terminal XML: " + terminalXML);
 
             SyntaxTreeNode leafNode = new SyntaxTreeNode(unid, "Terminal", terminalXML);
             nodeMap.put(unid, leafNode);
