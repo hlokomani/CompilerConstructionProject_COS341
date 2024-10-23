@@ -118,13 +118,13 @@ public class typeChecker {
         //System.out.println("instruc: " + instruc.toString());
         SyntaxTreeNode next = children.get(0);
         //System.out.println("next: " + next.getSymb());
-        if (next.getTerminal()!=null && next.getTerminal().isEmpty()) { //Case 1: INSTRUC -> 
+        if (next.getTerminal()!=null && next.getTerminal().isEmpty()) { //Case 1: INSTRUC ->
             return true;
         } else if(next.getSymb().equals("COMMAND")) { //Case 2: INSTRUC -> COMMAND ; INSTRUC
             return typeCheckCOMMAND(next) && typeCheckINSTRUC(children.get(2));
         } else {
             return false;
-        }        
+        }
     }
 
     private boolean typeCheckCOMMAND(SyntaxTreeNode command) {
@@ -160,13 +160,8 @@ public class typeChecker {
         } else if (next.getSymb().equals("ASSIGN")) {//Case 5: COMMAND -> ASSIGN
             return typeCheckASSIGN(next);
         } else if (next.getSymb().equals("CALL")) { //Case 6: COMMAND -> CALL
-            if (this.typeOfCall(next).equals("v")) {
-                //System.out.println("Returning true from COMMAND");
-                return true;
-            } else {
-                //System.out.println("Returning false from COMMAND");
-                return false;
-            }
+            String callType = this.typeOfCall(next);
+            return callType.equals("v") || callType.equals("n");
         } else if (next.getSymb().equals("BRANCH")) { //Case 7: COMMAND -> BRANCH
             return typeCheckBRANCH(next);
         }
@@ -604,7 +599,7 @@ public class typeChecker {
     public static void main(String[] args) {
        // Crawling a tree and printing the nodes
        try {
-            String xmlFilePath = "src/parser2/output/output6.xml";
+            String xmlFilePath = "src/parser2/output/output1.xml";
             SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(xmlFilePath);
             semanticAnalyzer.analyze();
             typeChecker typeChecker = new typeChecker(xmlFilePath);
