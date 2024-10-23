@@ -6,33 +6,45 @@ var2 = 5
 A = var2
 var3 = 10 
 A1 = var3
-place = 0 
 var4 = A 
 var5 = A1 
-IF var4  =  var5 THEN label2 ELSE label1
-LABEL label2
+IF var4  =  var5 THEN label3 ELSE label1
+LABEL label3
 var6 = A1 
 var7 = A 
 IF var6  >  var7 THEN label0 ELSE label1
 LABEL label0
-place = 1
+var8 = "Met" 
+C$ = var8
+REM END
+GOTO label2
 LABEL label1
+var9 = "Notmet" 
+C$ = var9
+REM END
+LABEL label2
 PRINT C$
-var9 = A  
-var10 = A1 
-var8 = var9  +  var10
-A2 = var8
-place = 0 
-var11 = 15 
-var12 = A 
-IF var11  =  var12 THEN label3 ELSE label5
-LABEL label5
-var13 = A2 
-var14 = 15 
-IF var13  =  var14 THEN label3 ELSE label4
-LABEL label3
-place = 1
+var11 = A  
+var12 = A1 
+var10 = var11  +  var12
+A2 = var10
+var13 = 15 
+var14 = A 
+IF var13  =  var14 THEN label4 ELSE label7
+LABEL label7
+var15 = A2 
+var16 = 15 
+IF var15  =  var16 THEN label4 ELSE label5
 LABEL label4
+var17 = "Atlone" 
+C$ = var17
+REM END
+GOTO label6
+LABEL label5
+var18 = "Bothfal" 
+C$ = var18
+REM END
+LABEL label6
 PRINT C$
 CALL F1(1,1,1)
 PRINT C$
@@ -40,14 +52,14 @@ REM END
 STOP
 void F1 (A3,A4,A5)
 REM BEGIN
-var15 = "Space" 
-D$ = var15
-var16 = A3 
-C$ = var16
-var17 = D$ 
-C$ = var17
-var18 = A4 
-C$ = var18
+var19 = "Space" 
+D$ = var19
+var20 = A3 
+C$ = var20
+var21 = D$ 
+C$ = var21
+var22 = A4 
+C$ = var22
 REM END
 REM END
 REM END

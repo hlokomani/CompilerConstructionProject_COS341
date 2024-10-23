@@ -132,7 +132,7 @@ public class intermediateCodeGeneration {
             command.setIntermediateCode(call);
             return call;
         } else if (next.getSymb().equals("BRANCH")) { //Case 7: COMMAND -> BRANCH
-            String branch = transBRANCH(children.get(0), "place");
+            String branch = transBRANCH(children.get(0));
             command.setIntermediateCode(branch);
             return branch;
         }
@@ -356,36 +356,33 @@ public class intermediateCodeGeneration {
     }
     
 
-    public String transBRANCH(SyntaxTreeNode branch, String place) throws IOException {
+    public String transBRANCH(SyntaxTreeNode branch) throws IOException {
         //NOT SURE ABOUT THIS
         //BRANCH->if COND then ALGO else ALGO   
         List<SyntaxTreeNode> children = branch.getChildren();
         SyntaxTreeNode cond = children.get(1);
         SyntaxTreeNode next = cond.getChildren().get(0);
 
-        
+        String label1 = newLabel();
+        String label2 = newLabel();
+        String label3 = newLabel();
+
+        String condCode;
         
         if (next.getSymb().equals("SIMPLE")) {//CASE 1 : COND -> SIMPLE
-            String label1 = newLabel();
-            String label2 = newLabel();
-            String label3 = newLabel();
+            condCode = transSIMPLE(children.get(1).getChildren().get(0), label1, label2);
 
-            String condCode = transSIMPLE(children.get(1).getChildren().get(0), label1, label2);
-            String algo1 = transALGO(children.get(3));
-            String algo2 = transALGO(children.get(5));
-            //adding to the syntax tree
-            branch.setIntermediateCode(condCode + "\nLABEL " + label1 + "\n" + algo1 + "\nGOTO " + label3 + "\nLABEL " + label2 + "\n" + algo2 + "\nLABEL " + label3);
-            return condCode + "\nLABEL " + label1 + "\n" + algo1 + "\nGOTO " + label3 + "\nLABEL " + label2 + "\n" + algo2 + "\nLABEL " + label3;
         } else if (next.getSymb().equals("COMPOSIT")) { //CASE 2: COND -> COMPOSIT
-            String label1 = newLabel();
-            String label2 = newLabel();
-            String condCode = transCOMPOSIT(children.get(1).getChildren().get(0), label1, label2, "");
-            //adding to the syntax tree
-            branch.setIntermediateCode("\n" + place + " = 0 " + condCode + "\nLABEL " + label1 + "\n" + place + " = 1\nLABEL " + label2);
-            return "\n" + place + " = 0 " + condCode + "\nLABEL " + label1 + "\n" + place + " = 1\nLABEL " + label2;
+            condCode = transCOMPOSIT(children.get(1).getChildren().get(0), label1, label2, "");
         } else {
-            return "";
+            condCode = "";
         }
+        
+        String algo1 = transALGO(children.get(3));
+        String algo2 = transALGO(children.get(5));
+        //adding to the syntax tree
+        branch.setIntermediateCode(condCode + "\nLABEL " + label1 + "\n" + algo1 + "\nGOTO " + label3 + "\nLABEL " + label2 + "\n" + algo2 + "\nLABEL " + label3);
+        return condCode + "\nLABEL " + label1 + "\n" + algo1 + "\nGOTO " + label3 + "\nLABEL " + label2 + "\n" + algo2 + "\nLABEL " + label3;
     }
 
     public String transSIMPLE(SyntaxTreeNode simple, String labelt, String labelf) throws IOException {
