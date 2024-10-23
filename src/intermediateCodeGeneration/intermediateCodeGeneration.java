@@ -531,7 +531,7 @@ public class intermediateCodeGeneration {
     public static void main(String[] args) {
         //Testing the code generator
         try {
-            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output5.xml");
+            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output8.xml");
             codeGen.trans();
             codeGen.outputFile.close();
         } catch (Exception e) {
