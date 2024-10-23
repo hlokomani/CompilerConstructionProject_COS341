@@ -16,7 +16,9 @@ public class Symbol {
     }
 
     private String generateBasicName() {
-        if (type.equals("text")) {
+        if (kind.equals("function")) {
+            return NameGenerator.getInstance().getNextFunctionName();
+        } else if (type.equals("text")) {
             return NameGenerator.getInstance().getNextTextName();
         } else {
             return NameGenerator.getInstance().getNextNumName();
@@ -52,6 +54,7 @@ public class Symbol {
         if (kind.equals("function")) {
             return "Symbol{" +
                     "name='" + name + '\'' +
+                    ", generatedName='" + generatedName + '\'' +
                     ", kind='" + kind + '\'' +
                     ", type='" + type + '\'' +
                     ", unid=" + unid +
