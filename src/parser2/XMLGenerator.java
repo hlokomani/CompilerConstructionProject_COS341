@@ -136,19 +136,22 @@ public class XMLGenerator{
             // TERMINAL
             Element terminalElement = doc.createElement("TERMINAL");
             // Assuming terminalXML is a well-formed XML string
-            try {
-                //System.out.println("checkpoint 6.5");
-                //System.out.println("leaf.getTerminal() = " + leaf.getTerminal());
-                Document terminalDoc = parseXMLString(leaf.getTerminal());
-                //System.out.println("checkpoint 6.6");
-                org.w3c.dom.Node importedTerminal = doc.importNode(terminalDoc.getDocumentElement(), true);
-                //System.out.println("checkpoint 6.7");
-                terminalElement.appendChild(importedTerminal);
-            } catch (Exception e) {
-                //System.out.println("checkpoint 6.8");
-                // If terminalXML is not well-formed, store it as text
-                terminalElement.appendChild(doc.createTextNode(leaf.getTerminal()));
+            if (leaf.getTerminal() != null){
+                try {
+                    //System.out.println("checkpoint 6.5");
+                    //System.out.println("leaf.getTerminal() = " + leaf.getTerminal());
+                    Document terminalDoc = parseXMLString(leaf.getTerminal());
+                    //System.out.println("checkpoint 6.6");
+                    org.w3c.dom.Node importedTerminal = doc.importNode(terminalDoc.getDocumentElement(), true);
+                    //System.out.println("checkpoint 6.7");
+                    terminalElement.appendChild(importedTerminal);
+                } catch (Exception e) {
+                    //System.out.println("checkpoint 6.8");
+                    // If terminalXML is not well-formed, store it as text
+                    terminalElement.appendChild(doc.createTextNode(leaf.getTerminal()));
+                }
             }
+
             leafElement.appendChild(terminalElement);
 
             leafNodesElement.appendChild(leafElement);
