@@ -4,21 +4,21 @@ var1 = 2
 A1 = var1
 var2 = 3 
 A2 = var2
-var3 =  CALL F_func(A,A1,A2)
+var3 =  CALL F1(A,A1,A2)
 A3 = var3
 REM END
 STOP
-num F_func (A5,A6,A7)
+num F1 (A4,A5,A6)
 REM BEGIN
-var5 = A5  
-var6 = A6 
+var5 = A4  
+var6 = A5 
 var4 = var5  -  var6
-A8 = var4
-var8 = A8  
-var9 = A7 
+A7 = var4
+var8 = A7  
+var9 = A6 
 var7 = var8  -  var9
-A9 = var7
-returnA9
+A8 = var7
+returnA8
 REM END
 REM END
 REM END

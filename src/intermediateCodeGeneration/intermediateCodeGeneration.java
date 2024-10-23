@@ -330,7 +330,7 @@ public class intermediateCodeGeneration {
         if (next.getTerminal() != null && next.getTerminal().contains("<WORD>eq</WORD>")) { //Case 3: BINOP -> eq
             //adding to the syntax tree
             binop.setIntermediateCode(" = ");
-            return " = ";
+            return " == ";
         } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>grt</WORD>")) { //Case 4: BINOP -> grt
             //adding to the syntax tree
             binop.setIntermediateCode(" > ");
@@ -561,7 +561,7 @@ public class intermediateCodeGeneration {
     public static void main(String[] args) {
         //Testing the code generator
         try {
-            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output6.xml");
+            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output8.xml");
             codeGen.trans();
             codeGen.outputFile.close();
         } catch (Exception e) {
