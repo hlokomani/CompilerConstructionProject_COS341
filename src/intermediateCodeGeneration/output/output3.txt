@@ -2,6 +2,8 @@ var0 = "Enter"
 A$ = var0
 PRINT A$
 INPUT A
+var1 = A 
+var2 = 18 
 IF var1  >  var2 THEN label0 ELSE label1
 LABEL label0
 var3 = "Adult" 

@@ -8,7 +8,7 @@ var3 = 10
 A1 = var3
 var4 = A 
 var5 = A1 
-IF var4  =  var5 THEN label3 ELSE label1
+IF var4  ==  var5 THEN label3 ELSE label1
 LABEL label3
 var6 = A1 
 var7 = A 
@@ -30,11 +30,11 @@ var10 = var11  +  var12
 A2 = var10
 var13 = 15 
 var14 = A 
-IF var13  =  var14 THEN label4 ELSE label7
+IF var13  ==  var14 THEN label4 ELSE label7
 LABEL label7
 var15 = A2 
 var16 = 15 
-IF var15  =  var16 THEN label4 ELSE label5
+IF var15  ==  var16 THEN label4 ELSE label5
 LABEL label4
 var17 = "Atlone" 
 C$ = var17

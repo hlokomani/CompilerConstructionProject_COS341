@@ -13,7 +13,9 @@ var3 = "Debug"
 A$ = var3
 PRINT A$
 PRINT A
-IF var4  =  var5 THEN label0 ELSE label1
+var4 = A 
+var5 = A5 
+IF var4  ==  var5 THEN label0 ELSE label1
 LABEL label0
 returnA3
 REM END
