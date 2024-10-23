@@ -8,13 +8,13 @@ import semanticanalyzer.SemanticAnalyzer;
 import semanticanalyzer.SymbolTableAccessor;
 import typeChecker.TreeCrawler;
 
-public class intermeridateCodeGeneration {
+public class intermediateCodeGeneration {
     private TreeCrawler treeCrawler;
     private FileWriter outputFile;
     private int varCounter, labelCounter;
     private SyntaxTreeNode root;
 
-    public intermeridateCodeGeneration(String xmlFilePath) throws Exception {
+    public intermediateCodeGeneration(String xmlFilePath) throws Exception {
         //Initialize symbol table 
         treeCrawler = new TreeCrawler(xmlFilePath);
         varCounter = 0;
@@ -24,7 +24,7 @@ public class intermeridateCodeGeneration {
         //Create text file to write the translated code
         //extracting the output name from the xml file name from src/parser2/output1.xml
         String outputName = xmlFilePath.substring(xmlFilePath.lastIndexOf("/") + 1, xmlFilePath.lastIndexOf("."));
-        String outputFilePath = "output/" + outputName + ".txt";
+        String outputFilePath = "src/intermediateCodeGeneration/output/" + outputName + ".txt";
         File output = new File(outputFilePath);
         output.createNewFile();
         output.setWritable(true);
@@ -32,9 +32,17 @@ public class intermeridateCodeGeneration {
     }
    
     public SyntaxTreeNode trans() {
+        System.out.println("Translating to intermediate code...");
         try {
             root = treeCrawler.getNext();
             String intermediateCode = transPROG(root);
+            System.out.println("intermediateCode: " + intermediateCode);
+            //checking if the first character is a new line character
+            if (intermediateCode.charAt(0) == '\n') {
+                intermediateCode = intermediateCode.substring(1);
+            }
+            //removing any \n\n from the intermediate code so that it is only \n
+            intermediateCode = intermediateCode.replaceAll("\n\n", "\n");
             outputFile.write(intermediateCode);
             outputFile.close();
         } catch (IOException e) {
@@ -49,13 +57,13 @@ public class intermeridateCodeGeneration {
         String functions = transFUNCTIONS(prog.getChildren().get(3));
 
         //adding it to the syntax tree
-        prog.setIntermediateCode(algo + functions);
-        return algo + functions;
+        prog.setIntermediateCode(algo + "\nSTOP\n" + functions);
+        return algo + "\nSTOP\n" + functions;
     }
 
     public String transVNAME(SyntaxTreeNode vname) throws IOException {
         SyntaxTreeNode next = vname.getChildren().get(0);
-        String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
+        String newName = SymbolTableAccessor.getGeneratedName(next.getTerminalWord());
 
         //adding it to the syntax tree
         vname.setIntermediateCode(newName);
@@ -65,11 +73,11 @@ public class intermeridateCodeGeneration {
 
     public String transVNAME(SyntaxTreeNode vname, String place) throws IOException {
         SyntaxTreeNode next = vname.getChildren().get(0);
-        String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
+        String newName = SymbolTableAccessor.getGeneratedName(next.getTerminalWord());
         
         //adding it to the syntax tree
-        vname.setIntermediateCode("\n " + place  + " = " + newName+ " ");
-        return "\n " + place  + " = " + newName+ " ";
+        vname.setIntermediateCode("\n" + place  + " = " + newName+ " ");
+        return "\n" + place  + " = " + newName+ " ";
     }
 
     public String transALGO(SyntaxTreeNode algo) throws IOException {
@@ -109,8 +117,8 @@ public class intermeridateCodeGeneration {
             return "\nSTOP";
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>print</WORD>")) {//Case 3: COMMAND -> print ATOMIC
             String atomic = transATOMIC(children.get(1));
-            command.setIntermediateCode("\nPRINT" +  atomic);
-            return "\nPRINT" +  atomic;
+            command.setIntermediateCode("\nPRINT " +  atomic);
+            return "\nPRINT " +  atomic;
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>return</WORD>")) {//Case 4: COMMAND -> return ATOMIC
             String atomic = transATOMIC(children.get(1));
             command.setIntermediateCode("\nreturn" +  atomic);
@@ -175,19 +183,21 @@ public class intermeridateCodeGeneration {
         SyntaxTreeNode next = children.get(0);
         //Case 1: CONST -> TokenN  && Case 2: CONST -> TokenT
         //adding to the syntax tree
-        cons.setIntermediateCode("\n " + place + " = " + next.getTerminalWord()  + " ");
-        return "\n " + place + " = " + next.getTerminalWord()  + " ";
+        cons.setIntermediateCode("\n" + place + " = " + next.getTerminalWord()  + " ");
+        return "\n" + place + " = " + next.getTerminalWord()  + " ";
     }
 
     public String transASSIGN(SyntaxTreeNode assign) throws IOException {
+        System.out.println("ASSIGN: " + assign);
         List<SyntaxTreeNode> children = assign.getChildren();
         SyntaxTreeNode symbol = children.get(1);
         
         if (symbol.getTerminal()!=null && symbol.getTerminal().contains("<WORD>&lt;</WORD>")) { // ASSIGN -> VNAME < input
             String vname = transVNAME(children.get(0));
-            assign.setIntermediateCode("INPUT " + vname);
-            return "INPUT " + vname;
+            assign.setIntermediateCode("\nINPUT " + vname);
+            return "\nINPUT " + vname;
         } else if (symbol.getTerminal() != null && symbol.getTerminal().contains("<WORD>=</WORD>")) { //Case 2: ASSIGN -> VNAME := TERM
+            System.out.println("ASSIGN -> VNAME := TERM");
             String place = newVar();
             String term = transTERM(children.get(2), place);
             String vname =transVNAME(children.get(0));
@@ -204,7 +214,8 @@ public class intermeridateCodeGeneration {
             String atomic = transATOMIC(next, place);
             term.setIntermediateCode(atomic);
             return atomic;
-        }else if(next.getSymb().equals("CALL")) { //Case 2: TERM -> CALL
+        } else if (next.getSymb().equals("CALL")) { //Case 2: TERM -> CALL
+            System.out.println("CALL");
             String call = transCALL(next, place);
             term.setIntermediateCode(call);
             return call;
@@ -217,6 +228,7 @@ public class intermeridateCodeGeneration {
     }
 
     public String transCALL(SyntaxTreeNode call) throws IOException {
+        System.out.println("CALL: " + call);
         // Call -> FNAME ( ATOMIC , ATOMIC , ATOMIC )
         String fname = transFNAME(call.getChildren().get(0));
         String atomic1 = transATOMIC(call.getChildren().get(2));
@@ -224,8 +236,8 @@ public class intermeridateCodeGeneration {
         String atomic3 = transATOMIC(call.getChildren().get(6));
         
         //adding to the syntax tree
-        call.setIntermediateCode("CALL " + fname + "(" + atomic1 + "," + atomic2 + "," + atomic3 + ")");
-        return "CALL " + fname + "(" + atomic1 + "," + atomic2 + "," + atomic3 + ")";
+        call.setIntermediateCode("\nCALL " + fname + "(" + atomic1 + "," + atomic2 + "," + atomic3 + ")");
+        return "\nCALL " + fname + "(" + atomic1 + "," + atomic2 + "," + atomic3 + ")";
     }
 
     public String transCALL(SyntaxTreeNode call, String place) throws IOException {
@@ -236,34 +248,35 @@ public class intermeridateCodeGeneration {
         String atomic3 = transATOMIC(call.getChildren().get(6));
         
         //adding to the syntax tree
-        call.setIntermediateCode("CALL " + fname + "(" + atomic1 + "," + atomic2 + "," + atomic3 + ")");
-        return "CALL " + fname + "(" + atomic1 + "," + atomic2 + "," + atomic3 + ")";
+        call.setIntermediateCode("\n" + place + " = " + " CALL " + fname + "(" + atomic1 + "," + atomic2 + "," + atomic3 + ")");
+        return "\n" + place + " = " + " CALL " + fname + "(" + atomic1 + "," + atomic2 + "," + atomic3 + ")";
     }
 
     public String transOP(SyntaxTreeNode op, String place) throws IOException {
+        System.out.println("OP: " + op);
         List<SyntaxTreeNode> children = op.getChildren();
         SyntaxTreeNode next = children.get(0);
+        System.out.println("next: " + next);
 
         if (next.getSymb().equals("UNOP")) { //Case 1: OP -> UNOP ( ARG )
+            System.out.println("UNOP");
             String place1 = newVar();
             String arg =transARG(children.get(2), place1);
-            outputFile.write(place);
-            outputFile.write(" = ");
             String unop = transUNOP(next);
-            outputFile.write(place1);
             //adding to the syntax tree
-            op.setIntermediateCode(arg + place + " = " + unop + " " + place1 + " ");
-            return arg + place + " = " + unop + " " + place1 + " ";
+            op.setIntermediateCode(arg + "\n" +  place + " = " + unop + " " + place1 + " ");
+            return arg + "\n" +  place + " = " + unop + " " + place1 + " ";
            
         } else if (next.getSymb().equals("BINOP")) { //Case 2: OP -> BINOP ( ARG , ARG )
+            System.out.println("BINOP");
             String place1 = newVar();
             String place2 = newVar();
             String arg1 = transARG(children.get(2), place1);
             String arg2 = transARG(children.get(4), place2);
             String binop = transBINOP(next);
             //adding to the syntax tree
-            op.setIntermediateCode(arg1 + " " + arg2 + "\n " + place + " = " + place1 + " " + binop + " " + place2);
-            return arg1 + " " + arg2 + "\n " + place + " = " + place1 + " " + binop + " " + place2;
+            op.setIntermediateCode(arg1 + " " + arg2 + "\n" + place + " = " + place1 + " " + binop + " " + place2);
+            return arg1 + " " + arg2 + "\n" + place + " = " + place1 + " " + binop + " " + place2;
         }
         return "";
     }
@@ -333,7 +346,6 @@ public class intermeridateCodeGeneration {
             binop.setIntermediateCode(" * ");
             return " * ";
         } else if (next.getTerminal() != null && next.getTerminal().contains("<WORD>div</WORD>")) { //Case 8: BINOP -> div
-            outputFile.write(" / ");
             //adding to the syntax tree
             binop.setIntermediateCode(" / ");
             return " / ";
@@ -356,49 +368,57 @@ public class intermeridateCodeGeneration {
         String condCode;
         
         if (next.getSymb().equals("SIMPLE")) {//CASE 1 : COND -> SIMPLE
-            condCode = transSIMPLE(children.get(2), label1, label2);
+            condCode = transSIMPLE(children.get(1).getChildren().get(0), label1, label2);
 
         } else if (next.getSymb().equals("COMPOSIT")) { //CASE 2: COND -> COMPOSIT
-            condCode = transCOMPOSIT(children.get(2), label1, label2, "");
+            condCode = transCOMPOSIT(children.get(1).getChildren().get(0), label1, label2, "");
         } else {
             condCode = "";
         }
         
-        String algo1 = transALGO(children.get(4));
-        String algo2 = transALGO(children.get(6));
+        String algo1 = transALGO(children.get(3));
+        String algo2 = transALGO(children.get(5));
         //adding to the syntax tree
-        branch.setIntermediateCode(condCode + "\nLABEL" + label1 + "\n" + algo1 + "\nGOTO " + label3 + "\nLABEL" + label2 + "\n" + algo2 + "\nLABEL" + label3);
-        return condCode + "\nLABEL" + label1 + "\n" + algo1 + "\nGOTO " + label3 + "\nLABEL" + label2 + "\n" + algo2 + "\nLABEL" + label3;
+        branch.setIntermediateCode(condCode + "\nLABEL " + label1 + "\n" + algo1 + "\nGOTO " + label3 + "\nLABEL " + label2 + "\n" + algo2 + "\nLABEL " + label3);
+        return condCode + "\nLABEL " + label1 + "\n" + algo1 + "\nGOTO " + label3 + "\nLABEL " + label2 + "\n" + algo2 + "\nLABEL " + label3;
     }
 
     public String transSIMPLE(SyntaxTreeNode simple, String labelt, String labelf) throws IOException {
+        System.out.println("SIMPLE: " + simple);
         //SIMPLE->BINOP ( ATOMIC , ATOMIC )
+        System.out.println("SIMPLE: " + simple);
         List<SyntaxTreeNode> children = simple.getChildren();
+        System.out.println("SIMPLE CHILDREN length: " + children.size());
+        System.out.println("children.get(0): " + children.get(0));
         String t1 = newVar();
         String t2 = newVar();
         String arg1 = transARG(children.get(2), t1);
         String arg2 = transARG(children.get(4), t2);
-        String op = transOP(children.get(0), t2);
+        String op = transBINOP(children.get(0));
+        System.out.println("op: " + op);
 
         //adding to the syntax tree
-        simple.setIntermediateCode(arg1 + arg2 + "IF " + t1 + " " + op + " " + t2 + " THEN " + labelt + " ELSE " + labelf);
-        return arg1 + arg2 + "IF " + t1 + " " + op + " " + t2 + " THEN " + labelt + " ELSE " + labelf;
+        simple.setIntermediateCode(arg1 + arg2 + "\nIF " + t1 + " " + op + " " + t2 + " THEN " + labelt + " ELSE " + labelf);
+        return arg1 + arg2 + "\nIF " + t1 + " " + op + " " + t2 + " THEN " + labelt + " ELSE " + labelf;
     }
 
     public String transCOMPOSIT(SyntaxTreeNode composit, String labelt, String labelf, String place) throws IOException {
+        System.out.println("COMPOSIT: " + composit);
         // NOT SURE ABOUT THIS IMPLEMENTATION
         List<SyntaxTreeNode> children = composit.getChildren();
         SyntaxTreeNode next = children.get(0);
-        if (next.getSymb().equals("BINOP") ) { //Case 1: COMPOSIT -> BINOP ( SIMPLE , SIMPLE )
+        if (next.getSymb().equals("BINOP")) { //Case 1: COMPOSIT -> BINOP ( SIMPLE , SIMPLE )
+            System.out.println("BINOP");
             String t1 = newVar();
             String t2 = newVar();
             String simple1 = transSIMPLE(children.get(2), t1, t2);
             String simple2 = transSIMPLE(children.get(4), t1, t2);
             String binop = transBINOP(children.get(0));
             //adding to the syntax tree
-            composit.setIntermediateCode(simple1 + simple2 + "IF " + t1 + " " + binop + " " + t2 + " THEN " + labelt + " ELSE " + labelf);
-            return simple1 + simple2 + "IF " + t1 + " " + t2 + " THEN " + labelt + " ELSE " + labelf;
+            composit.setIntermediateCode(simple1 + simple2 + "\nIF " + t1 + " " + binop + " " + t2 + " THEN " + labelt + " ELSE " + labelf);
+            return simple1 + simple2 + "\nIF " + t1 + " " + t2 + " THEN " + labelt + " ELSE " + labelf;
         } else if (next.getSymb().equals("UNOP")) {//Case 2: COMPOSIT -> UNOP ( SIMPLE )
+            System.out.println("UNOP");
             String place1 = newVar();
             String simple = transSIMPLE(children.get(2), labelt, labelf);
             String unop = transUNOP(next);
@@ -410,8 +430,11 @@ public class intermeridateCodeGeneration {
     }
 
     public String transFNAME(SyntaxTreeNode fname) throws IOException {
+        System.out.println("FNAME: " + fname);
         SyntaxTreeNode next = fname.getChildren().get(0);
-        String newName = SymbolTableAccessor.lookupVariable(next.getTerminalWord()).getName();
+        System.out.println("next: " + next);
+        System.out.println("SymbolTableAccessor.lookupFunction(next.getTerminalWord()): " + SymbolTableAccessor.lookupFunction(next.getTerminalWord()));
+        String newName = SymbolTableAccessor.lookupFunction(next.getTerminalWord()).getName();
         //adding to the syntax tree
         fname.setIntermediateCode(newName);
         return newName;
@@ -446,16 +469,19 @@ public class intermeridateCodeGeneration {
     }
 
     public String transHEADER(SyntaxTreeNode header) throws IOException {
+        System.out.println("HEADER: " + header);
         //HEADER->FTYP FNAME ( VNAME , VNAME , VNAME )
         List<SyntaxTreeNode> children = header.getChildren();
-        String ftype = children.get(0).getTerminalWord();
+        String ftype = children.get(0).getChildren().get(0).getTerminalWord();
+        System.out.println("children.get(0): " + children.get(0));
+        System.out.println("ftype: " + ftype);
         String fname = transFNAME(children.get(1));
         String vname1 = transVNAME(children.get(3));
         String vname2 = transVNAME(children.get(5));
         String vname3 = transVNAME(children.get(7));
         //adding to the syntax tree
-        header.setIntermediateCode(ftype + " " + fname + " (" + vname1 + "," + vname2 + "," + vname3 + ")");
-        return ftype + " " + fname + " (" + vname1 + "," + vname2 + "," + vname3 + ")";
+        header.setIntermediateCode("\n" + ftype + " " + fname + " (" + vname1 + "," + vname2 + "," + vname3 + ")");
+        return "\n" + ftype + " " + fname + " (" + vname1 + "," + vname2 + "," + vname3 + ")";
 
     }
     
@@ -505,7 +531,7 @@ public class intermeridateCodeGeneration {
     public static void main(String[] args) {
         //Testing the code generator
         try {
-            intermeridateCodeGeneration codeGen = new intermeridateCodeGeneration("src/parser2/output/output2.xml");
+            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output8.xml");
             codeGen.trans();
             codeGen.outputFile.close();
         } catch (Exception e) {
