@@ -18,23 +18,30 @@ public class typeChecker {
         treeCrawler = new TreeCrawler(xmlFilePath);     
     }
 
-    public boolean typeCheck() throws Exception {
+    public typeCheck typeCheck() throws Exception {
         return typeCheckPROG(treeCrawler.getNext());
     }
 
-    private boolean typeCheckPROG(SyntaxTreeNode prog) throws Exception {
+    private typeCheck typeCheckPROG(SyntaxTreeNode prog) throws Exception {
         //System.out.println("Type checking PROG");
         //System.out.println("prog: " + prog.toString());
         //PROG->main GLOBVARS ALGO FUNCTIONS
         boolean result = true;
         List<SyntaxTreeNode> children = prog.getChildren();
-        result = result && typeCheckGLOBVARS(children.get(1));
-        result = result && typeCheckALGO(children.get(2));
-        result = result && typeCheckFUNCTIONS(children.get(3));
-        return result;
+        typeCheck globVars = typeCheckGLOBVARS(children.get(1));
+        typeCheck algo = typeCheckALGO(children.get(2));
+        typeCheck functions = typeCheckFUNCTIONS(children.get(3));
+        result = result && globVars.type && algo.type && functions.type;
+        String message = globVars.message + " " + algo.message + " " + functions.message;
+        if (result) {
+            return new typeCheck(true, "Program is correctly typed.");
+        }
+        //removing leading whitespace
+        message = message.replaceAll("^\\s+", "");
+        return new typeCheck(result, message);
     }
 
-    private boolean typeCheckGLOBVARS(SyntaxTreeNode globVars) {
+    private typeCheck typeCheckGLOBVARS(SyntaxTreeNode globVars) {
         List<SyntaxTreeNode> children = globVars.getChildren();
         //System.out.println("Type checking GLOBVARS");
         //System.out.println("globVars: " + globVars.toString());
@@ -43,7 +50,7 @@ public class typeChecker {
         //System.out.println("next: " + next.toString());
         if (next.getTerminal() != null && next.getTerminal().isEmpty()) {//Case 1: GLOBVARS ->
             //System.out.println("GLOBVARS -> epsilon");
-            return true;
+            return new typeCheck(true, "");
         } else if (next.getSymb().equals("VTYP")) {//Case 2: GLOBVARS -> VTYP VNAME , GLOBVARS
             //System.out.println("GLOBVARS -> VTYP VNAME , GLOBVARS");
             String vtypType = typeOfVTYP(next);
@@ -51,13 +58,13 @@ public class typeChecker {
 
             if (!vnameType.equals(vtypType)) {
                 //System.out.println("Type checking failed for GLOBVARS -> VTYP VNAME , GLOBVARS");
-                return false;
+                return new typeCheck(false, "Type checking failed. Expected " + vtypType + " but got " + vnameType + ".\n Occured at: " + next.getChildren().get(0).getPosition());
             }
             treeCrawler.getNext(); //,
             return typeCheckGLOBVARS(children.get(3));
         } else {
             //System.out.println("Type checking failed for GLOBVARS");
-            return false;
+            return new typeCheck(false, "Type checking failed.");
         }
     }
 
@@ -103,31 +110,33 @@ public class typeChecker {
         
     }
     
-    private boolean typeCheckALGO(SyntaxTreeNode algo) {
+    private typeCheck typeCheckALGO(SyntaxTreeNode algo) {
         List<SyntaxTreeNode> children = algo.getChildren();
         //System.out.println("Type checking ALGO");
         //System.out.println("algo: " + algo.toString());
         // ALGO -> begin INSTRUC end
-        boolean result = typeCheckINSTRUC(children.get(1));
-        return result;
+        typeCheck result = typeCheckINSTRUC(children.get(1));
+        return new typeCheck(result.type, result.message);
     }
 
-    private boolean typeCheckINSTRUC(SyntaxTreeNode instruc) {
+    private typeCheck typeCheckINSTRUC(SyntaxTreeNode instruc) {
         List<SyntaxTreeNode> children = instruc.getChildren();
         //System.out.println("Type checking INSTRUC");
         //System.out.println("instruc: " + instruc.toString());
         SyntaxTreeNode next = children.get(0);
         //System.out.println("next: " + next.getSymb());
         if (next.getTerminal()!=null && next.getTerminal().isEmpty()) { //Case 1: INSTRUC ->
-            return true;
-        } else if(next.getSymb().equals("COMMAND")) { //Case 2: INSTRUC -> COMMAND ; INSTRUC
-            return typeCheckCOMMAND(next) && typeCheckINSTRUC(children.get(2));
+            return new typeCheck(true, "");
+        } else if (next.getSymb().equals("COMMAND")) { //Case 2: INSTRUC -> COMMAND ; INSTRUC
+            typeCheck command = typeCheckCOMMAND(next);
+            typeCheck instruc2 = typeCheckINSTRUC(children.get(2));
+            return new typeCheck(command.type && instruc2.type, command.message + " " + instruc2.message);
         } else {
-            return false;
+            return new typeCheck(false, "Type checking failed.");
         }
     }
 
-    private boolean typeCheckCOMMAND(SyntaxTreeNode command) {
+    private typeCheck typeCheckCOMMAND(SyntaxTreeNode command) {
         List<SyntaxTreeNode> children = command.getChildren();
         //System.out.println("Type checking COMMAND");
         //System.out.println("command: " + command.toString());
@@ -135,42 +144,42 @@ public class typeChecker {
         SyntaxTreeNode next = children.get(0);
         //System.out.println("next: " + next.toString());
         if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>skip</WORD>")) { //Case 1: COMMAND -> skip
-            return true;
+            return new typeCheck(true, "");
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>halt</WORD>")) { //Case 2: COMMAND -> halt
-            return true;
+            return new typeCheck(true, "");
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>print</WORD>")) {//Case 3: COMMAND -> print ATOMIC
             String atomic = typeOfATOMIC(children.get(1));
             if (atomic.equals("n") ) {
-                return true;
+                return new typeCheck(true, "");
             } else if (atomic.equals("t")) {
-                return true;
+                return new typeCheck(true, "");
             } else {
-                return false;
+                return new typeCheck(false, "Type checking failed. Can only print num or text. \nOccurred at: " + next.getPosition());
             }
         } else if (next.getTerminal()!=null && next.getTerminal().contains("<WORD>return</WORD>")) {//Case 4: COMMAND -> return ATOMIC
             if (this.lastFame == null) {
-                return false;
+                return new typeCheck(false, "Type checking failed.");
             }
             String typeAtomic = typeOfATOMIC(children.get(1));
             if (typeAtomic.equals(typeOfFNAME(this.lastFame)) && typeAtomic.equals("n") ) {
-                return true;
+                return new typeCheck(true, "");
             } else {
-                return false;
+                return new typeCheck(false, "Type checking failed. Can only return num. \nOccurred at: " + next.getPosition());
             }
         } else if (next.getSymb().equals("ASSIGN")) {//Case 5: COMMAND -> ASSIGN
             return typeCheckASSIGN(next);
         } else if (next.getSymb().equals("CALL")) { //Case 6: COMMAND -> CALL
             if (this.typeOfCall(next).equals("v")) {
                 //System.out.println("Returning true from COMMAND");
-                return true;
+                return new typeCheck(true, "");
             } else {
                 //System.out.println("Returning false from COMMAND");
-                return false;
+                return new typeCheck(false, "Type checking failed. Must assign the result of a non-void function to a variable. \nOccurred at: " + next.getChildren().get(0).getChildren().get(0).getPosition());
             }
         } else if (next.getSymb().equals("BRANCH")) { //Case 7: COMMAND -> BRANCH
             return typeCheckBRANCH(next);
         }
-        return false;
+        return new typeCheck(false, "Type checking failed.");
     }
 
     private String typeOfATOMIC(SyntaxTreeNode atomic) {
@@ -205,7 +214,7 @@ public class typeChecker {
         }
     }
 
-    private boolean typeCheckASSIGN(SyntaxTreeNode assign) {
+    private typeCheck typeCheckASSIGN(SyntaxTreeNode assign) {
         List<SyntaxTreeNode> children = assign.getChildren();
         //System.out.println("Type checking ASSIGN");
         //System.out.println("assign: " + assign.toString());
@@ -216,10 +225,10 @@ public class typeChecker {
             //Case 1: ASSIGN -> VNAME < input
             if (this.typeOfVNAME(children.get(0)).equals("n")) {
                 //System.out.println("Returning true from ASSIGN");
-                return true;
+                return new typeCheck(true, "");
             } else {
                 //System.out.println("Returning false from ASSIGN");
-                return false;
+                return new typeCheck(false, "Type checking failed. Can only input to a num variable. \nOccurred at: " + children.get(0).getChildren().get(0).getPosition());
             }
         } else if (symbol.getTerminal() != null && symbol.getTerminal().contains("<WORD>=</WORD>")) { //Case 2: ASSIGN -> VNAME := TERM
             //System.out.println("ASSIGN -> VNAME := TERM");
@@ -231,14 +240,14 @@ public class typeChecker {
             //System.out.println("typeTerm: " + typeTerm);
             if (typeVname.equals(typeTerm)) {
                 //System.out.println("Returning true from ASSIGN");
-                return true;
+                return new typeCheck(true, "");
             } else {
                 //System.out.println("Returning false from ASSIGN");
-                return false;
+                return new typeCheck(false, "Type checking failed. Expected " + typeVname + " but got " + typeTerm + ".\n Occurred at: " + children.get(0).getChildren().get(0).getPosition());
             }
         } else {
             //System.out.println("Returning false from ASSIGN");
-            return false;
+            return new typeCheck(false, "Type checking failed.");
         }
     }
 
@@ -391,15 +400,17 @@ public class typeChecker {
         }
     }
 
-    private boolean typeCheckBRANCH(SyntaxTreeNode branch) {
+    private typeCheck typeCheckBRANCH(SyntaxTreeNode branch) {
         List<SyntaxTreeNode> children = branch.getChildren();
         //System.out.println("Type checking BRANCH");
         //System.out.println("branch: " + branch.toString());
         //BRANCH->if COND then ALGO else ALGO        
-        if( this.typeOfCOND(children.get(1)).equals("b")) {
-            return typeCheckALGO(children.get(3)) && typeCheckALGO(children.get(5));
+        if (this.typeOfCOND(children.get(1)).equals("b")) {
+            typeCheck algo1 = typeCheckALGO(children.get(3));
+            typeCheck algo2 = typeCheckALGO(children.get(5));
+            return new typeCheck(algo1.type && algo2.type, algo1.message + " " + algo2.message);
         } else {
-            return false;
+            return new typeCheck(false, "Type checking failed. Condition must be of type boolean. \nOccurred at: " + children.get(0).getPosition());
         }
     }
 
@@ -483,36 +494,40 @@ public class typeChecker {
         
     }
 
-    private boolean typeCheckFUNCTIONS(SyntaxTreeNode functions) {
+    private typeCheck typeCheckFUNCTIONS(SyntaxTreeNode functions) {
         List<SyntaxTreeNode> children = functions.getChildren();
         //System.out.println("Type checking FUNCTIONS");
         //System.out.println("functions: " + functions.toString());
         SyntaxTreeNode next = children.get(0);
         if (next.getTerminal()!= null && next.getTerminal().isEmpty()) { //Case 1: FUNCTIONS -> 
-            return true;
-        } else if(next.getSymb().equals("DECL")) { //Case 2: FUNCTIONS -> DECL FUNCTIONS
-            return typeCheckDECL(next) && typeCheckFUNCTIONS(children.get(1));
+            return new typeCheck(true, "");
+        } else if (next.getSymb().equals("DECL")) { //Case 2: FUNCTIONS -> DECL FUNCTIONS
+            typeCheck decl = typeCheckDECL(next);
+            typeCheck functions2 = typeCheckFUNCTIONS(children.get(1));
+            return new typeCheck(decl.type && functions2.type, decl.message + " " + functions2.message);
         } else {
-            return false;
+            return new typeCheck(false, "Type checking failed.");
         }
     }
 
-    private boolean typeCheckDECL(SyntaxTreeNode decl) {
+    private typeCheck typeCheckDECL(SyntaxTreeNode decl) {
         //DECL->HEADER BODY
         List<SyntaxTreeNode> children = decl.getChildren();
         //System.out.println("Type checking DECL");
         //System.out.println("decl: " + decl.toString());
-        return typeCheckHEADER(children.get(0)) && typeCheckBODY(children.get(1));
+        typeCheck header = typeCheckHEADER(children.get(0));
+        typeCheck body = typeCheckBODY(children.get(1));
+        return new typeCheck(header.type && body.type, header.message + " " + body.message);
     }
 
-    private boolean typeCheckHEADER(SyntaxTreeNode header) {
+    private typeCheck typeCheckHEADER(SyntaxTreeNode header) {
         //HEADER->FTYP FNAME ( VNAME , VNAME , VNAME )
         List<SyntaxTreeNode> children = header.getChildren();
         //System.out.println("Type checking HEADER");
         //System.out.println("header: " + header.toString());
         
         if (this.typeOfFNAME(children.get(1)) != this.typeOfFTYP(children.get(0))) {
-            return false;
+            return new typeCheck(false, "Type checking failed. Type of your function and return type do not match. \nOccurred at: " + children.get(0).getChildren().get(0).getPosition());
         }
         //Adding the types to the symbol table for the function arguments
         //System.out.println("children.get(3).getChildren().get(0).getTerminal(): " + children.get(3).getChildren().get(0).getTerminalWord());
@@ -523,9 +538,9 @@ public class typeChecker {
         //System.out.println("Id: " + SymbolTableAccessor.getSymbolId(children.get(3).getChildren().get(0).getTerminalWord()));
 
         if(this.typeOfVNAME(children.get(3)).equals("n")  && this.typeOfVNAME(children.get(5)).equals("n")  && this.typeOfVNAME(children.get(7)).equals("n") ) {
-            return true;
+            return new typeCheck(true, "");
         } else {
-            return false;
+            return new typeCheck(false, "Type checking failed. Function arguments must be of type num. \nOccurred at: " + children.get(3).getChildren().get(0).getPosition());
         }
     }
 
@@ -547,52 +562,56 @@ public class typeChecker {
         }
     }
 
-    private boolean typeCheckBODY(SyntaxTreeNode body) {
+    private typeCheck typeCheckBODY(SyntaxTreeNode body) {
         //BODY->PROLOG LOCVARS ALGO EPILOG SUBFUNCS end
         List<SyntaxTreeNode> children = body.getChildren();
         //System.out.println("Type checking BODY");
         //System.out.println("body: " + body.toString());
-        
-        return this.typeCheckPROLOG(children.get(0)) && this.typeCheckLOCVARS(children.get(1))
-                && this.typeCheckALGO(children.get(2)) && this.typeCheckEPILOG(children.get(3))
-                && this.typeCheckSUBFUNCS(children.get(4));
+        typeCheck prolog = typeCheckPROLOG(children.get(0));
+        typeCheck locvars = typeCheckLOCVARS(children.get(1));
+        typeCheck algo = typeCheckALGO(children.get(2));
+        typeCheck epilog = typeCheckEPILOG(children.get(3));
+        typeCheck subfuncs = typeCheckSUBFUNCS(children.get(4));
+
+        return new typeCheck(prolog.type && locvars.type && algo.type && epilog.type && subfuncs.type, prolog.message
+                + " " + locvars.message + " " + algo.message + " " + epilog.message + " " + subfuncs.message);
     }
     
-    private boolean typeCheckPROLOG(SyntaxTreeNode prolog) {
+    private typeCheck typeCheckPROLOG(SyntaxTreeNode prolog) {
         //PROLOG->{
         //System.out.println("Type checking PROLOG");
         //System.out.println("prolog: " + prolog.toString());
         
-        return true;
+        return new typeCheck(true, "");
     }
 
-    private boolean typeCheckEPILOG(SyntaxTreeNode epilog) {
+    private typeCheck typeCheckEPILOG(SyntaxTreeNode epilog) {
         //EPILOG->}
         //System.out.println("Type checking EPILOG");
         //System.out.println("epilog: " + epilog.toString());
         
-        return true;
+        return new typeCheck(true, "");
     }
 
-    private boolean typeCheckLOCVARS(SyntaxTreeNode locvars) {
+    private typeCheck typeCheckLOCVARS(SyntaxTreeNode locvars) {
         //LOCVARS->VTYP VNAME , VTYP VNAME , VTYP VNAME ,
         List<SyntaxTreeNode> children = locvars.getChildren();
         //System.out.println("Type checking LOCVARS");
         //System.out.println("locvars: " + locvars.toString());
         
         if (this.typeOfVNAME(children.get(1)) != this.typeOfVTYP(children.get(0))) {
-            return false;
+            return new typeCheck(false, "Type checking failed. The type of the variable does not match the type declared. \nOccurred at: " + children.get(1).getChildren().get(0).getPosition());
         }
         if (this.typeOfVNAME(children.get(4)) != this.typeOfVTYP(children.get(3))) {
-            return false;
+            return new typeCheck(false, "Type checking failed. The type of the variable does not match the type declared. \nOccurred at: " + children.get(4).getChildren().get(0).getPosition());
         }
         if (this.typeOfVNAME(children.get(7)) != this.typeOfVTYP(children.get(6))) {
-            return false;
+            return new typeCheck(false, "Type checking failed. The type of the variable does not match the type declared. \nOccurred at: " + children.get(7).getChildren().get(0).getPosition());
         }
-        return true;
+        return new typeCheck(true, "");
     }
 
-    private boolean typeCheckSUBFUNCS(SyntaxTreeNode subfuncs) {
+    private typeCheck typeCheckSUBFUNCS(SyntaxTreeNode subfuncs) {
         //SUBFUNCS->FUNCTIONS
         List<SyntaxTreeNode> children = subfuncs.getChildren();
         //System.out.println("Type checking SUBFUNCS");
@@ -608,10 +627,10 @@ public class typeChecker {
             SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(xmlFilePath);
             semanticAnalyzer.analyze();
             typeChecker typeChecker = new typeChecker(xmlFilePath);
-            System.out.println("The result of the type checker: " + typeChecker.typeCheck());
+            typeCheck typeCheck = typeChecker.typeCheck();
+            System.out.println("The result of the type checker: " + typeCheck.type + "\n" + typeCheck.message);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 }
-
