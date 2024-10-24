@@ -4,6 +4,7 @@ import lexer.Token;
 import lexer.XMLFormatter;
 import parser2.SLRParser;
 import semanticanalyzer.SemanticAnalyzer;
+import typeChecker.typeCheck;
 import typeChecker.typeChecker;
 import targetCodeGeneration.targetCodeGenerator;
 import intermediateCodeGeneration.intermediateCodeGeneration;
@@ -97,8 +98,9 @@ public class compiler {
             // Phase 4: Type Checking
             System.out.println("Starting type checking...");
             typeChecker typeChecker = new typeChecker(parserOutput);
-            if (!typeChecker.typeCheck()) {
-                throw new Exception("Type checking failed");
+            typeCheck programType = typeChecker.typeCheck();
+            if (!programType.type) {
+                throw new Exception(programType.message);
             }
             System.out.println("Type checking completed successfully.");
 
