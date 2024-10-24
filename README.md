@@ -14,7 +14,10 @@ Where arg1 is the directory (relative to the current directory) of the input tex
 
 ## Compiled successfully
 
-Once the compiler has successfully run, you will see a new output folder in the directory that the .jar was run. This output folder will contain a .txt that has the target code (Basic) for the given input. To inspect the output of any of the components of the compiler, simply navigate to the respective folder in the output folder.
+Once the compiler has successfully run, you will see a new output folder in the directory that the .jar was run. This output folder will contain a .txt that has the target code (Basic) for the given input. To inspect the output of any of the components of the compiler, simply navigate to the respective folder in the output folder. 
+
+### Running the output program
+Download and install [this](https://robhagemans.github.io/pcbasic/). After installing and opening the "Andy Parkes BBCEdit" IDE, copy and paste the contents of the of the output file into the editor and click on the run button.
 
 ## Compiled unsuccessfully
 
