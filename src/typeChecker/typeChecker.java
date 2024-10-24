@@ -160,8 +160,13 @@ public class typeChecker {
         } else if (next.getSymb().equals("ASSIGN")) {//Case 5: COMMAND -> ASSIGN
             return typeCheckASSIGN(next);
         } else if (next.getSymb().equals("CALL")) { //Case 6: COMMAND -> CALL
-            String callType = this.typeOfCall(next);
-            return callType.equals("v") || callType.equals("n");
+            if (this.typeOfCall(next).equals("v")) {
+                //System.out.println("Returning true from COMMAND");
+                return true;
+            } else {
+                //System.out.println("Returning false from COMMAND");
+                return false;
+            }
         } else if (next.getSymb().equals("BRANCH")) { //Case 7: COMMAND -> BRANCH
             return typeCheckBRANCH(next);
         }
