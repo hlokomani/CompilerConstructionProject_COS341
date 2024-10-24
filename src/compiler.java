@@ -8,9 +8,59 @@ import typeChecker.typeChecker;
 import targetCodeGeneration.targetCodeGenerator;
 import intermediateCodeGeneration.intermediateCodeGeneration;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class compiler {
+    private static String baseOutputDir;
+    private static String compilerOutputDir;
+    private static String lexerOutputDir;
+    private static String parserOutputDir;
+    private static String intermediateOutputDir;
+    private static String targetOutputDir;
+
+    private static void setupDirectories(String inputFile) throws Exception {
+        // Get the parent directory of the input file
+        File inputFileObj = new File(inputFile).getAbsoluteFile();
+        File inputParentDir = inputFileObj.getParentFile();
+        if (inputParentDir == null) {
+            inputParentDir = new File(".");
+        }
+
+        // Create compilerOutputs directory as a sibling to the input file
+        compilerOutputDir = inputParentDir.getPath() + File.separator + "compilerOutputs";
+
+        // Create output directories under compilerOutputs
+        lexerOutputDir = compilerOutputDir + File.separator + "lexer";
+        parserOutputDir = compilerOutputDir + File.separator + "parser";
+        intermediateOutputDir = compilerOutputDir + File.separator + "intermediate";
+        targetOutputDir = compilerOutputDir + File.separator + "target";
+
+        // Create directories if they don't exist
+        createDirectoryIfNotExists(compilerOutputDir);
+        createDirectoryIfNotExists(lexerOutputDir);
+        createDirectoryIfNotExists(parserOutputDir);
+        createDirectoryIfNotExists(intermediateOutputDir);
+        createDirectoryIfNotExists(targetOutputDir);
+
+        // Set baseOutputDir to the parent directory
+        baseOutputDir = inputParentDir.getPath();
+    }
+
+    private static void createDirectoryIfNotExists(String dir) throws Exception {
+        Path path = Paths.get(dir);
+        if (!Files.exists(path)) {
+            Files.createDirectories(path);
+        }
+    }
+
+    private static String getOutputPath(String directory, String filename) {
+        return directory + File.separator + filename;
+    }
+
     public static void main(String[] args) {
         if (args.length != 1) {
             System.err.println("Usage: java compiler <input-file>");
@@ -19,19 +69,23 @@ public class compiler {
 
         String inputFile = args[0];
         try {
+            // Setup output directories
+            setupDirectories(inputFile);
+
             // Phase 1: Lexical Analysis
             System.out.println("Starting lexical analysis...");
             String input = FileHandler.readFile(inputFile);
             List<Token> tokens = LexicalAnalyzer.analyze(input);
-            String lexerOutput = "src/lexer/output/output.xml";
+            String lexerOutput = getOutputPath(lexerOutputDir, "output.xml");
             XMLFormatter.writeXMLOutput(tokens, lexerOutput);
             System.out.println("Lexical analysis completed successfully.");
 
             // Phase 2: Parsing
             System.out.println("Starting parsing...");
             SLRParser parser = new SLRParser();
+            parser.setOutputDirectory(parserOutputDir);
             parser.parse(lexerOutput);
-            String parserOutput = "src/parser2/output/output.xml";
+            String parserOutput = getOutputPath(parserOutputDir, "output.xml");
             System.out.println("Parsing completed successfully.");
 
             // Phase 3: Semantic Analysis
@@ -50,17 +104,22 @@ public class compiler {
 
             // Phase 5a: Intermediate Code Generation
             System.out.println("Starting intermediate code generation...");
-            intermediateCodeGeneration intermediateCodeGenerator = new intermediateCodeGeneration(parserOutput);
+            intermediateCodeGeneration intermediateCodeGenerator = new intermediateCodeGeneration(
+                    parserOutput,
+                    intermediateOutputDir
+            );
             intermediateCodeGenerator.trans();
+            String intermediateOutput = getOutputPath(intermediateOutputDir, "output.txt");
             System.out.println("Intermediate code generation completed successfully.");
 
             // Phase 5b: Code Generation
             System.out.println("Starting code generation...");
-            targetCodeGenerator codeGenerator = new targetCodeGenerator("src/intermediateCodeGeneration/output/output.txt");
+            targetCodeGenerator codeGenerator = new targetCodeGenerator(intermediateOutput, targetOutputDir);
             codeGenerator.generateBasicCode();
             System.out.println("Code generation completed successfully.");
 
             System.out.println("\nCompilation completed successfully!");
+            System.out.println("Output files are located in: " + compilerOutputDir);
 
         } catch (Exception e) {
             System.err.println("\nCompilation failed:");

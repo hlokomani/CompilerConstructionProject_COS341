@@ -1,9 +1,6 @@
 package parser2;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,99 +19,105 @@ public class ParseTable {
         populateActionTable();
         populateGotoTable();
     }
-    
-    private void populateGrammar()
-    {
-        String line;
 
-        try (BufferedReader br = new BufferedReader(new FileReader("src/parser2/input/grammar.txt"))) {
+    private java.io.InputStream getResourceStream(String resourcePath) throws IOException {
+        // Try to load from resources first
+        java.io.InputStream is = getClass().getResourceAsStream(resourcePath);
+
+        // If not found in resources, try to load from file system (for development)
+        if (is == null) {
+            is = getClass().getResourceAsStream("/parser2/input/" + resourcePath);
+        }
+
+        // If still not found, try direct file access (for development)
+        if (is == null) {
+            File file = new File("src/parser2/input/" + resourcePath);
+            if (file.exists()) {
+                is = new FileInputStream(file);
+            }
+        }
+
+        if (is == null) {
+            throw new IOException("Could not find resource: " + resourcePath);
+        }
+
+        return is;
+    }
+
+    private void populateGrammar() {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(getResourceStream("grammar.txt")))) {
+            String line;
             while ((line = br.readLine()) != null) {
                 grammar.add(line);
             }
         } catch (IOException e) {
+            System.err.println("Error loading grammar.txt: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private void populateTerminals()
-    {
-        //reading terminals form a text file
-        String line;
-        try (BufferedReader br = new BufferedReader(new FileReader("src/parser2/input/terminals.txt"))) {
+    private void populateTerminals() {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(getResourceStream("terminals.txt")))) {
+            String line;
             while ((line = br.readLine()) != null) {
                 terminal.add(line);
             }
         } catch (IOException e) {
+            System.err.println("Error loading terminals.txt: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private void populateNonTerminals()
-    {
-        //reading non-terminals form a text file
-        String line;
-        try (BufferedReader br = new BufferedReader(new FileReader("src/parser2/input/nonTerminals.txt"))) {
+    private void populateNonTerminals() {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(getResourceStream("nonTerminals.txt")))) {
+            String line;
             while ((line = br.readLine()) != null) {
                 nonTerminal.add(line);
             }
         } catch (IOException e) {
+            System.err.println("Error loading nonTerminals.txt: " + e.getMessage());
             e.printStackTrace();
         }
     }
-    
-    private void populateActionTable()
-    {
-        try (BufferedReader br = new BufferedReader(new FileReader("src/parser2/input/actionTable.csv"))) {
+
+    private void populateActionTable() {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(getResourceStream("actionTable.csv")))) {
             String line;
-            
-            // Reading each line of the CSV file
             while ((line = br.readLine()) != null) {
-                // Split the line by semicolon
-                String[] entries = line.split(";", -1);  // -1 ensures that trailing empty values are preserved
-                
-                // Replace empty entries with null
+                String[] entries = line.split(";", -1);
                 for (int i = 0; i < entries.length; i++) {
                     if (entries[i].trim().isEmpty()) {
                         entries[i] = null;
                     }
                 }
-                
-                // Add the array to the actionTable
                 actionTable.add(entries);
             }
         } catch (IOException e) {
+            System.err.println("Error loading actionTable.csv: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private void populateGotoTable()
-    {
-        try (BufferedReader br = new BufferedReader(new FileReader("src/parser2/input/gotoTable.csv"))) {
+    private void populateGotoTable() {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(getResourceStream("gotoTable.csv")))) {
             String line;
-            
-            // Reading each line of the CSV file
             while ((line = br.readLine()) != null) {
-                // Split the line by semicolon
-                String[] entries = line.split(";", -1);  // -1 ensures that trailing empty values are preserved
-                
+                String[] entries = line.split(";", -1);
                 List<Integer> row = new ArrayList<>();
-                
-                // Replace empty entries with null and parse integers
                 for (String entry : entries) {
                     if (entry.trim().isEmpty()) {
-                        row.add(null);  // Add null for empty entries
+                        row.add(null);
                     } else {
-                        row.add(Integer.parseInt(entry));  // Parse the integer
+                        row.add(Integer.parseInt(entry));
                     }
                 }
-                
-                // Add the row to the gotoTable
                 gotoTable.add(row);
             }
         } catch (IOException e) {
+            System.err.println("Error loading gotoTable.csv: " + e.getMessage());
             e.printStackTrace();
         }
-    } 
+    }
 
     public String getAction(int state, String terminal) {
         int index = -1;

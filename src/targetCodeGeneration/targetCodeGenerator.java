@@ -17,20 +17,25 @@ import typeChecker.TreeCrawler;
 public class targetCodeGenerator {
     private FileWriter outputFile;
     private int lineNumber = 10;  // Start from line 10
-    private String inputFilePath, outputFilePath;
+    private String inputFilePath, outputDirectory;
     private Map<String, String> tempVarMap = new HashMap<>();
     private Map<String, Integer> labelLineNumbers = new HashMap<>();
     private List<String> generatedCode = new ArrayList<>();
     private Set<String> stringVariables = new HashSet<>();
 
-    public targetCodeGenerator(String intermediateCodeFile) throws Exception {
+    public targetCodeGenerator(String intermediateCodeFile, String outputDirectory) throws Exception {
         this.inputFilePath = intermediateCodeFile;
+        this.outputDirectory = outputDirectory;
 
-
+        // Create the output file
         File inputFile = new File(intermediateCodeFile);
         String outputName = inputFile.getName();
-        outputName = outputName.substring(0, outputName.lastIndexOf("."));
-        outputFilePath = "src/targetCodeGeneration/output/" + outputName + "Basic.txt";
+        outputName = outputName.substring(0, outputName.lastIndexOf(".")) + "Basic.txt";
+
+        // Ensure output directory exists
+        new File(outputDirectory).mkdirs();
+
+        String outputFilePath = outputDirectory + File.separator + outputName;
         File output = new File(outputFilePath);
         PrintWriter writer = new PrintWriter(output);
         writer.print("");
@@ -129,7 +134,8 @@ public class targetCodeGenerator {
     }
 
     private void writeToFile() throws IOException {
-        try (FileWriter writer = new FileWriter(outputFilePath)) {
+        String outputPath = outputDirectory + File.separator + "outputBasic.txt";
+        try (FileWriter writer = new FileWriter(outputPath)) {
             int expectedLineNumber = 10;
             for (String line : generatedCode) {
                 int currentLineNumber = Integer.parseInt(line.split("\\s+")[0]);
@@ -340,11 +346,28 @@ public class targetCodeGenerator {
         lineNumber += 10;
     }
 
+    private String getOutputFilePath() {
+        return outputDirectory + File.separator + "outputBasic.txt";
+    }
+
     public static void main(String[] args) {
         try {
-            targetCodeGenerator generator = new targetCodeGenerator("src/intermediateCodeGeneration/output/output1.txt");
+            String currentDir = new File(".").getCanonicalPath();
+            String outputDir = currentDir + File.separator + "compilerOutputs" + File.separator + "target";
+
+            new File(outputDir).mkdirs();
+
+            targetCodeGenerator generator = new targetCodeGenerator(
+                    currentDir + File.separator + "compilerOutputs" + File.separator + "intermediate" + File.separator + "output.txt",
+                    outputDir
+            );
+
             generator.generateBasicCode();
+            System.out.println("Generated BASIC code:");
+            System.out.println("---------------------");
             generator.showGeneratedCode();
+            System.out.println("---------------------");
+            System.out.println("Output file location: " + generator.getOutputFilePath());
 
         } catch (Exception e) {
             System.err.println("Error during code generation: " + e.getMessage());
@@ -353,12 +376,13 @@ public class targetCodeGenerator {
     }
 
     public void showGeneratedCode() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(outputFilePath))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(getOutputFilePath()))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
             }
         } catch (IOException e) {
+            System.err.println("Error reading generated code: " + e.getMessage());
             e.printStackTrace();
         }
     }

@@ -1,6 +1,8 @@
 package intermediateCodeGeneration;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import parser2.SyntaxTreeNode;
@@ -13,43 +15,66 @@ public class intermediateCodeGeneration {
     private FileWriter outputFile;
     private int varCounter, labelCounter;
     private SyntaxTreeNode root;
+    private String outputDirectory;
+
+    public void setOutputDirectory(String outputDirectory) {
+        this.outputDirectory = outputDirectory;
+    }
 
     public intermediateCodeGeneration(String xmlFilePath) throws Exception {
-        //Initialize symbol table 
         treeCrawler = new TreeCrawler(xmlFilePath);
         varCounter = 0;
         labelCounter = 0;
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(xmlFilePath);
         semanticAnalyzer.analyze();
-        //Create text file to write the translated code
-        //extracting the output name from the xml file name from src/parser2/output1.xml
-        String outputName = xmlFilePath.substring(xmlFilePath.lastIndexOf("/") + 1, xmlFilePath.lastIndexOf("."));
-        String outputFilePath = "src/intermediateCodeGeneration/output/" + outputName + ".txt";
-        File output = new File(outputFilePath);
-        PrintWriter writer = new PrintWriter(output);
-        writer.print("");
-        writer.close();
-        outputFile = new FileWriter(output, true);
     }
-   
+
+    public intermediateCodeGeneration(String xmlFilePath, String outputDirectory) throws Exception {
+        this(xmlFilePath);
+        this.outputDirectory = outputDirectory;
+    }
+
     public SyntaxTreeNode trans() {
         System.out.println("Translating to intermediate code...");
         try {
+            // Ensure output directory exists
+            if (outputDirectory != null) {
+                Files.createDirectories(Paths.get(outputDirectory));
+            }
+
+            // Create output file
+            String outputPath;
+            if (outputDirectory != null) {
+                outputPath = outputDirectory + File.separator + "output.txt";
+            } else {
+                // Fallback to default path if no output directory specified
+                outputPath = "src/intermediateCodeGeneration/output/output.txt";
+            }
+
+            File output = new File(outputPath);
+            PrintWriter writer = new PrintWriter(output);
+            writer.print("");
+            writer.close();
+            outputFile = new FileWriter(output, true);
+
+            // Generate intermediate code
             root = treeCrawler.getNext();
             String intermediateCode = transPROG(root);
-//            System.out.println("intermediateCode: " + intermediateCode);
-            //checking if the first character is a new line character
+
             if (intermediateCode.charAt(0) == '\n') {
                 intermediateCode = intermediateCode.substring(1);
             }
-            //removing any \n\n from the intermediate code so that it is only \n
             intermediateCode = intermediateCode.replaceAll("\n\n", "\n");
+
             outputFile.write(intermediateCode);
             outputFile.close();
+
+            return root;
         } catch (IOException e) {
+            System.err.println("Error generating intermediate code: " + e.getMessage());
             e.printStackTrace();
+            return null;
         }
-        return root;
     }
     
     public String transPROG(SyntaxTreeNode prog) throws IOException {
@@ -560,13 +585,15 @@ public class intermediateCodeGeneration {
     }
 
     public static void main(String[] args) {
-        //Testing the code generator
         try {
-            intermediateCodeGeneration codeGen = new intermediateCodeGeneration("src/parser2/output/output4.xml");
+            String outputDir = "src/intermediateCodeGeneration/output";
+            intermediateCodeGeneration codeGen = new intermediateCodeGeneration(
+                    "src/parser2/output/output4.xml",
+                    outputDir
+            );
             codeGen.trans();
-            codeGen.outputFile.close();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
+            System.err.println("Error in intermediate code generation: " + e.getMessage());
             e.printStackTrace();
         }
     }

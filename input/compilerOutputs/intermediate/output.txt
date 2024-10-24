@@ -1,0 +1,54 @@
+var0 = 5 
+A6 = var0
+var1 = "Hello" 
+C$ = var1
+var2 = A6 
+var3 = 0 
+IF var2  >  var3 THEN label0 ELSE label1
+LABEL label0
+PRINT C$
+var5 = A6  
+var6 = 1 
+var4 = var5  -  var6
+A6 = var4
+REM END
+GOTO label2
+LABEL label1
+STOP
+REM END
+LABEL label2
+CALL F2(A6,1,1)
+REM END
+STOP
+num F2 (A7,A8,A9)
+REM BEGIN
+var7 = A7 
+var8 = 0 
+IF var7  ==  var8 THEN label3 ELSE label4
+LABEL label3
+var9 = "Factor" 
+D$ = var9
+PRINT D$
+PRINT A8
+return A8
+REM END
+GOTO label5
+LABEL label4
+var11 = A7  
+var12 = A8 
+var10 = var11  *  var12
+B = var10
+var14 = A7  
+var15 = 1 
+var13 = var14  -  var15
+A7 = var13
+var16 =  CALL F2(A7,B,A9)
+B1 = var16
+return B1
+REM END
+LABEL label5
+REM END
+REM END
+REM END
+STOP 
+REM END
