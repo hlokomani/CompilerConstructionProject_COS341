@@ -125,10 +125,28 @@ public class SyntaxTreeNode {
     }
 
     public String toString() {
-        if(isLeaf) {
+        if (isLeaf) {
             return unid + " " + terminal;
         } else {
             return unid + " " + symb;
         }
+    }
+    
+    public String getPosition() {
+        if (terminal == null) {
+            return "";
+        }
+        if (terminal.contains("<TOK>") && terminal.contains("</TOK>")) {
+            System.out.println("In getPosition");
+            //getting <LINE></LINE> and <COLUMN>1</COLUMN>
+            int start = terminal.indexOf("<LINE>") + 6;
+            int end = terminal.indexOf("</LINE>");
+            String line = terminal.substring(start, end);
+            start = terminal.indexOf("<COLUMN>") + 8;
+            end = terminal.indexOf("</COLUMN>");
+            String column = terminal.substring(start, end);
+            return "Line: " + line + " Column: " + column;
+        }
+        return "";
     }
 }
