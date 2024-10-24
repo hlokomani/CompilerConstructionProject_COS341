@@ -7,7 +7,7 @@ In this folder you will find both the source code as well as the .jar file for t
 Ensure that you have a suitable JVM installed on your machine. To run the .jar, open a terminal in the directory containing the .jar file (it should be something like ".../compiler/dist"). Then run the following command:
 
 ```bash
-java -jar compiler.jar arg1
+java -jar 341SemesterProject.jar arg1
 ```
 
 Where arg1 is the directory (relative to the current directory) of the input text file.
@@ -18,6 +18,7 @@ Once the compiler has successfully run, you will see a new output folder in the 
 
 ### Running the output program
 Download and install [this](https://robhagemans.github.io/pcbasic/). After installing and opening the "Andy Parkes BBCEdit" IDE, copy and paste the contents of the of the output file into the editor and click on the run button.
+If you are unable to obtain this software QB 64 (https://qb64.com/) and run the qb64.exe.
 
 ## Compiled unsuccessfully
 
