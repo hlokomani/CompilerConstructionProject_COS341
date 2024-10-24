@@ -1,22 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="341SemesterProject:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c28cd061-734d-4bbf-b87d-7d3b85d2d3d7" name="Changes" comment="Stubbed empty type checker to remove errors">
+    <list default="true" id="c28cd061-734d-4bbf-b87d-7d3b85d2d3d7" name="Changes" comment="Final compiler file that takes in argument of input file">
+      <change afterPath="$PROJECT_DIR$/.idea/artifacts/341SemesterProject_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc(1).xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules(1).xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs 2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace(1).xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input/input_program1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input/input_program1.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lexer/output/output1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/output/output1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lexer/output/output3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/output/output3.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/parser/Main.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/parser/Parser.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/parser/SyntaxTreeBuilder.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/parser/Token.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/parser/TreeNode.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/parser/XMLTokenReader.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/341SemesterProject.iml" beforeDir="false" afterPath="$PROJECT_DIR$/341SemesterProject.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/compiler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/compiler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/intermediateCodeGeneration/intermediateCodeGeneration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/intermediateCodeGeneration/intermediateCodeGeneration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/parser2/ParseTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/parser2/ParseTable.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/parser2/SLRParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/parser2/SLRParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/parser2/output/output2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/parser2/output/output2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/semanticanalyzer/SemanticAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/semanticanalyzer/SemanticAnalyzer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/targetCodeGeneration/targetCodeGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/targetCodeGeneration/targetCodeGenerator.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,37 +76,53 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.Compiler.executor": "Run",
     "Application.Lexer.executor": "Run",
     "Application.Main.executor": "Run",
     "Application.Run Lexer.executor": "Run",
     "Application.Run Parser.executor": "Run",
     "Application.SLRParser.executor": "Debug",
-    "Application.SemanticAnalyzer.executor": "Run",
+    "Application.SemanticAnalyzer.executor": "Debug",
+    "Application.compiler.executor": "Run",
+    "Application.intermediateCodeGeneration.executor": "Run",
+    "Application.targetCodeGenerator.executor": "Run",
+    "Application.typeChecker.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "feature/semantic__analysis",
-    "kotlin-language-version-configured": "true"
+    "git-widget-placeholder": "feature/target",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/hloko/iCloudDrive/UP documents/Final Year/Semester 8/COS 341 - Compiler Construction/Semester Project/341SemesterProject/resources",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\hloko\iCloudDrive\UP documents\Final Year\Semester 8\COS 341 - Compiler Construction\Semester Project\341SemesterProject\src" />
       <recent name="C:\Users\hloko\iCloudDrive\UP documents\Final Year\Semester 8\COS 341 - Compiler Construction\Semester Project\341SemesterProject\src\lexer" />
       <recent name="C:\Users\hloko\iCloudDrive\UP documents\Final Year\Semester 8\COS 341 - Compiler Construction\Semester Project\341SemesterProject\input" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.SemanticAnalyzer">
+  <component name="RunManager" selected="Application.Compiler">
+    <configuration name="Compiler" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="compiler" />
+      <module name="341SemesterProject" />
+      <option name="PROGRAM_PARAMETERS" value="input/input_program1.txt" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Run Lexer" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="lexer.Lexer" />
       <module name="341SemesterProject" />
-      <option name="PROGRAM_PARAMETERS" value="input/input_program3.txt src/lexer/output/output3.xml" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <configuration name="Run Parser" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" value="parser.Main" />
+      <option name="MAIN_CLASS_NAME" value="parser2.SLRParser" />
       <module name="341SemesterProject" />
-      <option name="PROGRAM_PARAMETERS" value="src/lexer/output/output7.xml" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -133,6 +156,7 @@
     <list>
       <item itemvalue="Application.Run Lexer" />
       <item itemvalue="Application.Run Parser" />
+      <item itemvalue="Application.Compiler" />
       <item itemvalue="Application.SLRParser" />
       <item itemvalue="Application.SemanticAnalyzer" />
     </list>
@@ -232,7 +256,71 @@
       <option name="project" value="LOCAL" />
       <updated>1728917704008</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Updated input program one return type">
+      <option name="closed" value="true" />
+      <created>1729716584374</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1729716584374</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Added null check">
+      <option name="closed" value="true" />
+      <created>1729716633212</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1729716633212</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Fixed false negative for calls to functions of type num">
+      <option name="closed" value="true" />
+      <created>1729716687375</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1729716687375</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Commented out XML Debugging output for terminals">
+      <option name="closed" value="true" />
+      <created>1729716711783</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1729716711783</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Handled CALLS in target code">
+      <option name="closed" value="true" />
+      <created>1729716785493</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1729716785493</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Commented out debugging prints">
+      <option name="closed" value="true" />
+      <created>1729774497058</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1729774497058</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Removed some prints">
+      <option name="closed" value="true" />
+      <created>1729774526708</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1729774526708</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Final compiler file that takes in argument of input file">
+      <option name="closed" value="true" />
+      <created>1729774549551</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1729774549551</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -257,14 +345,22 @@
     <MESSAGE value="Added end of program token after lexing is completed" />
     <MESSAGE value="Init semantic analysis module" />
     <MESSAGE value="Stubbed empty type checker to remove errors" />
-    <option name="LAST_COMMIT_MESSAGE" value="Stubbed empty type checker to remove errors" />
+    <MESSAGE value="Updated input program one return type" />
+    <MESSAGE value="Added null check" />
+    <MESSAGE value="Fixed false negative for calls to functions of type num" />
+    <MESSAGE value="Commented out XML Debugging output for terminals" />
+    <MESSAGE value="Handled CALLS in target code" />
+    <MESSAGE value="Commented out debugging prints" />
+    <MESSAGE value="Removed some prints" />
+    <MESSAGE value="Final compiler file that takes in argument of input file" />
+    <option name="LAST_COMMIT_MESSAGE" value="Final compiler file that takes in argument of input file" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/parser2/SLRParser.java</url>
-          <line>49</line>
+          <line>55</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>

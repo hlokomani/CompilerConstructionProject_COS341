@@ -1,4 +1,5 @@
 package parser2;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -11,9 +12,14 @@ public class SLRParser {
     Token next; // This would represent the next input symbol
     InputStream inputStream;
     ParseTable parseTable;
+    private String outputDirectory;
 
     public SLRParser() {
         parseTable = new ParseTable();
+    }
+
+    public void setOutputDirectory(String outputDirectory) {
+        this.outputDirectory = outputDirectory;
     }
 
     public void parse(String filename) {
@@ -91,8 +97,19 @@ public class SLRParser {
                     elm = new StackElement(goToState, newNode);
                     stack.push(elm);
                 } else if (action.equals("acc")) {
-                    String newFileName = filename.replace("src/lexer", "src/parser2");
-                    new XMLGenerator(stack.pop().node).convertToXML(newFileName);
+                    // Use the configured output directory instead of hardcoded path replacement
+                    String outputFile;
+                    if (outputDirectory != null) {
+                        outputFile = outputDirectory + File.separator + "output.xml";
+                    } else {
+                        // Fallback to original behavior if no output directory is set
+                        outputFile = filename.replace("src/lexer", "src/parser2");
+                    }
+
+                    // Ensure output directory exists
+                    new File(outputFile).getParentFile().mkdirs();
+
+                    new XMLGenerator(stack.pop().node).convertToXML(outputFile);
                     System.out.println("Parsing successful!");
                     return;
                 } else {
