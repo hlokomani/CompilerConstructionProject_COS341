@@ -113,10 +113,9 @@ public class targetCodeGenerator {
             String line = generatedCode.get(i);
             if (line.contains("REM label")) {
                 String label = line.substring(line.indexOf("REM ") + 4).trim();
-                // Line numbers start at 10 and increment by 10
                 int actualLineNumber = 10 + (i * 10);
                 labelLineNumbers.put(label, actualLineNumber);
-                System.out.println("Found " + label + " at line " + actualLineNumber);
+//                System.out.println("Found " + label + " at line " + actualLineNumber);
             }
             else if (line.contains("REM num ") || line.contains("REM void ")) {
                 // Extract function name (F1, F2, etc.)
@@ -124,7 +123,7 @@ public class targetCodeGenerator {
                 String funcName = parts[parts.length - 1];
                 int actualLineNumber = 10 + (i * 10);
                 labelLineNumbers.put(funcName, actualLineNumber);
-                System.out.println("Found function " + funcName + " at line " + actualLineNumber);
+//                System.out.println("Found function " + funcName + " at line " + actualLineNumber);
             }
         }
     }
