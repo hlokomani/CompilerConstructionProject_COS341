@@ -9,22 +9,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c28cd061-734d-4bbf-b87d-7d3b85d2d3d7" name="Changes" comment="Final compiler file that takes in argument of input file">
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/341SemesterProject_jar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc(1).xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules(1).xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs 2.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace(1).xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/341SemesterProject.iml" beforeDir="false" afterPath="$PROJECT_DIR$/341SemesterProject.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/compiler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/compiler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/intermediateCodeGeneration/intermediateCodeGeneration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/intermediateCodeGeneration/intermediateCodeGeneration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/parser2/ParseTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/parser2/ParseTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/parser2/SLRParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/parser2/SLRParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/semanticanalyzer/SemanticAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/semanticanalyzer/SemanticAnalyzer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/targetCodeGeneration/targetCodeGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/targetCodeGeneration/targetCodeGenerator.java" afterDir="false" />
-    </list>
+    <list default="true" id="c28cd061-734d-4bbf-b87d-7d3b85d2d3d7" name="Changes" comment="Final compiler file that takes in argument of input file" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -89,7 +74,7 @@
     "Application.typeChecker.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "feature/target",
+    "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/hloko/iCloudDrive/UP documents/Final Year/Semester 8/COS 341 - Compiler Construction/Semester Project/341SemesterProject/resources",
     "project.structure.last.edited": "Artifacts",
